@@ -1,0 +1,123 @@
+import { Page, Locator, expect } from '@playwright/test';
+import { TestSteps } from '@poms/base-pages/TestSteps';
+import { CKEditor } from '../../base-pages/CKEditor';
+import { UserPage } from '../../base-pages/UserPage';
+import { CreatePages } from '../../base-pages/CreatePages';
+import { TestSetUpData, TestData } from '../../../test-data/TestDataObject';
+import { PreviewPage } from '@poms/base-pages/PreviewPage';
+import { UploadMediaHelper } from '@helpers/general/UploadMediaHelper';
+
+export interface TopicSaveData
+{
+    topicTitle: string;
+    revisionLogMessage: string;
+    topicSummary: string;
+    topicLongDescription: string;
+    hideListing?: boolean;
+    bannerImage?: boolean;
+    bannerImageOverlay?: boolean;
+    bannerImageThin?: boolean;
+}
+
+export class TopicCreatePage
+{
+    // logging
+    private readonly testSteps: TestSteps;
+
+    // pages
+    private readonly ckeditor: CKEditor;
+    private readonly userPage: UserPage;
+    private readonly createPages: CreatePages;
+    private readonly previewPage: PreviewPage;
+    private readonly uploadMediaHelper: UploadMediaHelper;
+
+    // locators
+    private readonly topicTitleField: Locator;
+    private readonly hideListingCheckbox: Locator;
+    private readonly topicSummaryField: Locator;
+
+    // constructor
+    constructor(
+        private readonly page: Page,
+        // isolated instances of test data
+        private testSetUpData: typeof TestSetUpData,
+        private testData: typeof TestData
+    )
+    {
+        // logging isolated instance
+        this.testSteps = new TestSteps();
+
+        // imported pages
+        this.userPage = new UserPage(page, this.testSetUpData);
+        this.createPages = new CreatePages(page, this.testSetUpData, this.testData);
+        this.ckeditor = new CKEditor(page, this.testSetUpData, testData);
+        this.previewPage = new PreviewPage(page);
+        this.uploadMediaHelper = new UploadMediaHelper(page, this.testSetUpData, this.testData);
+
+        // locators
+        this.topicTitleField = page.locator('#edit-title-0-value');
+        this.hideListingCheckbox = page.locator('#edit-hide-listing');
+        this.topicSummaryField = page.locator('#edit-field-summary-0-value');
+    }
+
+    // ------------------------ asserts ------------------------
+
+    // check url on create topic page
+    async createTopicPageURLCheck()
+    {
+        await this.testSteps.LogInfo(`Verifying URL is "${this.testSetUpData.urlForTest.url}/node/add/topic"`);
+        await expect(this.page).toHaveURL(`${this.testSetUpData.urlForTest.url}/node/add/topic`);
+    }
+
+    // check url on return to create topic page after doing a preview
+    async returnFromPreviewTopicPageURLCheck()
+    {
+        await this.testSteps.LogInfo(`Verifying URL is "${this.testSetUpData.urlForTest.url}/node/add/topic\\?uuid"`);
+        await expect(this.page).toHaveURL(new RegExp(`${this.testSetUpData.urlForTest.url}/node/add/topic\\?uuid`));
+    }
+
+    // ------------------------ filling topic form ------------------------
+
+    // enter topic title
+    async enterTopicTitle(topicTitle: string)
+    {
+        await this.testSteps.LogInfo(`Entering "${topicTitle}" into the Title field`);
+        await this.topicTitleField.fill(topicTitle);
+    }
+
+    // enter topic summary
+    async enterTopicSummary(topicSummary: string)
+    {
+        await this.testSteps.LogInfo(`Entering "${topicSummary}" into the Summary field`);
+        await this.topicSummaryField.fill(topicSummary);
+    }
+
+    // toggle Hide listing checkbox
+    async toggleHideListing()
+    {
+        await this.testSteps.LogInfo('Toggling the Hide listing checkbox');
+        await this.hideListingCheckbox.click();
+    }
+
+    // ------------------------ actions related to create topic ------------------------
+
+    // fill in topic form elements - title summary long description etc
+    async fillTopicForm(data: TopicSaveData)
+    {
+        await this.createTopicPageURLCheck();
+        await this.enterTopicTitle(data.topicTitle);
+        await this.uploadMediaHelper.uploadBannerImagesWorkflow({
+            bannerImage: true,
+            bannerImageOverlay: false,
+            bannerImageThin: false,
+        });
+        await this.createPages.enterRevisionLogMessage(data.revisionLogMessage);
+        await this.enterTopicSummary(data.topicSummary);
+        await this.ckeditor.enterCKEditorBody(data.topicLongDescription);
+
+        if (data.hideListing)
+        {
+            await this.toggleHideListing();
+        }
+    }
+}
