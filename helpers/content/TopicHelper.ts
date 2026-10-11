@@ -392,7 +392,7 @@ export class TopicHelper
                 await this.createPage.clickSaveButton();
                 const subtopicNodePage = new SubtopicNodePage(this.page, this.testSetUpData, this.testData);
                 await subtopicNodePage.subtopicNodeURLCheck();
-                await subtopicNodePage.verifySubtopic({ preview: false });
+                await subtopicNodePage.verifySubtopic();
                 await returnToParentTopic();
             }
         }

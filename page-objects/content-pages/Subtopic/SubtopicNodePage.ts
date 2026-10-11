@@ -2,11 +2,6 @@ import { Page, expect } from '@playwright/test';
 import { TestSteps } from '@poms/base-pages/TestSteps';
 import { TestSetUpData, TestData } from '../../../test-data/TestDataObject';
 
-export interface VerifyOptions
-{
-    preview: boolean;
-};
-
 export class SubtopicNodePage
 {
     // logging
@@ -37,7 +32,7 @@ export class SubtopicNodePage
     }
 
     // verify the subtopic's own title/summary/long description render on its node page
-    async verifySubtopic({ preview }: VerifyOptions)
+    async verifySubtopic()
     {
         await this.testSteps.LogInfo(`Verifying title "${this.testData.Subtopic.title}" is visible`);
         await expect(this.page.getByRole('heading', { level: 1, exact: true })).toHaveText(this.testData.Subtopic.title);
@@ -48,14 +43,10 @@ export class SubtopicNodePage
         await this.testSteps.LogInfo(`Verifying long description "${this.testData.Subtopic.longDescription}" is visible`);
         await expect(this.page.getByText(this.testData.Subtopic.longDescription)).toBeVisible();
 
-        if (!preview)
-        {
-            // TODO: once child content links are supported, verify/click them here - not possible while in preview
-        }
     }
 
     // verify the edited subtopic's own title/summary/long description render on its node page
-    async verifyEditedSubtopic({ preview }: VerifyOptions)
+    async verifyEditedSubtopic()
     {
         await this.testSteps.LogInfo(`Verifying title "${this.testData.Subtopic.titleEdited}" is visible`);
         await expect(this.page.getByRole('heading', { level: 1, exact: true })).toHaveText(this.testData.Subtopic.titleEdited);
@@ -66,10 +57,6 @@ export class SubtopicNodePage
         await this.testSteps.LogInfo(`Verifying long description "${this.testData.Subtopic.longDescriptionEdited}" is visible`);
         await expect(this.page.getByText(this.testData.Subtopic.longDescriptionEdited)).toBeVisible();
 
-        if (!preview)
-        {
-            // TODO: once child content links are supported, verify/click them here - not possible while in preview
-        }
     }
 
     // verify child content (subtopic content items) renders in the expected order

@@ -19,6 +19,7 @@ import { LinkComparePage } from '@poms/content-pages/Link/LinkComparePage';
 import { HeritageSiteComparePage } from '@poms/content-pages/HeritageSite/HeritageSiteComparePage';
 import { ProtectedAreaComparePage } from '@poms/content-pages/ProtectedArea/ProtectedAreaComparePage';
 import { TopicComparePage } from '@poms/content-pages/Topic/TopicComparePage';
+import { SubtopicComparePage } from '@poms/content-pages/Subtopic/SubtopicComparePage';
 
 export interface DeleteRevisionsOptions
 {
@@ -53,6 +54,7 @@ export class RevisionHelper
     readonly heritageSiteComparePage: HeritageSiteComparePage;
     readonly protectedAreaComparePage: ProtectedAreaComparePage;
     readonly topicComparePage: TopicComparePage;
+    readonly subtopicComparePage: SubtopicComparePage;
     readonly deleteRevisionsPage: DeleteRevisionsPage;
     readonly revertRevisionsPage: RevertRevisionsPage;
 
@@ -83,6 +85,7 @@ export class RevisionHelper
         this.heritageSiteComparePage = new HeritageSiteComparePage(page, this.testSetUpData, this.testdata);
         this.protectedAreaComparePage = new ProtectedAreaComparePage(page, this.testSetUpData, this.testdata);
         this.topicComparePage = new TopicComparePage(page, this.testSetUpData, this.testdata);
+        this.subtopicComparePage = new SubtopicComparePage(page, this.testSetUpData, this.testdata);
     }
 
 
@@ -152,6 +155,10 @@ export class RevisionHelper
             }
             case this.testSetUpData.validContentTypeList.topic: {
                 await this.topicComparePage.verifyCompareTopic();
+                break;
+            }
+            case this.testSetUpData.validContentTypeList.subtopic: {
+                await this.subtopicComparePage.verifyCompareSubtopic();
                 break;
             }
         }
