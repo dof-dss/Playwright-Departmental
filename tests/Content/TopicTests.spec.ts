@@ -33,8 +33,8 @@ test.describe('Empty Topic Tests', () =>
 
             // searching as anon to ensure content is not viewable as draft
             await anonymousHelper.searchAsAnon({ edited: false });
-            await topicVisibilityHelper.verifyOnHomepage({ title: testData.Topic.title, shouldBeVisible: false, edited: false });
-            await topicVisibilityHelper.verifyOnTopicsPage({ title: testData.Topic.title, shouldBeVisible: false, edited: false });
+            await topicVisibilityHelper.verifyTopicOnHomepage({ title: testData.Topic.title, shouldBeVisible: false, edited: false });
+            await topicVisibilityHelper.verifyTopicOnTopicsPage({ title: testData.Topic.title, shouldBeVisible: false, edited: false });
 
             // log back in and naviagte to content 
             await loginHelper.loginWithValidUser();
@@ -53,8 +53,8 @@ test.describe('Empty Topic Tests', () =>
 
             // searching as anon to ensure content is not viewable as needs review 
             await anonymousHelper.searchAsAnon({ edited: false });
-            await topicVisibilityHelper.verifyOnHomepage({ title: testData.Topic.title, shouldBeVisible: false, edited: false });
-            await topicVisibilityHelper.verifyOnTopicsPage({ title: testData.Topic.title, shouldBeVisible: false, edited: false });
+            await topicVisibilityHelper.verifyTopicOnHomepage({ title: testData.Topic.title, shouldBeVisible: false, edited: false });
+            await topicVisibilityHelper.verifyTopicOnTopicsPage({ title: testData.Topic.title, shouldBeVisible: false, edited: false });
 
             // log back in and naviagte to content 
             await loginHelper.loginWithValidUser();
@@ -73,8 +73,8 @@ test.describe('Empty Topic Tests', () =>
 
             // searching as anon to ensure content is viewable as it is published 
             await anonymousHelper.searchAsAnon({ edited: false });
-            await topicVisibilityHelper.verifyOnHomepage({ title: testData.Topic.title, shouldBeVisible: true, edited: false });
-            await topicVisibilityHelper.verifyOnTopicsPage({ title: testData.Topic.title, shouldBeVisible: true, edited: false });
+            await topicVisibilityHelper.verifyTopicOnHomepage({ title: testData.Topic.title, shouldBeVisible: true, edited: false });
+            await topicVisibilityHelper.verifyTopicOnTopicsPage({ title: testData.Topic.title, shouldBeVisible: true, edited: false });
 
             // log back in and naviagte to content 
             await loginHelper.loginWithValidUser();
@@ -93,8 +93,8 @@ test.describe('Empty Topic Tests', () =>
 
             // searching as anon to ensure content is not viewable as it is archived 
             await anonymousHelper.searchAsAnon({ edited: false });
-            await topicVisibilityHelper.verifyOnHomepage({ title: testData.Topic.title, shouldBeVisible: false, edited: false });
-            await topicVisibilityHelper.verifyOnTopicsPage({ title: testData.Topic.title, shouldBeVisible: false, edited: false });
+            await topicVisibilityHelper.verifyTopicOnHomepage({ title: testData.Topic.title, shouldBeVisible: false, edited: false });
+            await topicVisibilityHelper.verifyTopicOnTopicsPage({ title: testData.Topic.title, shouldBeVisible: false, edited: false });
         });
 
     test('Empty-Topic-TC02 - Edit - Edit  published empty Topic (preview edit)', { tag: "@regression" },
@@ -127,8 +127,8 @@ test.describe('Empty Topic Tests', () =>
 
             // ensure the edited topic is published and viewable to anon users
             await anonymousHelper.searchAsAnon({ edited: true });
-            await topicVisibilityHelper.verifyOnHomepage({ title: testData.Topic.titleEdited, shouldBeVisible: true, edited: true });
-            await topicVisibilityHelper.verifyOnTopicsPage({ title: testData.Topic.titleEdited, shouldBeVisible: true, edited: true });
+            await topicVisibilityHelper.verifyTopicOnHomepage({ title: testData.Topic.titleEdited, shouldBeVisible: true, edited: true });
+            await topicVisibilityHelper.verifyTopicOnTopicsPage({ title: testData.Topic.titleEdited, shouldBeVisible: true, edited: true });
         });
 
     test('Empty-Topic-TC03 - Delete - Ensure Topic Supervisor can delete empty Topic', { tag: "@regression" },
@@ -153,8 +153,8 @@ test.describe('Empty Topic Tests', () =>
 
             // searching as anon to ensure content is viewable as it is published 
             await anonymousHelper.searchAsAnon({ edited: false });
-            await topicVisibilityHelper.verifyOnHomepage({ title: testData.Topic.title, shouldBeVisible: true, edited: false });
-            await topicVisibilityHelper.verifyOnTopicsPage({ title: testData.Topic.title, shouldBeVisible: true, edited: false });
+            await topicVisibilityHelper.verifyTopicOnHomepage({ title: testData.Topic.title, shouldBeVisible: true, edited: false });
+            await topicVisibilityHelper.verifyTopicOnTopicsPage({ title: testData.Topic.title, shouldBeVisible: true, edited: false });
 
             // log back in and navigate to content to confirm cancel did not delete the Topic
             await loginHelper.loginWithValidUser();
@@ -174,8 +174,8 @@ test.describe('Empty Topic Tests', () =>
 
             // ensure the deleted Topic is not viewable to anonymous users
             await anonymousHelper.searchAsAnon({ edited: false });
-            await topicVisibilityHelper.verifyOnHomepage({ title: testData.Topic.title, shouldBeVisible: false, edited: false });
-            await topicVisibilityHelper.verifyOnTopicsPage({ title: testData.Topic.title, shouldBeVisible: false, edited: false });
+            await topicVisibilityHelper.verifyTopicOnHomepage({ title: testData.Topic.title, shouldBeVisible: false, edited: false });
+            await topicVisibilityHelper.verifyTopicOnTopicsPage({ title: testData.Topic.title, shouldBeVisible: false, edited: false });
         });
 
     test('Empty-Topic-TC04 - Compare revisions- Edit empty Topic content and ensure user is able to Compare revisions', { tag: "@regression" },
@@ -340,8 +340,8 @@ test.describe('Empty Topic Tests', () =>
 
             // verify the hidden Topic is not listed publicly
             await anonymousHelper.searchAsAnon({ edited: false });
-            await topicVisibilityHelper.verifyOnTopicsPage({ title: testData.Topic.title, shouldBeVisible: false, edited: false });
-            await topicVisibilityHelper.verifyOnHomepage({ title: testData.Topic.title, shouldBeVisible: false, edited: false });
+            await topicVisibilityHelper.verifyTopicOnTopicsPage({ title: testData.Topic.title, shouldBeVisible: false, edited: false });
+            await topicVisibilityHelper.verifyTopicOnHomepage({ title: testData.Topic.title, shouldBeVisible: false, edited: false });
         });
 });
 
@@ -392,7 +392,7 @@ test.describe('Full Topic Tests', () =>
             await anonymousHelper.searchAsAnon({ edited: false });
 
             // verify published topic is visible on homepage but Draft children are not
-            await topicVisibilityHelper.verifyOnHomepage({ title: testData.Topic.title, shouldBeVisible: true, edited: false });
+            await topicVisibilityHelper.verifyTopicOnHomepage({ title: testData.Topic.title, shouldBeVisible: true, edited: false });
             await topicHelper.verifyTopicChildContentVisibility({
                 application: false,
                 article: false,
@@ -400,7 +400,7 @@ test.describe('Full Topic Tests', () =>
             });
 
             // verify published topic is visible on the topics page but Draft children are not
-            await topicVisibilityHelper.verifyOnTopicsPage({ title: testData.Topic.title, shouldBeVisible: true, edited: false });
+            await topicVisibilityHelper.verifyTopicOnTopicsPage({ title: testData.Topic.title, shouldBeVisible: true, edited: false });
             await topicHelper.verifyTopicChildContentVisibility({
                 application: false,
                 article: false,
@@ -441,7 +441,7 @@ test.describe('Full Topic Tests', () =>
             await anonymousHelper.searchAsAnon({ edited: false });
 
             // verify published topic is visible on homepage but Needs Review children are not
-            await topicVisibilityHelper.verifyOnHomepage({ title: testData.Topic.title, shouldBeVisible: true, edited: false });
+            await topicVisibilityHelper.verifyTopicOnHomepage({ title: testData.Topic.title, shouldBeVisible: true, edited: false });
             await topicHelper.verifyTopicChildContentVisibility({
                 application: false,
                 article: false,
@@ -449,7 +449,7 @@ test.describe('Full Topic Tests', () =>
             });
 
             // verify published topic is visible on /topics page but Needs Review children are not
-            await topicVisibilityHelper.verifyOnTopicsPage({ title: testData.Topic.title, shouldBeVisible: true, edited: false });
+            await topicVisibilityHelper.verifyTopicOnTopicsPage({ title: testData.Topic.title, shouldBeVisible: true, edited: false });
             await topicHelper.verifyTopicChildContentVisibility({
                 application: false,
                 article: false,
@@ -490,7 +490,7 @@ test.describe('Full Topic Tests', () =>
             await anonymousHelper.searchAsAnon({ edited: false });
 
             // verify published topic is visible on homepage but published  children are too 
-            await topicVisibilityHelper.verifyOnHomepage({ title: testData.Topic.title, shouldBeVisible: true, edited: false });
+            await topicVisibilityHelper.verifyTopicOnHomepage({ title: testData.Topic.title, shouldBeVisible: true, edited: false });
             await topicHelper.verifyTopicChildContentVisibility({
                 application: true,
                 article: true,
@@ -498,7 +498,7 @@ test.describe('Full Topic Tests', () =>
             });
 
             // verify published topic is visible on /topics page but published children are too
-            await topicVisibilityHelper.verifyOnTopicsPage({ title: testData.Topic.title, shouldBeVisible: true, edited: false });
+            await topicVisibilityHelper.verifyTopicOnTopicsPage({ title: testData.Topic.title, shouldBeVisible: true, edited: false });
             await topicHelper.verifyTopicChildContentVisibility({
                 application: true,
                 article: true,
@@ -539,7 +539,7 @@ test.describe('Full Topic Tests', () =>
             await anonymousHelper.searchAsAnon({ edited: false });
 
             // verify published topic is visible on homepage but published  children are not as archived 
-            await topicVisibilityHelper.verifyOnHomepage({ title: testData.Topic.title, shouldBeVisible: true, edited: false });
+            await topicVisibilityHelper.verifyTopicOnHomepage({ title: testData.Topic.title, shouldBeVisible: true, edited: false });
             await topicHelper.verifyTopicChildContentVisibility({
                 application: false,
                 article: false,
@@ -547,7 +547,7 @@ test.describe('Full Topic Tests', () =>
             });
 
             // verify published topic is visible on /topics page but published children are not as archived
-            await topicVisibilityHelper.verifyOnTopicsPage({ title: testData.Topic.title, shouldBeVisible: true, edited: false });
+            await topicVisibilityHelper.verifyTopicOnTopicsPage({ title: testData.Topic.title, shouldBeVisible: true, edited: false });
             await topicHelper.verifyTopicChildContentVisibility({
                 application: false,
                 article: false,
@@ -581,7 +581,7 @@ test.describe('Full Topic Tests', () =>
             await anonymousHelper.searchAsAnon({ edited: false });
 
             // verify published topic is visible on homepage but Draft children are not
-            await topicVisibilityHelper.verifyOnHomepage({ title: testData.Topic.title, shouldBeVisible: true, edited: false });
+            await topicVisibilityHelper.verifyTopicOnHomepage({ title: testData.Topic.title, shouldBeVisible: true, edited: false });
             await topicHelper.verifyTopicChildContentVisibility({
                 application: false,
                 article: false,
@@ -589,7 +589,7 @@ test.describe('Full Topic Tests', () =>
             });
 
             // verify published topic is visible on the topics page but Draft children are not
-            await topicVisibilityHelper.verifyOnTopicsPage({ title: testData.Topic.title, shouldBeVisible: true, edited: false });
+            await topicVisibilityHelper.verifyTopicOnTopicsPage({ title: testData.Topic.title, shouldBeVisible: true, edited: false });
             await topicHelper.verifyTopicChildContentVisibility({
                 application: false,
                 article: false,
@@ -630,7 +630,7 @@ test.describe('Full Topic Tests', () =>
             await anonymousHelper.searchAsAnon({ edited: false });
 
             // verify published topic is visible on homepage but Needs Review children are not
-            await topicVisibilityHelper.verifyOnHomepage({ title: testData.Topic.title, shouldBeVisible: true, edited: false });
+            await topicVisibilityHelper.verifyTopicOnHomepage({ title: testData.Topic.title, shouldBeVisible: true, edited: false });
             await topicHelper.verifyTopicChildContentVisibility({
                 application: false,
                 article: false,
@@ -638,7 +638,7 @@ test.describe('Full Topic Tests', () =>
             });
 
             // verify published topic is visible on /topics page but Needs Review children are not
-            await topicVisibilityHelper.verifyOnTopicsPage({ title: testData.Topic.title, shouldBeVisible: true, edited: false });
+            await topicVisibilityHelper.verifyTopicOnTopicsPage({ title: testData.Topic.title, shouldBeVisible: true, edited: false });
             await topicHelper.verifyTopicChildContentVisibility({
                 application: false,
                 article: false,
@@ -679,7 +679,7 @@ test.describe('Full Topic Tests', () =>
             await anonymousHelper.searchAsAnon({ edited: false });
 
             // verify published topic is visible on homepage but published  children are too 
-            await topicVisibilityHelper.verifyOnHomepage({ title: testData.Topic.title, shouldBeVisible: true, edited: false });
+            await topicVisibilityHelper.verifyTopicOnHomepage({ title: testData.Topic.title, shouldBeVisible: true, edited: false });
             await topicHelper.verifyTopicChildContentVisibility({
                 application: true,
                 article: true,
@@ -687,7 +687,7 @@ test.describe('Full Topic Tests', () =>
             });
 
             // verify published topic is visible on /topics page but published children are too
-            await topicVisibilityHelper.verifyOnTopicsPage({ title: testData.Topic.title, shouldBeVisible: true, edited: false });
+            await topicVisibilityHelper.verifyTopicOnTopicsPage({ title: testData.Topic.title, shouldBeVisible: true, edited: false });
             await topicHelper.verifyTopicChildContentVisibility({
                 application: true,
                 article: true,
@@ -728,7 +728,7 @@ test.describe('Full Topic Tests', () =>
             await anonymousHelper.searchAsAnon({ edited: false });
 
             // verify published topic is visible on homepage but published  children are not as archived 
-            await topicVisibilityHelper.verifyOnHomepage({ title: testData.Topic.title, shouldBeVisible: true, edited: false });
+            await topicVisibilityHelper.verifyTopicOnHomepage({ title: testData.Topic.title, shouldBeVisible: true, edited: false });
             await topicHelper.verifyTopicChildContentVisibility({
                 application: false,
                 article: false,
@@ -736,7 +736,7 @@ test.describe('Full Topic Tests', () =>
             });
 
             // verify published topic is visible on /topics page but published children are not as archived
-            await topicVisibilityHelper.verifyOnTopicsPage({ title: testData.Topic.title, shouldBeVisible: true, edited: false });
+            await topicVisibilityHelper.verifyTopicOnTopicsPage({ title: testData.Topic.title, shouldBeVisible: true, edited: false });
             await topicHelper.verifyTopicChildContentVisibility({
                 application: false,
                 article: false,
@@ -776,7 +776,7 @@ test.describe('Full Topic Tests', () =>
             await anonymousHelper.searchAsAnon({ edited: false });
 
             // verify published topic is visible on homepage and published children are visible  
-            await topicVisibilityHelper.verifyOnHomepage({ title: testData.Topic.title, shouldBeVisible: true, edited: false });
+            await topicVisibilityHelper.verifyTopicOnHomepage({ title: testData.Topic.title, shouldBeVisible: true, edited: false });
             await topicHelper.verifyTopicChildContentVisibility({
                 application: true,
                 article: true,
@@ -784,7 +784,7 @@ test.describe('Full Topic Tests', () =>
             });
 
             // verify published topic is visible on the topics page and published children are visible  
-            await topicVisibilityHelper.verifyOnTopicsPage({ title: testData.Topic.title, shouldBeVisible: true, edited: false });
+            await topicVisibilityHelper.verifyTopicOnTopicsPage({ title: testData.Topic.title, shouldBeVisible: true, edited: false });
             await topicHelper.verifyTopicChildContentVisibility({
                 application: true,
                 article: true,
@@ -810,7 +810,7 @@ test.describe('Full Topic Tests', () =>
             await anonymousHelper.searchAsAnon({ edited: false });
 
             // verify published topic is visible on homepage and published children are visible  
-            await topicVisibilityHelper.verifyOnHomepage({ title: testData.Topic.title, shouldBeVisible: true, edited: false });
+            await topicVisibilityHelper.verifyTopicOnHomepage({ title: testData.Topic.title, shouldBeVisible: true, edited: false });
             await topicHelper.verifyTopicChildContentVisibility({
                 application: false,
                 article: false,
@@ -818,7 +818,7 @@ test.describe('Full Topic Tests', () =>
             });
 
             // verify published topic is visible on the topics page and published children are visible  
-            await topicVisibilityHelper.verifyOnTopicsPage({ title: testData.Topic.title, shouldBeVisible: true, edited: false });
+            await topicVisibilityHelper.verifyTopicOnTopicsPage({ title: testData.Topic.title, shouldBeVisible: true, edited: false });
             await topicHelper.verifyTopicChildContentVisibility({
                 application: false,
                 article: false,
@@ -1001,8 +1001,8 @@ test.describe('Full Topic Tests', () =>
 
             // ensure the deleted Topic is not viewable to anonymous users
             await anonymousHelper.searchAsAnon({ edited: false });
-            await topicVisibilityHelper.verifyOnHomepage({ title: testData.Topic.title, shouldBeVisible: false, edited: false });
-            await topicVisibilityHelper.verifyOnTopicsPage({ title: testData.Topic.title, shouldBeVisible: false, edited: false });
+            await topicVisibilityHelper.verifyTopicOnHomepage({ title: testData.Topic.title, shouldBeVisible: false, edited: false });
+            await topicVisibilityHelper.verifyTopicOnTopicsPage({ title: testData.Topic.title, shouldBeVisible: false, edited: false });
 
         });
 
