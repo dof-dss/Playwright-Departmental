@@ -257,6 +257,8 @@ export class TopicHelper
                 await new SubtopicHelper(this.page, this.testSetUpData, this.testData).createSubtopic({
                     preview: false,
                     mandatoryFieldCheck: false,
+                    customTopicNeeded: false,
+                    topics: [this.testData.Topic.title],
                 });
             }
 

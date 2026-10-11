@@ -2,10 +2,9 @@ import { TestSteps } from '@poms/base-pages/TestSteps';
 import { test } from '@fixtures/MyFixtures';
 import { TopicVisibilityHelper } from '@helpers/general/TopicVisibilityHelper';
 
-test.describe('Empty Subtopic Tests', { tag: ['@subtopic', '@regression', '@topicsupervisor'] }, () =>
+test.describe('Empty Subtopic Tests', { tag: ['@subtopics', '@regression', '@topicsupervisor'] }, () =>
 {
-    // Pass the fixture for Topic Supervisor into the beforeEach hook and setup the initial topic and subtopic data
-    test.beforeEach(async ({ loginHelper, topicHelper, testSetUpData, testData }, testInfo) =>
+    test.beforeEach(async ({ loginHelper, testSetUpData, testData }, testInfo) =>
     {
         const testSteps = new TestSteps();
         await testSteps.LogInfo('Test starting');
@@ -14,22 +13,11 @@ test.describe('Empty Subtopic Tests', { tag: ['@subtopic', '@regression', '@topi
         testSetUpData.urlForTest.url = testSetUpData.validTestURLList.finance_url;
         testSetUpData.userForTest.username = testSetUpData.validUserList.topicsupervisor_username;
         testSetUpData.userForTest.password = testSetUpData.validUserList.topicsupervisor_password;
-        testSetUpData.contentTypeforTest.contentType = testSetUpData.validContentTypeList.topic;
-        testSetUpData.contentTitleforTest.contentTitle = testData.Topic.title;
-        testSetUpData.saveAsOptionForTest.saveAsOption = testSetUpData.validSaveAsOptionList.published;
-
-        await loginHelper.loginWithValidUser();
-        await topicHelper.createTopic({
-            preview: false,
-            mandatoryFieldCheck: false,
-        });
-
-        testData.SiteTopics.topic1 = testData.Topic.title;
-
         testSetUpData.contentTypeforTest.contentType = testSetUpData.validContentTypeList.subtopic;
         testSetUpData.contentTitleforTest.contentTitle = testData.Subtopic.title;
         testSetUpData.saveAsOptionForTest.saveAsOption = testSetUpData.validSaveAsOptionList.draft;
         testSetUpData.moderationStateForTest.moderationState = testSetUpData.validModerationStates.draft;
+        await loginHelper.loginWithValidUser();
     });
 
     test('Empty-Subtopic-TC01 - Create - Create empty Subtopic and moderate through all stages (preview and mandatory field check) including initial topic creation', { tag: "@create" },
@@ -37,7 +25,8 @@ test.describe('Empty Subtopic Tests', { tag: ['@subtopic', '@regression', '@topi
         {
             await subtopicHelper.createSubtopic({
                 preview: true,
-                mandatoryFieldCheck: false
+                mandatoryFieldCheck: false,
+                customTopicNeeded: true,
             });
 
             // searching as anon to ensure content is not viewable as draft
@@ -106,13 +95,14 @@ test.describe('Empty Subtopic Tests', { tag: ['@subtopic', '@regression', '@topi
             await topicVisibilityHelper.verifySubtopicViaTopicsPage({ title: testData.Subtopic.title, shouldBeVisible: false, edited: false });
         });
 
-    test('Empty-Subtopic-TC02 - Edit - Edit  published empty Subtopic (preview edit)', { tag: "@regression" },
+    test('Empty-Subtopic-TC02 - Edit - Edit  published empty Subtopic (preview edit)', { tag: "@edit" },
         async ({ subtopicHelper, anonymousHelper, contentModerationHelper, topicVisibilityHelper, testData }) =>
         {
             // creating content
             await subtopicHelper.createSubtopic({
                 preview: false,
                 mandatoryFieldCheck: false,
+                customTopicNeeded: true,
             });
 
             // moderating to published  
@@ -140,13 +130,14 @@ test.describe('Empty Subtopic Tests', { tag: ['@subtopic', '@regression', '@topi
             await topicVisibilityHelper.verifySubtopicViaTopicsPage({ title: testData.Subtopic.titleEdited, shouldBeVisible: true, edited: true });
         });
 
-    test('Empty-Subtopic-TC03 - Delete - Ensure Topic Supervisor can delete empty Subtopic', { tag: "@regression" },
+    test('Empty-Subtopic-TC03 - Delete - Ensure Topic Supervisor can delete empty Subtopic', { tag: "@delete" },
         async ({ subtopicHelper, navigateToCreatedContentHelper, contentModerationHelper, anonymousHelper, loginHelper, topicVisibilityHelper, testData }) =>
         {
             // creating content
             await subtopicHelper.createSubtopic({
                 preview: false,
                 mandatoryFieldCheck: false,
+                customTopicNeeded: true,
             });
 
             // moderating to published  
@@ -187,13 +178,14 @@ test.describe('Empty Subtopic Tests', { tag: ['@subtopic', '@regression', '@topi
             await topicVisibilityHelper.verifySubtopicViaTopicsPage({ title: testData.Subtopic.title, shouldBeVisible: false, edited: false });
         });
 
-    test('Empty-Subtopic-TC04 - Compare revisions- Edit empty Subtopic content and ensure user is able to Compare revisions', { tag: "@regression" },
+    test('Empty-Subtopic-TC04 - Compare revisions- Edit empty Subtopic content and ensure user is able to Compare revisions', { tag: "@revision" },
         async ({ subtopicHelper, revisionHelper, testSetUpData }) =>
         {
             // creating content
             await subtopicHelper.createSubtopic({
                 preview: false,
                 mandatoryFieldCheck: false,
+                customTopicNeeded: false,
             });
 
             // overriding test data so that Edit test saves as Needs Review
@@ -205,13 +197,14 @@ test.describe('Empty Subtopic Tests', { tag: ['@subtopic', '@regression', '@topi
             await revisionHelper.compareRevisions();
         });
 
-    test('Empty-Subtopic-TC05 - Delete revision - Edit Subtopic content and ensure user is able to Delete Revisions', { tag: "@regression" },
+    test('Empty-Subtopic-TC05 - Delete revision - Edit Subtopic content and ensure user is able to Delete Revisions', { tag: "@revision" },
         async ({ subtopicHelper, revisionHelper, testSetUpData }) =>
         {
             // creating content
             await subtopicHelper.createSubtopic({
                 preview: false,
                 mandatoryFieldCheck: false,
+                customTopicNeeded: false,
             });
 
             // overriding test data so that Edit test saves as Needs Review
@@ -233,13 +226,14 @@ test.describe('Empty Subtopic Tests', { tag: ['@subtopic', '@regression', '@topi
             });
         });
 
-    test('Empty-Subtopic-TC06 - Revert revision - Edit Subtopic content and ensure user is able to Revert Revisions', { tag: "@regression" },
+    test('Empty-Subtopic-TC06 - Revert revision - Edit Subtopic content and ensure user is able to Revert Revisions', { tag: "@revision" },
         async ({ subtopicHelper, revisionHelper, testSetUpData }) =>
         {
             // creating content
             await subtopicHelper.createSubtopic({
                 preview: false,
                 mandatoryFieldCheck: false,
+                customTopicNeeded: false,
             });
 
             // overriding test data so that Edit test saves as Needs Review
@@ -261,15 +255,14 @@ test.describe('Empty Subtopic Tests', { tag: ['@subtopic', '@regression', '@topi
             });
         });
 
-    test('Empty-Subtopic-TC07- Workbench -  Create Subtopic content as a "Topic Supervisor", and use Workbench to complete all moderation states', { tag: "@regression" },
+    test('Empty-Subtopic-TC07- Workbench -  Create Subtopic content as a "Topic Supervisor", and use Workbench to complete all moderation states', { tag: "@workbench" },
         async ({ subtopicHelper, contentModerationHelper, workBenchHelper, testSetUpData }) =>
         {
-            console.log(testSetUpData.contentTitleforTest.contentTitle + ' - creating content with this title');
-
             // creating topic as a draft
             await subtopicHelper.createSubtopic({
                 preview: false,
                 mandatoryFieldCheck: false,
+                customTopicNeeded: false,
             });
 
             await workBenchHelper.topicSupervisorWorkBench({
@@ -307,13 +300,14 @@ test.describe('Empty Subtopic Tests', { tag: ['@subtopic', '@regression', '@topi
             });
         });
 
-    test('Empty-Subtopic-TC08 - Archived Subtopic should not be displayed in topics tree', { tag: "@regression" },
+    test('Empty-Subtopic-TC08 - Archived Subtopic should not be displayed in topics tree', { tag: "@visibility" },
         async ({ subtopicHelper, applicationHelper, topicsTreeHelper, contentModerationHelper, anonymousHelper, topicVisibilityHelper, testData, testSetUpData }) =>
         {
             // creating content
             await subtopicHelper.createSubtopic({
                 preview: false,
                 mandatoryFieldCheck: false,
+                customTopicNeeded: true,
             });
 
             // moderating to archived  
@@ -330,12 +324,13 @@ test.describe('Empty Subtopic Tests', { tag: ['@subtopic', '@regression', '@topi
             await topicsTreeHelper.verifyTopicNotVisibleInSiteTopicsTree(testData.Topic.title);
         });
 
-    test('Empty-Subtopic-TC09 - Emsure that Hide Listing functionality prevents Subtopic being listed on parent topic pages and home page', { tag: "@regression" },
+    test('Empty-Subtopic-TC09 - Emsure that Hide Listing functionality prevents Subtopic being listed on parent topic pages and home page', { tag: "@visibility" },
         async ({ subtopicHelper, contentModerationHelper, anonymousHelper, topicVisibilityHelper, testData }) =>
         {
             await subtopicHelper.createSubtopic({
                 preview: false,
                 mandatoryFieldCheck: false,
+                customTopicNeeded: true,
                 hideListing: true,
             });
 

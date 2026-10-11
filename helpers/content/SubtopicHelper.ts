@@ -12,11 +12,13 @@ import { TestSetUpData, TestData } from '../../test-data/TestDataObject';
 import { PreviewPage } from '@poms/base-pages/PreviewPage';
 import { CreatePages } from '@poms/base-pages/CreatePages';
 import { DeletePage } from '@poms/base-pages/DeletePage';
+import { TopicHelper } from '@helpers/content/TopicHelper';
 
 export interface SaveOptions
 {
     preview: boolean;
     mandatoryFieldCheck: boolean;
+    customTopicNeeded: boolean;
     topics?: (string | null)[];
     hideListing?: boolean;
 };
@@ -78,6 +80,33 @@ export class SubtopicHelper
     // create Subtopic method
     async createSubtopic(options: SaveOptions)
     {
+        if (options.customTopicNeeded)
+        {
+            const contentType = this.testSetUpData.contentTypeforTest.contentType;
+            const contentTitle = this.testSetUpData.contentTitleforTest.contentTitle;
+            const saveAsOption = this.testSetUpData.saveAsOptionForTest.saveAsOption;
+            const moderationState = this.testSetUpData.moderationStateForTest.moderationState;
+
+            try
+            {
+                this.testSetUpData.contentTypeforTest.contentType = this.testSetUpData.validContentTypeList.topic;
+                this.testSetUpData.contentTitleforTest.contentTitle = this.testData.Topic.title;
+                this.testSetUpData.saveAsOptionForTest.saveAsOption = this.testSetUpData.validSaveAsOptionList.published;
+                await new TopicHelper(this.page, this.testSetUpData, this.testData).createTopic({
+                    preview: false,
+                    mandatoryFieldCheck: false,
+                });
+                this.testData.SiteTopics.topic1 = this.testData.Topic.title;
+            }
+            finally
+            {
+                this.testSetUpData.contentTypeforTest.contentType = contentType;
+                this.testSetUpData.contentTitleforTest.contentTitle = contentTitle;
+                this.testSetUpData.saveAsOptionForTest.saveAsOption = saveAsOption;
+                this.testSetUpData.moderationStateForTest.moderationState = moderationState;
+            }
+        }
+
         // navigate to create subtopic
         await this.navigateToCreateSubtopic();
 
