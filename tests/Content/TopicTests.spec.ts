@@ -2,7 +2,7 @@ import { TestSteps } from '@poms/base-pages/TestSteps';
 import { test } from '@fixtures/MyFixtures';
 import { TopicVisibilityHelper } from '@helpers/general/TopicVisibilityHelper';
 
-test.describe('Empty Topic Tests', () =>
+test.describe('Empty Topic Tests', { tag: ['@topics', '@regression', '@topicsupervisor'] }, () =>
 {
     // Pass the fixture for Topic Supervisor into the beforeEach hook
     test.beforeEach(async ({ loginHelper, testSetUpData, testData }, testInfo) =>
@@ -23,7 +23,7 @@ test.describe('Empty Topic Tests', () =>
         await loginHelper.loginWithValidUser();
     });
 
-    test('Empty-Topic-TC01 - Create - Create empty Topic and moderate through all stages (preview and mandatory field check)', { tag: "@regression" },
+    test('Empty-Topic-TC01 - Create - Create empty Topic and moderate through all stages (preview and mandatory field check)', { tag: "@create" },
         async ({ topicHelper, anonymousHelper, loginHelper, contentModerationHelper, navigateToCreatedContentHelper, testSetUpData, testData, topicVisibilityHelper }) =>
         {
             await topicHelper.createTopic({
@@ -97,7 +97,7 @@ test.describe('Empty Topic Tests', () =>
             await topicVisibilityHelper.verifyTopicOnTopicsPage({ title: testData.Topic.title, shouldBeVisible: false, edited: false });
         });
 
-    test('Empty-Topic-TC02 - Edit - Edit  published empty Topic (preview edit)', { tag: "@regression" },
+    test('Empty-Topic-TC02 - Edit - Edit  published empty Topic (preview edit)', { tag: "@edit" },
         async ({ topicHelper, anonymousHelper, contentModerationHelper, topicVisibilityHelper, testData }) =>
         {
             // creating content
@@ -131,7 +131,7 @@ test.describe('Empty Topic Tests', () =>
             await topicVisibilityHelper.verifyTopicOnTopicsPage({ title: testData.Topic.titleEdited, shouldBeVisible: true, edited: true });
         });
 
-    test('Empty-Topic-TC03 - Delete - Ensure Topic Supervisor can delete empty Topic', { tag: "@regression" },
+    test('Empty-Topic-TC03 - Delete - Ensure Topic Supervisor can delete empty Topic', { tag: "@delete" },
         async ({ topicHelper, navigateToCreatedContentHelper, contentModerationHelper, anonymousHelper, loginHelper, topicVisibilityHelper, testData }) =>
         {
             // creating content
@@ -178,7 +178,7 @@ test.describe('Empty Topic Tests', () =>
             await topicVisibilityHelper.verifyTopicOnTopicsPage({ title: testData.Topic.title, shouldBeVisible: false, edited: false });
         });
 
-    test('Empty-Topic-TC04 - Compare revisions- Edit empty Topic content and ensure user is able to Compare revisions', { tag: "@regression" },
+    test('Empty-Topic-TC04 - Compare revisions- Edit empty Topic content and ensure user is able to Compare revisions', { tag: "@revision" },
         async ({ topicHelper, revisionHelper, testSetUpData }) =>
         {
             // creating content
@@ -196,7 +196,7 @@ test.describe('Empty Topic Tests', () =>
             await revisionHelper.compareRevisions();
         });
 
-    test('Empty-Topic-TC05 - Delete revision - Edit Topic content and ensure user is able to Delete Revisions', { tag: "@regression" },
+    test('Empty-Topic-TC05 - Delete revision - Edit Topic content and ensure user is able to Delete Revisions', { tag: "@revision" },
         async ({ topicHelper, revisionHelper, testSetUpData }) =>
         {
             // creating content
@@ -224,7 +224,7 @@ test.describe('Empty Topic Tests', () =>
             });
         });
 
-    test('Empty-Topic-TC06 - Revert revision - Edit Topic content and ensure user is able to Revert Revisions', { tag: "@regression" },
+    test('Empty-Topic-TC06 - Revert revision - Edit Topic content and ensure user is able to Revert Revisions', { tag: "@revision" },
         async ({ topicHelper, revisionHelper, testSetUpData }) =>
         {
             // creating content
@@ -252,11 +252,9 @@ test.describe('Empty Topic Tests', () =>
             });
         });
 
-    test('Empty-Topic-TC07- Workbench -  Create Topic content as a "Topic Supervisor", and use Workbench to complete all moderation states', { tag: "@regression" },
+    test('Empty-Topic-TC07- Workbench -  Create Topic content as a "Topic Supervisor", and use Workbench to complete all moderation states', { tag: "@workbench" },
         async ({ topicHelper, contentModerationHelper, workBenchHelper, testSetUpData }) =>
         {
-            console.log(testSetUpData.contentTitleforTest.contentTitle + ' - creating content with this title');
-
             // creating topic as a draft
             await topicHelper.createTopic({
                 preview: false,
@@ -298,7 +296,7 @@ test.describe('Empty Topic Tests', () =>
             });
         });
 
-    test('Empty-Topic-TC08 - Archived Topic should not be displayed in topics tree', { tag: "@regression" },
+    test('Empty-Topic-TC08 - Archived Topic should not be displayed in topics tree', { tag: "@visibility" },
         async ({ topicHelper, applicationHelper, topicsTreeHelper, contentModerationHelper, anonymousHelper, topicVisibilityHelper, testData, testSetUpData }) =>
         {
             // creating content
@@ -321,7 +319,7 @@ test.describe('Empty Topic Tests', () =>
             await topicsTreeHelper.verifyTopicNotVisibleInSiteTopicsTree(testData.Topic.title);
         });
 
-    test('Empty-Topic-TC09 - Emsure that Hide Listing functionality prevents Topic being listed on parent topic pages and home page', { tag: "@regression" },
+    test('Empty-Topic-TC09 - Emsure that Hide Listing functionality prevents Topic being listed on parent topic pages and home page', { tag: "@visibility" },
         async ({ topicHelper, contentModerationHelper, anonymousHelper, topicVisibilityHelper, testData }) =>
         {
             await topicHelper.createTopic({
@@ -345,7 +343,7 @@ test.describe('Empty Topic Tests', () =>
         });
 });
 
-test.describe('Full Topic Tests', () =>
+test.describe('Full Topic Tests', { tag: ['@topics', '@regression', '@topicsupervisor'] }, () =>
 {
     // Pass the fixture for Topic Supervisor into the beforeEach hook
     test.beforeEach(async ({ loginHelper, testSetUpData, testData }, testInfo) =>
@@ -366,7 +364,7 @@ test.describe('Full Topic Tests', () =>
         await loginHelper.loginWithValidUser();
     });
 
-    test('Full-Topic-TC01 - Create - Create full Topic using topics tree)', { tag: "@regression" },
+    test('Full-Topic-TC01 - Create - Create full Topic using topics tree)', { tag: "@create" },
         async ({ topicHelper, anonymousHelper, loginHelper, contentModerationHelper, navigateToCreatedContentHelper, testSetUpData, testData, topicVisibilityHelper }) =>
         {
             await topicHelper.createTopic({
@@ -555,7 +553,7 @@ test.describe('Full Topic Tests', () =>
             });
         });
 
-    test('Full-Topic-TC02 - Create - Create full Topic using quickly add)', { tag: "@regression" },
+    test('Full-Topic-TC02 - Create - Create full Topic using quickly add)', { tag: "@create" },
         async ({ topicHelper, anonymousHelper, loginHelper, contentModerationHelper, navigateToCreatedContentHelper, testSetUpData, testData, topicVisibilityHelper }) =>
         {
             await topicHelper.createTopic({
@@ -744,7 +742,7 @@ test.describe('Full Topic Tests', () =>
             });
         });
 
-    test('Full-Topic-TC03 - Edit - Edit Topic by removing some child content)', { tag: "@regression" },
+    test('Full-Topic-TC03 - Edit - Edit Topic by removing some child content)', { tag: "@edit" },
         async ({ topicHelper, anonymousHelper, loginHelper, contentModerationHelper, navigateToCreatedContentHelper, testSetUpData, testData, topicVisibilityHelper }) =>
         {
             await topicHelper.createTopic({
@@ -826,7 +824,7 @@ test.describe('Full Topic Tests', () =>
             });
         });
 
-    test('Full-Topic-TC04 - Edit - Edit Topic by using drag and drop on edit node page)', { tag: "@regression" },
+    test('Full-Topic-TC04 - Edit - Edit Topic by using drag and drop on edit node page)', { tag: "@edit" },
         async ({ topicHelper, anonymousHelper, loginHelper, contentModerationHelper, navigateToCreatedContentHelper, testSetUpData, testData, topicVisibilityHelper }) =>
         {
             await topicHelper.createTopic({
@@ -857,7 +855,7 @@ test.describe('Full Topic Tests', () =>
             // RETURN TO WHEN TOPICS BRANCH BACK 
         });
 
-    test('Full-Topic-TC05 - Edit - Edit Topic by using arrange content button moderation sidebar)', { tag: "@regression" },
+    test('Full-Topic-TC05 - Edit - Edit Topic by using arrange content button moderation sidebar)', { tag: "@edit" },
         async ({ topicHelper, anonymousHelper, loginHelper, contentModerationHelper, navigateToCreatedContentHelper, testSetUpData, testData, topicVisibilityHelper }) =>
         {
             await topicHelper.createTopic({
@@ -888,7 +886,7 @@ test.describe('Full Topic Tests', () =>
             // RETURN TO WHEN TOPICS BRANCH BACK 
         });
 
-    test('Full-Topic-TC06 - Edit - Edit child content nodes and verify changes)', { tag: "@regression" },
+    test('Full-Topic-TC06 - Edit - Edit child content nodes and verify changes)', { tag: "@edit" },
         async ({ topicHelper, anonymousHelper, loginHelper, contentModerationHelper, navigateToCreatedContentHelper, testSetUpData, testData, topicVisibilityHelper }) =>
         {
             await topicHelper.createTopic({
@@ -919,7 +917,7 @@ test.describe('Full Topic Tests', () =>
             // RETURN TO WHEN TOPICS BRANCH BACK 
         });
 
-    test('Full-Topic-TC07 - Delete - Ensure cannot delete Topic with child content by moderation sidebar but can when child content archived)', { tag: "@regression" },
+    test('Full-Topic-TC07 - Delete - Ensure cannot delete Topic with child content by moderation sidebar but can when child content archived)', { tag: "@delete" },
         async ({ topicHelper, anonymousHelper, loginHelper, contentModerationHelper, navigateToCreatedContentHelper, testSetUpData, testData, topicVisibilityHelper }) =>
         {
             await topicHelper.createTopic({
