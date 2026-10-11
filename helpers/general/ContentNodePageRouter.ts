@@ -11,6 +11,11 @@ import { PublicationNodePage } from '@poms/content-pages/Publication/Publication
 import { EventNodePage } from '@poms/content-pages/Event/EventNodePage';
 import { ProfileNodePage } from '@poms/content-pages/Profile/ProfileNodePage';
 import { ProtectedAreaNodePage } from '@poms/content-pages/ProtectedArea/ProtectedAreaNodePage';
+import { LinkNodePage } from '@poms/content-pages/Link/LinkNodePage';
+import { ContactNodePage } from '@poms/content-pages/Contact/ContactNodePage';
+import { HeritageSiteNodePage } from '@poms/content-pages/HeritageSite/HeritageSiteNodePage';
+import { TopicNodePage } from '@poms/content-pages/Topic/TopicNodePage';
+import { UALNodePage } from '@poms/content-pages/UAL/UALNodePage';
 
 export class ContentNodePageRouter
 {
@@ -19,6 +24,11 @@ export class ContentNodePageRouter
     private readonly articleNodePage: ArticleNodePage;
     private readonly consultationNodePage: ConsultationNodePage;
     private readonly eventNodePage: EventNodePage;
+    private readonly contactNodePage: ContactNodePage;
+    private readonly heritageSiteNodePage: HeritageSiteNodePage;
+    private readonly linkNodePage: LinkNodePage;
+    private readonly topicNodePage: TopicNodePage;
+    private readonly ualNodePage: UALNodePage;
     private readonly galleryNodePage: GalleryNodePage;
     private readonly newsNodePage: NewsNodePage;
     private readonly publicationNodePage: PublicationNodePage;
@@ -35,17 +45,23 @@ export class ContentNodePageRouter
         this.applicationNodePage = new ApplicationNodePage(page, testSetUpData, testData);
         this.articleNodePage = new ArticleNodePage(page, testSetUpData, testData);
         this.consultationNodePage = new ConsultationNodePage(page, testSetUpData, testData);
+        this.contactNodePage = new ContactNodePage(page, testSetUpData, testData);
         this.eventNodePage = new EventNodePage(page, testSetUpData, testData);
         this.galleryNodePage = new GalleryNodePage(page, testSetUpData, testData, galleryImageDetails);
+        this.heritageSiteNodePage = new HeritageSiteNodePage(page, testSetUpData, testData);
+        this.linkNodePage = new LinkNodePage(page, testSetUpData, testData);
         this.newsNodePage = new NewsNodePage(page, testSetUpData, testData);
         this.publicationNodePage = new PublicationNodePage(page, testSetUpData, testData);
         this.profileNodePage = new ProfileNodePage(page, testSetUpData, testData);
         this.protectedAreaNodePage = new ProtectedAreaNodePage(page, testSetUpData, testData);
+        this.topicNodePage = new TopicNodePage(page, testSetUpData, testData);
+        this.ualNodePage = new UALNodePage(page, testSetUpData, testData);
+        this.linkNodePage = new LinkNodePage(page, testSetUpData, testData);
     }
 
     async verifyNodeURL(contentType: string): Promise<void>
     {
-        const escapeRegex = (value: string) => value.trim().replace(/\s*-\s*/g, '-').replace(/\s+/g, '-').toLowerCase();
+        // const escapeRegex = (value: string) => value.trim().replace(/\s*-\s*/g, '-').replace(/\s+/g, '-').toLowerCase();
 
         switch (contentType)
         {
@@ -66,7 +82,7 @@ export class ContentNodePageRouter
                 }
             case this.testSetUpData.validContentTypeList.contact:
                 {
-                    //await this.contactNodePage.contactNodeURLCheck();
+                    await this.contactNodePage.contactNodeURLCheck();
                     break;
                 }
             case this.testSetUpData.validContentTypeList.event:
@@ -81,12 +97,12 @@ export class ContentNodePageRouter
                 }
             case this.testSetUpData.validContentTypeList.heritagesite:
                 {
-                    //await this.heritageSiteNodePage.heritageSiteNodeURLCheck();
+                    await this.heritageSiteNodePage.heritageSiteNodeURLCheck();
                     break;
                 }
             case this.testSetUpData.validContentTypeList.link:
                 {
-                    //await this.linkNodePage.linkNodeURLCheck();
+                    await this.linkNodePage.linkNodeURLCheck();
                     break;
                 }
             case this.testSetUpData.validContentTypeList.news:
@@ -111,12 +127,12 @@ export class ContentNodePageRouter
                 }
             case this.testSetUpData.validContentTypeList.topic:
                 {
-                    //await this.topicsNodePage.topicsNodeURLCheck();
+                    await this.topicNodePage.topicNodeURLCheck();
                     break;
                 }
             case this.testSetUpData.validContentTypeList.unlawfully:
                 {
-                    //await this.unlawfullyNodePage.unlawfullyNodeURLCheck();
+                    await this.ualNodePage.ualNodeURLCheck();
                     break;
                 }
         }
