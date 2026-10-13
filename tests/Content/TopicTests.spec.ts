@@ -2,7 +2,7 @@ import { TestSteps } from '@poms/base-pages/TestSteps';
 import { test } from '@fixtures/MyFixtures';
 import { TopicVisibilityHelper } from '@helpers/general/TopicVisibilityHelper';
 
-test.describe('Empty Topic Tests', { tag: ['@topics', '@regression', '@topicsupervisor'] }, () =>
+test.describe('Empty Topic Tests', { tag: ['@topics', '@development', '@topicsupervisor'] }, () =>
 {
     // Pass the fixture for Topic Supervisor into the beforeEach hook
     test.beforeEach(async ({ loginHelper, testSetUpData, testData }, testInfo) =>

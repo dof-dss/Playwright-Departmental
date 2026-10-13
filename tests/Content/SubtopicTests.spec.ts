@@ -2,7 +2,7 @@ import { TestSteps } from '@poms/base-pages/TestSteps';
 import { test } from '@fixtures/MyFixtures';
 import { TopicVisibilityHelper } from '@helpers/general/TopicVisibilityHelper';
 
-test.describe('Empty Subtopic Tests', { tag: ['@subtopics', '@regression', '@topicsupervisor'] }, () =>
+test.describe('Empty Subtopic Tests', { tag: ['@subtopics', '@development', '@topicsupervisor'] }, () =>
 {
     test.beforeEach(async ({ loginHelper, testSetUpData, testData }, testInfo) =>
     {
