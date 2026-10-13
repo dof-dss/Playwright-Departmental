@@ -253,7 +253,7 @@ export const TestData = {
     bannerThinImageTitle: 'Banner Thin Image Title',
     bannerThinImageCaption: 'This is Banner Thin Image Caption',
 
-    remoteVideoURL: 'https://www.youtube.com/watch?v=thZ21emNdns',
+    remoteVideoURL: 'https://www.youtube.com/watch?v=mMTPeoUg8eU',
     remoteVideoURLEdited: 'https://www.youtube.com/watch?v=H6k77SXU6cU',
 
     attachmentName: 'Automated attachment Testing New',
