@@ -302,22 +302,18 @@ export class VerificationHelper
                 }
                 break;
             }
-            // case this.testSetUpData.validContentTypeList.subtopic: {
-            //     await this.securePublicationNodePage.securePublicationNodeURLCheck();
-            //     if (edited === false)
-            //     {
-            //         await this.subtopicNodePage.verifySubtopic({
-            //             topics: this.topicsHelper.getTopics()
-            //         });
-            //     }
-            //     else
-            //     {
-            //         await this.subtopicNodePage.verifyEditedSubtopic({
-            //             topics: this.topicsHelper.getTopics()
-            //         });
-            //     }
-            //     break;
-            // }
+            case this.testSetUpData.validContentTypeList.subtopic: {
+                await this.subtopicNodePage.subtopicNodeURLCheck();
+                if (edited === false)
+                {
+                    await this.subtopicNodePage.verifySubtopic();
+                }
+                else
+                {
+                    await this.subtopicNodePage.verifyEditedSubtopic();
+                }
+                break;
+            }
             case this.testSetUpData.validContentTypeList.topic: {
                 await this.topicNodePage.topicNodeURLCheck();
                 if (edited === false)

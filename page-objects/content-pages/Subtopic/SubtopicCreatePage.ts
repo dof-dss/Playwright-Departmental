@@ -18,6 +18,7 @@ export interface SubtopicSaveData
     bannerImage?: boolean;
     bannerImageOverlay?: boolean;
     bannerImageThin?: boolean;
+    hideListing?: boolean;
 }
 
 export class SubtopicCreatePage
@@ -121,6 +122,11 @@ export class SubtopicCreatePage
         }
         await this.enterSubtopicSummary(data.subtopicSummary);
         await this.ckeditor.enterCKEditorBody(data.subtopicLongDescription);
+
+        if (data.hideListing)
+        {
+            await this.page.locator('#edit-hide-listing').check();
+        }
 
     }
 }
