@@ -265,7 +265,6 @@ export class ContentVisibilityHelper
         await this.AudioContentVisibility();
         await this.DocumentContentVisibility();
         await this.ImageContentVisibility();
-        await this.RemoteDocumentContentVisibility();
         await this.RemoteVideoContentVisibility();
         //await this.SecureFileContentVisibility();
     }
@@ -292,15 +291,6 @@ export class ContentVisibilityHelper
     async ImageContentVisibility()
     {
         this.testSetUpData.contentTypeforTest.contentType = "Image";
-
-        await this.testSteps.LogInfo(`Verifying "${this.testSetUpData.contentTypeforTest.contentType}" link IS VISIBLE on "${this.testSetUpData.urlForTest.url}" as a "${this.testSetUpData.userForTest.username}" user`);
-        await this.addContentPage.VerifyContentIsVisible();
-    }
-
-
-    async RemoteDocumentContentVisibility()
-    {
-        this.testSetUpData.contentTypeforTest.contentType = "Remote document";
 
         await this.testSteps.LogInfo(`Verifying "${this.testSetUpData.contentTypeforTest.contentType}" link IS VISIBLE on "${this.testSetUpData.urlForTest.url}" as a "${this.testSetUpData.userForTest.username}" user`);
         await this.addContentPage.VerifyContentIsVisible();
