@@ -634,7 +634,7 @@ export class CKEditor
 
         await this.testSteps.LogInfo('Clicking "Audio" Format option');
         await this.page.getByRole('button', { name: 'Audio' }).click();
-        
+
         await expect(this.page.getByText(/Allowed types:\s*mp3\b.*\bwav\b.*\baac\b/i)).toBeVisible();
 
         let audioName = this.testData.Media.audioFileName;
@@ -644,9 +644,9 @@ export class CKEditor
             audioName = existingAudioName;
 
             await this.uploadMedia.clickMediaModelFavouriteButton();
-            await this.page.waitForTimeout(2000);
+            await this.page.waitForTimeout(1000);
             await this.searchMediaLibrary(audioName);
-            await this.page.waitForTimeout(2000);
+            await this.page.waitForTimeout(1000);
 
             if (this.testData.Gallery.favourite)
             {
@@ -660,6 +660,7 @@ export class CKEditor
                 // back to grid view: a non-favourite image must still be insertable
                 await this.uploadMedia.clickMediaModelGridButton();
             }
+            await this.page.waitForTimeout(2000);
             await this.searchAndInsertMedia(audioName);
         }
         else
@@ -707,7 +708,7 @@ export class CKEditor
         await this.uploadMedia.clickMediaSave();
         await this.uploadMedia.clickInsertSelectedButton();
 
-        await this.page.locator('//div[contains(@aria-label, "Finance Minister Caoimhe Archibald welcomed to the Department")]//following-sibling::div//div[@title="Insert paragraph after block"]').click();
+        await this.page.locator('//div[contains(@aria-label, "Universal Credit Guide 6 - How to prepare for interviews and tests")]//following-sibling::div//div[@title="Insert paragraph after block"]').click();
     }
 
     async addSpecialCharactersToBodyField()

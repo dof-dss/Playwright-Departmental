@@ -367,13 +367,13 @@ export class ArticleHelper
         {
             // root-first order: parent is visited before its children each pass,
             // so delete-button-not-visible is asserted while blockers still exist
-            const deletionOrder: Array<{ item: keyof BooksHelper; blockers: Array<keyof BooksHelper> }> = [
-                { item: 'Book',      blockers: ['Chapter1', 'Paragraph1', 'Glossery1', 'Chapter2', 'Paragraph2', 'Glossery2'] },
-                { item: 'Chapter1',  blockers: ['Paragraph1', 'Glossery1'] },
-                { item: 'Paragraph1',blockers: ['Glossery1'] },
+            const deletionOrder: Array<{ item: keyof BooksHelper; blockers: Array<keyof BooksHelper>; }> = [
+                { item: 'Book', blockers: ['Chapter1', 'Paragraph1', 'Glossery1', 'Chapter2', 'Paragraph2', 'Glossery2'] },
+                { item: 'Chapter1', blockers: ['Paragraph1', 'Glossery1'] },
+                { item: 'Paragraph1', blockers: ['Glossery1'] },
                 { item: 'Glossery1', blockers: [] },
-                { item: 'Chapter2',  blockers: ['Paragraph2', 'Glossery2'] },
-                { item: 'Paragraph2',blockers: ['Glossery2'] },
+                { item: 'Chapter2', blockers: ['Paragraph2', 'Glossery2'] },
+                { item: 'Paragraph2', blockers: ['Glossery2'] },
                 { item: 'Glossery2', blockers: [] },
             ];
 
