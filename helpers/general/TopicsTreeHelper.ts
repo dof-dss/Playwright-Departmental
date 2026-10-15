@@ -5,6 +5,7 @@ import { TestSteps } from '@poms/base-pages/TestSteps';
 
 export class TopicsTreeHelper
 {
+    private static readonly topicSites = new WeakMap<typeof TestData, string>();
     private readonly testSteps: TestSteps;
 
     constructor(
@@ -22,6 +23,18 @@ export class TopicsTreeHelper
     {
         // getting current site being tested from test setup data to use in switch
         const site = this.testSetUpData.urlForTest.url;
+
+        const previousSite = TopicsTreeHelper.topicSites.get(this.testData);
+        if (previousSite !== undefined && previousSite !== site)
+        {
+            Object.assign(this.testData.SiteTopics, {
+                topic1: '',
+                topic2: null,
+                topic3: null,
+                topic4: null,
+            });
+        }
+        TopicsTreeHelper.topicSites.set(this.testData, site);
 
         // switch to determine topics based on site using valid test url list for cases
         switch (site)
