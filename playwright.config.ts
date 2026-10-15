@@ -60,11 +60,11 @@ export default defineConfig({
 
     /* This limits how long each action like .click(), .fill(), or .hover() can take to perform */
     actionTimeout: 10000,
-    trace: 'on',
+    trace: 'off',
 
     /* Collect trace when retrying the failed test. See https://playwright.dev/docs/trace-viewer */
     //trace: 'on-first-retry',
-    video: 'retain-on-failure',
+    video: 'off',
     screenshot: 'only-on-failure',
     /* Support running in DDev which will have invalid browser TLS certificates */
     ignoreHTTPSErrors: true,
