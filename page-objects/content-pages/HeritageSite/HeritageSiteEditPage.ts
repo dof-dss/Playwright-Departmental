@@ -185,6 +185,7 @@ export class HeritageSiteEditPage
     await this.addressCountryField.selectOption({ label: country });
     // Wait for Drupal AJAX to re-render the address fields after country selection
     await this.addressStreetLine1Field.waitFor({ state: 'visible' });
+    await expect(this.addressTownLandField).toBeVisible({ timeout: 2000 });
   }
 
   // edit address street line 1
