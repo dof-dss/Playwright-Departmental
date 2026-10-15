@@ -58,13 +58,13 @@ export default defineConfig({
     /* Base URL to use in actions like `await page.goto('')`. */
     // baseURL: 'http://localhost:3000',
 
-    /* This limits how long each action like .click(), .fill(), or .hover() can take to perform */
+       /* This limits how long each action like .click(), .fill(), or .hover() can take to perform */
     actionTimeout: 10000,
-    trace: 'off',
-
+    trace: process.env.CI ? 'off' : 'on',
+ 
     /* Collect trace when retrying the failed test. See https://playwright.dev/docs/trace-viewer */
     //trace: 'on-first-retry',
-    video: 'off',
+    video: process.env.CI ? 'off' : 'retain-on-failure',
     screenshot: 'only-on-failure',
     /* Support running in DDev which will have invalid browser TLS certificates */
     ignoreHTTPSErrors: true,
