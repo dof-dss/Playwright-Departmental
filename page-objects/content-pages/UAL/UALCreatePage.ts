@@ -205,9 +205,9 @@ export class UALCreatePage
   {
     await this.createUALPageURLCheck();
     await this.enterUALTitle(data.ualTitle);
-    await this.createPages.enterRevisionLogMessage(data.revisionLogMessage);
     await this.enterUALFrom(data.uALFrom);
     await this.enterUALAge(data.age);
+    await this.createPages.enterRevisionLogMessage(data.revisionLogMessage);
     await this.uploadMediaHelper.uploadImageWorkflow({
       original: true,
       edited: false

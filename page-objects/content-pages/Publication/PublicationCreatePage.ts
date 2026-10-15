@@ -198,11 +198,14 @@ export class PublicationCreatePage
   {
     await this.createPublicationPageURLCheck();
     await this.enterPublicationTitle(data.publicationTitle);
-    if (this.testSetUpData.userForTest.username !== this.testSetUpData.validUserList.stats_author_username || this.testSetUpData.userForTest.username !== this.testSetUpData.validUserList.stats_supervisor_username)
+
+    if (this.testSetUpData.userForTest.username !== this.testSetUpData.validUserList.stats_author_username 
+      && this.testSetUpData.userForTest.username !== this.testSetUpData.validUserList.stats_supervisor_username)
     {
       await this.testSteps.LogInfo('Verifying Attachment Type field is hidden for non stats users');
       await this.attachmentTypeHidden();
     }
+
     await this.createPages.enterRevisionLogMessage(data.revisionLogMessage);
     await this.topics.selectSiteTopics(
       data.topics[0] ?? null,
