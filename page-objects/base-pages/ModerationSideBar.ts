@@ -69,9 +69,9 @@ export class ModerationSideBar
         this.whatlinksherebutton = page.locator('//a[contains(text(),"What links here")]');
         // topics
         this.arrangecontentbutton = page.getByRole('link', { name: 'Arrange content' });
-        this.quicklyaddapplication = page.getByRole('link', { name: 'Application' });
-        this.quicklyaddarticle = page.getByRole('link', { name: 'Article' });
-        this.quicklyaddsubtopic = page.getByRole('link', { name: 'Subtopic' });
+        this.quicklyaddapplication = page.getByTestId('moderation-sidebar-add-new-application');
+        this.quicklyaddarticle = page.getByTestId('moderation-sidebar-add-new-article');
+        this.quicklyaddsubtopic = page.getByTestId('moderation-sidebar-add-new-subtopic');
 
         this.currentstate = page.locator('//div//strong');
         this.moderationSidebarTrigger = page.locator('a.use-ajax[data-dialog-renderer="off_canvas"]');
