@@ -38,8 +38,8 @@ export class MediaPage
         this.favouritesViewLink = page.getByRole('link', { name: 'Favourites', exact: true });
         this.addMediaLink = page.getByRole('link', { name: '+Add media', exact: true });
         this.editMediaButtonTableView = page.getByRole('link', { name: 'Edit', exact: true });
-        this.favouriteMediaButtonGridView = page.getByRole('link', { name: 'Favourite', exact: true });
-        this.unfavouriteMediaButtonGridView = page.getByRole('link', { name: 'Unfavourite', exact: true });
+        this.favouriteMediaButtonGridView = page.getByRole('button', { name: 'Favourite' });
+        this.unfavouriteMediaButtonGridView = page.getByRole('button', { name: 'Unfavourite' });
         this.selectAllButtonTableView = page.locator('input[type="checkbox"][title="Select all rows in this table"]');
 
         this.selectActionDropdown = page.getByRole('checkbox', { name: 'Select all media' });
