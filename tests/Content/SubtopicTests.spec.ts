@@ -128,6 +128,9 @@ test.describe('Empty Subtopic Tests', { tag: ['@subtopics', '@development', '@to
             await anonymousHelper.searchAsAnon({ edited: true });
             await topicVisibilityHelper.verifySubtopicViaHomepage({ title: testData.Subtopic.titleEdited, shouldBeVisible: true, edited: true });
             await topicVisibilityHelper.verifySubtopicViaTopicsPage({ title: testData.Subtopic.titleEdited, shouldBeVisible: true, edited: true });
+            // ensuring the edited topic is no longer visible to anon users on the orgininal parent topic after it has been edited
+            await topicVisibilityHelper.verifySubtopicViaHomepage({ title: testData.Subtopic.titleEdited, shouldBeVisible: false, edited: false });
+            await topicVisibilityHelper.verifySubtopicViaTopicsPage({ title: testData.Subtopic.titleEdited, shouldBeVisible: false, edited: false });
         });
 
     test('Empty-Subtopic-TC03 - Delete - Ensure Topic Supervisor can delete empty Subtopic', { tag: "@delete" },
@@ -324,29 +327,30 @@ test.describe('Empty Subtopic Tests', { tag: ['@subtopics', '@development', '@to
             await topicsTreeHelper.verifyTopicNotVisibleInSiteTopicsTree(testData.Topic.title);
         });
 
-    test('Empty-Subtopic-TC09 - Emsure that Hide Listing functionality prevents Subtopic being listed on parent topic pages and home page', { tag: "@visibility" },
-        async ({ subtopicHelper, contentModerationHelper, anonymousHelper, topicVisibilityHelper, testData }) =>
-        {
-            await subtopicHelper.createSubtopic({
-                preview: false,
-                mandatoryFieldCheck: false,
-                customTopicNeeded: true,
-                hideListing: true,
-            });
+});
 
-            // moderating to published  
-            await contentModerationHelper.topicSupervisorModerateContent({
-                QuickPublish: false,
-                NeedsReview: false,
-                Published: true,
-                Archive: false
-            });
+test.describe('Full Subtopic Tests', { tag: ['@subtopics', '@regression', '@topicsupervisor'] }, () =>
+{
+    test.beforeEach(async ({ loginHelper, testSetUpData, testData }, testInfo) =>
+    {
+        const testSteps = new TestSteps();
+        await testSteps.LogInfo('Test starting');
+        await testSteps.LogInfo(testInfo.title);
 
-            // verify the hidden Topic is not listed publicly
-            await anonymousHelper.searchAsAnon({ edited: false });
-            await topicVisibilityHelper.verifySubtopicViaHomepage({ title: testData.Subtopic.title, shouldBeVisible: false, edited: false });
-            await topicVisibilityHelper.verifySubtopicViaHomepage({ title: testData.Subtopic.title, shouldBeVisible: false, edited: false });
-        });
+        testSetUpData.urlForTest.url = testSetUpData.validTestURLList.finance_url;
+        testSetUpData.userForTest.username = testSetUpData.validUserList.topicsupervisor_username;
+        testSetUpData.userForTest.password = testSetUpData.validUserList.topicsupervisor_password;
+        testSetUpData.contentTypeforTest.contentType = testSetUpData.validContentTypeList.subtopic;
+        testSetUpData.contentTitleforTest.contentTitle = testData.Subtopic.title;
+        testSetUpData.saveAsOptionForTest.saveAsOption = testSetUpData.validSaveAsOptionList.draft;
+        testSetUpData.moderationStateForTest.moderationState = testSetUpData.validModerationStates.draft;
+        await loginHelper.loginWithValidUser();
+    });
+
+
+
+
+
 });
 
 

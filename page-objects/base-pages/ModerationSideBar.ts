@@ -199,6 +199,67 @@ export class ModerationSideBar
         await this.arrangecontentbutton.click();
     }
 
+    async arrangeTopicContentUsingDragAndDrop()
+    {
+        // Open the "Arrange Content" dialog before performing drag and drop operations
+        await this.clickArrangeContentButton();
+
+        // Wait for the "Arrange Content" dialog to be visible before proceeding
+        const arrangeDialog = this.page.getByRole('dialog');
+        await expect(arrangeDialog).toBeVisible();
+
+        // Get all the child rows within the "Arrange Content" dialog
+        const childRows = arrangeDialog.locator('tr.draggable');
+        const subtopicRow = childRows.filter({ hasText: this.testData.Subtopic.title }).first();
+        const sourceHandle = subtopicRow.locator('.tabledrag-handle');
+        const firstRow = childRows.first();
+        const targetHandle = firstRow.locator('.tabledrag-handle');
+
+        // Ensure that there are exactly 3 child rows before attempting to drag and drop
+        await expect(childRows).toHaveCount(3);
+        await expect(sourceHandle).toBeVisible();
+        await expect(targetHandle).toBeVisible();
+
+        // Attempt to drag and drop the subtopic row to the first position
+        let dragSucceeded = false;
+        try
+        {
+            await sourceHandle.dragTo(targetHandle);
+            await expect(firstRow).toContainText(this.testData.Subtopic.title, { timeout: 2000 });
+            dragSucceeded = true;
+        }
+        catch
+        {
+            dragSucceeded = false;
+        }
+
+        // If the initial drag and drop attempt failed, perform a manual drag using mouse events
+        if (!dragSucceeded)
+        {
+            const sourceBox = await sourceHandle.boundingBox();
+            const targetBox = await targetHandle.boundingBox();
+
+            if (!sourceBox || !targetBox)
+            {
+                throw new Error('Unable to calculate drag coordinates for Arrange Content reorder');
+            }
+
+            await this.page.mouse.move(sourceBox.x + sourceBox.width / 2, sourceBox.y + sourceBox.height / 2);
+            await this.page.mouse.down();
+            await this.page.mouse.move(targetBox.x + targetBox.width / 2, targetBox.y + 4, { steps: 20 });
+            await this.page.mouse.up();
+        }
+
+        // Verify that the subtopic row is now in the first position after the drag and drop operation
+        await expect(firstRow).toContainText(this.testData.Subtopic.title);
+
+        // Click the "Save" button to confirm the new arrangement of content
+        const saveButton = arrangeDialog.getByRole('button', { name: 'Save', exact: true });
+        await expect(saveButton).toBeEnabled();
+        await saveButton.click();
+        await expect(arrangeDialog).toBeHidden();
+    }
+
     async clickAddApplication()
     {
         await expect(this.quicklyaddapplication).toBeEnabled();

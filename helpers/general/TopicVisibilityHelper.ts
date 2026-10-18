@@ -56,14 +56,23 @@ export class TopicVisibilityHelper
         await this.page.goto(`${this.testSetUpData.urlForTest.url}`);
         await this.homePage.homePageURLCheck();
 
-        await this.testSteps.LogInfo(`Clicking on the parent topic "${TestData.Topic.title}" to verify subtopic "${title}"`);
-        await this.page.click(`//a/h2[normalize-space()="${TestData.Topic.title}"]`);
+        const parentTopicTitle = edited
+            ? this.testData.SiteTopics.topic2
+            : this.testData.SiteTopics.topic1;
 
-        const subtopicLink = this.page.locator(`//h2[normalize-space()="${title}"]`);
+        if (!parentTopicTitle)
+        {
+            throw new Error('Expected a parent topic title for subtopic visibility verification');
+        }
+
+        await this.testSteps.LogInfo(`Clicking on the parent topic "${parentTopicTitle}" to verify subtopic "${title}"`);
+        await this.page.click(`//a/h2[normalize-space()="${parentTopicTitle}"]`);
+
+        const subtopicLink = this.page.locator(`//h2/a[normalize-space()="${title}"]`);
         if (shouldBeVisible)
         {
             await expect(subtopicLink).toBeVisible();
-            await this.page.click(`//a/h2[normalize-space()="${title}"]`);
+            await this.page.click(`//h2/a[normalize-space()="${title}"]`);
             if (edited)
             {
                 await this.subtopicNodePage.verifyEditedSubtopic();
@@ -75,6 +84,7 @@ export class TopicVisibilityHelper
         }
         else
         {
+            await this.testSteps.LogInfo(`Asserting that the subtopic "${title}" is not visible under the parent topic "${parentTopicTitle}"`);
             await expect(subtopicLink).toBeHidden();
         }
     }
@@ -85,13 +95,23 @@ export class TopicVisibilityHelper
         await this.page.goto(`${this.testSetUpData.urlForTest.url}/topics`);
         await this.topicsPage.topicsPageURLCheck();
 
-        await this.page.click(`//a/h2[normalize-space()="${TestData.Topic.title}"]`);
-        const subtopicLink = this.page.locator(`//h2[normalize-space()="${title}"]`);
+        const parentTopicTitle = edited
+            ? this.testData.SiteTopics.topic2
+            : this.testData.SiteTopics.topic1;
 
+        if (!parentTopicTitle)
+        {
+            throw new Error('Expected a parent topic title for subtopic visibility verification');
+        }
+
+        await this.testSteps.LogInfo(`Clicking on the parent topic "${parentTopicTitle}" to verify subtopic "${title}"`);
+        await this.page.click(`//a/h2[normalize-space()="${parentTopicTitle}"]`);
+
+        const subtopicLink = this.page.locator(`//h2/a[normalize-space()="${title}"]`);
         if (shouldBeVisible)
         {
             await expect(subtopicLink).toBeVisible();
-            await this.page.click(`//a/h2[normalize-space()="${title}"]`);
+            await this.page.click(`//h2/a[normalize-space()="${title}"]`);
             if (edited)
             {
                 await this.subtopicNodePage.verifyEditedSubtopic();
@@ -103,6 +123,7 @@ export class TopicVisibilityHelper
         }
         else
         {
+            await this.testSteps.LogInfo(`Asserting that the subtopic "${title}" is not visible under the parent topic "${parentTopicTitle}"`);
             await expect(subtopicLink).toBeHidden();
         }
     }

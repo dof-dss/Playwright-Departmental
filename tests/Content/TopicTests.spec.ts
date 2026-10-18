@@ -841,18 +841,9 @@ test.describe('Full Topic Tests', { tag: ['@topics', '@regression', '@topicsuper
             // navigate back to parent topic 
             await navigateToCreatedContentHelper.navigateToCreatedContent({ active: true, deleted: false });
 
-            // moderate all children content to published
-            await contentModerationHelper.topicSupervisorModerateAllChildrenContent({
-                application: true,
-                article: true,
-                subtopic: true,
-                QuickPublish: false,
-                NeedsReview: false,
-                Published: true,
-                Archive: false
-            });
+            // use drag and drop on edit node page to edit the topic
+            await topicHelper.editTopicUsingDragAndDrop();
 
-            // RETURN TO WHEN TOPICS BRANCH BACK 
         });
 
     test('Full-Topic-TC05 - Edit - Edit Topic by using arrange content button moderation sidebar)', { tag: "@edit" },
@@ -872,18 +863,9 @@ test.describe('Full Topic Tests', { tag: ['@topics', '@regression', '@topicsuper
             // navigate back to parent topic 
             await navigateToCreatedContentHelper.navigateToCreatedContent({ active: true, deleted: false });
 
-            // moderate all children content to published
-            await contentModerationHelper.topicSupervisorModerateAllChildrenContent({
-                application: true,
-                article: true,
-                subtopic: true,
-                QuickPublish: false,
-                NeedsReview: false,
-                Published: true,
-                Archive: false
-            });
+            // reorder Topic Content using the Arrange Content modal
+            await topicHelper.arrangeTopicContentUsingDragAndDrop();
 
-            // RETURN TO WHEN TOPICS BRANCH BACK 
         });
 
     test('Full-Topic-TC06 - Edit - Edit child content nodes and verify changes)', { tag: "@edit" },
@@ -914,7 +896,7 @@ test.describe('Full Topic Tests', { tag: ['@topics', '@regression', '@topicsuper
                 Archive: false
             });
 
-            // RETURN TO WHEN TOPICS BRANCH BACK 
+            // RETURN TO WHEN TOPICS BRANCH BACK
         });
 
     test('Full-Topic-TC07 - Delete - Ensure cannot delete Topic with child content by moderation sidebar but can when child content archived)', { tag: "@delete" },

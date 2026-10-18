@@ -107,4 +107,13 @@ export class TopicNodePage
         const childItems = this.page.locator('//TODO-child-content-list//a');
         await expect(childItems).toHaveText(expectedOrder);
     }
+
+    async verifyRearrangedTopic()
+    {
+        await this.testSteps.LogInfo(`Verifying Subtopic "${this.testData.Subtopic.title}" is first in Topic Content`);
+        const contentsHeading = this.page.getByRole('heading', { name: 'contents', exact: true });
+        const topicArticle = this.page.locator('main article').filter({ has: contentsHeading });
+        const firstChild = topicArticle.locator('article a').first();
+        await expect(firstChild).toHaveText(this.testData.Subtopic.title);
+    }
 }

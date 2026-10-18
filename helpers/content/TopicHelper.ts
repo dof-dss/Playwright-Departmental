@@ -75,6 +75,7 @@ export class TopicHelper
     private readonly deletePage: DeletePage;
     private readonly siteTopics: Topics;
     private readonly navigateToCreatedContentHelper: NavigateToCreatedContentHelper;
+    private readonly subtopicNodePage: SubtopicNodePage;
 
     // constructor
     constructor(
@@ -97,6 +98,7 @@ export class TopicHelper
         this.deletePage = new DeletePage(page);
         this.siteTopics = new Topics(page, testSetUpData, testData);
         this.navigateToCreatedContentHelper = new NavigateToCreatedContentHelper(page, testSetUpData, testData);
+        this.subtopicNodePage = new SubtopicNodePage(page, testSetUpData, testData);
     }
 
     // navigation method
@@ -188,6 +190,34 @@ export class TopicHelper
         await this.createPage.clickSaveButton();
         await this.topicNodePage.topicNodeURLCheck();
         await this.topicNodePage.verifyEditedTopic();
+    }
+
+    async editTopicUsingDragAndDrop()
+    {
+        // should be on node page already
+        await this.topicNodePage.topicNodeURLCheck();
+
+        // open moderation sidebar
+        await this.moderationSideBar.openModerationSideBar();
+        // click edit content
+        await this.moderationSideBar.clickEditContentButton();
+
+        // perform drag and drop edit actions
+        await this.topicEditPage.editTopicUsingDragAndDrop();
+
+        // Save and verify
+        await this.createPage.clickSaveButton();
+        await this.topicNodePage.topicNodeURLCheck();
+        await this.topicNodePage.verifyRearrangedTopic();
+    }
+
+    async arrangeTopicContentUsingDragAndDrop()
+    {
+        await this.topicNodePage.topicNodeURLCheck();
+        await this.moderationSideBar.openModerationSideBar();
+        await this.moderationSideBar.arrangeTopicContentUsingDragAndDrop();
+        await this.topicNodePage.topicNodeURLCheck();
+        await this.topicNodePage.verifyRearrangedTopic();
     }
 
     // delete Topic method
