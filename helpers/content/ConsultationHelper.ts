@@ -23,6 +23,8 @@ export interface SaveOptions
 export interface EditSaveOptions
 {
     preview: boolean;
+    preserveSiteTopics?: boolean;
+    preserveGlobalTopics?: boolean;
 };
 
 export interface DeleteOptions
@@ -136,7 +138,7 @@ export class ConsultationHelper
         await this.consultationNodePage.consultationNodeURLCheck();
         await this.consultationNodePage.verifyConsultation({
             preview: true,
-                topics: this.topicsHelper.getTopics()
+            topics: this.topicsHelper.getTopics()
         });
     }
 
@@ -152,7 +154,10 @@ export class ConsultationHelper
         await this.moderationSideBar.clickEditContentButton();
 
         // set topics for test using selec topics for site before filling consultation form
-        await this.topicsHelper.selectTopicForSite({ edit: true, triggeralert: false });
+        if (!options.preserveSiteTopics)
+        {
+            await this.topicsHelper.selectTopicForSite({ edit: true, triggeralert: false });
+        }
 
         // complete consultation form using edit isolated test data 
         await this.consultationEditPage.editConsultationForm({
@@ -170,7 +175,7 @@ export class ConsultationHelper
             consultationRespondOnline: this.testData.Consultation.respondeOnlineEdited,
             consultationEmailAddress: this.testData.Consultation.emailAddressEdited,
             consultationPostalAddress: this.testData.Consultation.postalAddressEdited
-        });
+        }, !options.preserveSiteTopics, !options.preserveGlobalTopics);
 
         // setting test set up data to new title
         this.testSetUpData.contentTitleforTest.contentTitle = this.testData.Consultation.titleEdited;
@@ -184,8 +189,11 @@ export class ConsultationHelper
         {
             await this.createPage.clickPreviewButton();
             await this.previewPage.performURLCheck();
-            await this.consultationNodePage.verifyEditedConsultation({preview: true,
-                topics: this.topicsHelper.getTopics()});
+            await this.consultationNodePage.verifyEditedConsultation({
+                preview: true,
+                topics: this.topicsHelper.getTopics(),
+                preserveSiteTopics: options.preserveSiteTopics,
+            });
             await this.previewPage.clickBackToContentEdittingButton();
             await this.consultationEditPage.returnFromPreviewConsultationPageURLCheck();
         }
@@ -195,7 +203,8 @@ export class ConsultationHelper
         await this.consultationNodePage.consultationNodeURLCheck();
         await this.consultationNodePage.verifyEditedConsultation({
             preview: false,
-            topics: this.topicsHelper.getTopics()
+            topics: this.topicsHelper.getTopics(),
+            preserveSiteTopics: options.preserveSiteTopics,
         });
     }
 

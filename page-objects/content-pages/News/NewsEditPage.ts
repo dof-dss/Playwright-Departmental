@@ -155,21 +155,27 @@ export class NewsEditPage
   // ------------------------ actions related to edit news  ------------------------
 
   // fill in news form elements - title summary topics etc
-  async editNewsForm(data: NewsEditSaveData)
+  async editNewsForm(data: NewsEditSaveData, updateSiteTopics: boolean = true, updateGlobalTopics: boolean = true)
   {
     await this.editNewsPageURLCheck();
     await this.editNewsTitle(data.newsTitle);
     await this.createPages.enterRevisionLogMessage(data.revisionLogMessage);
-    await this.topics.selectSiteTopics(
-      data.topics[0] ?? null,
-      data.topics[1] ?? null,
-      data.topics[2] ?? null,
-      data.topics[3] ?? null,
-      true,
-    );
+    if (updateSiteTopics)
+    {
+      await this.topics.selectSiteTopics(
+        data.topics[0] ?? null,
+        data.topics[1] ?? null,
+        data.topics[2] ?? null,
+        data.topics[3] ?? null,
+        true,
+      );
+    }
     await this.editNewsType(data.newsType);
-    await this.page.locator(`//span[text()="${this.testSetUpData.globalTopicForTest.globalTopic}"]/following-sibling::button`).click();
-    await this.topics.selectGlobalTopics(data.globalTopicChoice);
+    if (updateGlobalTopics)
+    {
+      await this.page.locator(`//span[text()="${this.testSetUpData.globalTopicForTest.globalTopic}"]/following-sibling::button`).click();
+      await this.topics.selectGlobalTopics(data.globalTopicChoice);
+    }
     await this.editNewsIntroParagraph(data.newsIntoParagraph);
     await this.editPublicationDate(data.pubDate);
     await this.editNewsTeaser(data.newsteaser);

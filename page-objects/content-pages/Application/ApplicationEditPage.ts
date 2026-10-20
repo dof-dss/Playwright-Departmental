@@ -117,20 +117,26 @@ export class ApplicationEditPage
   // ------------------------ actions related to edit application  ------------------------
 
   // fill in application form elements - title summary topics etc
-  async editApplicationForm(data: ApplicationEditSaveData)
+  async editApplicationForm(data: ApplicationEditSaveData, updateSiteTopics: boolean = true, updateGlobalTopics: boolean = true)
   {
     await this.editApplicationPageURLCheck();
     await this.editApplicationTitle(data.applicationTitle);
     await this.createPages.enterRevisionLogMessage(data.revisionLogMessage);
-    await this.topics.selectSiteTopics(
-      data.topics[0] ?? null,
-      data.topics[1] ?? null,
-      data.topics[2] ?? null,
-      data.topics[3] ?? null,
-      true,
-    );
-    await this.page.locator(`//span[text()="${this.testSetUpData.globalTopicForTest.globalTopic}"]/following-sibling::button`).click();
-    await this.topics.selectGlobalTopics(data.globalTopicChoice);
+    if (updateSiteTopics)
+    {
+      await this.topics.selectSiteTopics(
+        data.topics[0] ?? null,
+        data.topics[1] ?? null,
+        data.topics[2] ?? null,
+        data.topics[3] ?? null,
+        true,
+      );
+    }
+    if (updateGlobalTopics)
+    {
+      await this.page.locator(`//span[text()="${this.testSetUpData.globalTopicForTest.globalTopic}"]/following-sibling::button`).click();
+      await this.topics.selectGlobalTopics(data.globalTopicChoice);
+    }
     await this.editApplicationSummary(data.applicationSummary);
     await this.ckeditor.enterCKEditorBeforeYouStart(data.beforeyoustart);
     await this.editApplicationLinkURL(data.applicationLinkURL);

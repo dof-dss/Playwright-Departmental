@@ -22,6 +22,8 @@ export interface SaveOptions
 export interface EditSaveOptions
 {
     preview: boolean;
+    preserveSiteTopics?: boolean;
+    preserveGlobalTopics?: boolean;
 };
 
 export interface DeleteOptions
@@ -146,7 +148,10 @@ export class ApplicationHelper
         await this.moderationSideBar.clickEditContentButton();
 
         // set topics for test using selec topics for site before filling application form
-        await this.topicsHelper.selectTopicForSite({ edit: true, triggeralert: false });
+        if (!options.preserveSiteTopics)
+        {
+            await this.topicsHelper.selectTopicForSite({ edit: true, triggeralert: false });
+        }
 
         // complete application form using edit isolated test data 
         await this.applicationEditPage.editApplicationForm({
@@ -159,7 +164,7 @@ export class ApplicationHelper
             applicationLinkURL: this.testData.Application.LinkURLEdited,
             applicationLinkText: this.testData.Application.LinkTextEdited,
             additionalinfo: this.testData.Application.additionalinfoEdited,
-        });
+        }, !options.preserveSiteTopics, !options.preserveGlobalTopics);
 
         // setting test set up data to new title
         this.testSetUpData.contentTitleforTest.contentTitle = this.testData.Application.titleEdited;
@@ -175,7 +180,8 @@ export class ApplicationHelper
             await this.previewPage.performURLCheck();
             await this.applicationNodePage.verifyEditedApplication({
                 preview: true,
-                topics: this.topicsHelper.getTopics()
+                topics: this.topicsHelper.getTopics(),
+                preserveSiteTopics: options.preserveSiteTopics,
             });
             await this.previewPage.clickBackToContentEdittingButton();
             await this.applicationEditPage.returnFromPreviewApplicationPageURLCheck();
@@ -186,7 +192,8 @@ export class ApplicationHelper
         await this.applicationNodePage.applicationNodeURLCheck();
         await this.applicationNodePage.verifyEditedApplication({
             preview: false,
-            topics: this.topicsHelper.getTopics()
+            topics: this.topicsHelper.getTopics(),
+            preserveSiteTopics: options.preserveSiteTopics,
         });
     }
 

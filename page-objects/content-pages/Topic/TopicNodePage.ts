@@ -97,16 +97,16 @@ export class TopicNodePage
         }
     }
 
-    // verify child content (subtopics / topic content items) renders in the expected order
-    // TODO: only usable once "full" topics (with Topic content items assigned) are supported by TopicHelper/TopicCreatePage
-    async verifyTopicChildContentOrder(expectedOrder: string[])
-    {
-        await this.testSteps.LogInfo(`Verifying child content is displayed in order: ${expectedOrder.join(', ')}`);
+    // // verify child content (subtopics / topic content items) renders in the expected order
+    // // TODO: only usable once "full" topics (with Topic content items assigned) are supported by TopicHelper/TopicCreatePage
+    // async verifyTopicChildContentOrder(expectedOrder: string[])
+    // {
+    //     await this.testSteps.LogInfo(`Verifying child content is displayed in order: ${expectedOrder.join(', ')}`);
 
-        // TODO: replace with the real child-content list locator once full topics are supported
-        const childItems = this.page.locator('//TODO-child-content-list//a');
-        await expect(childItems).toHaveText(expectedOrder);
-    }
+    //     // TODO: replace with the real child-content list locator once full topics are supported
+    //     const childItems = this.page.locator('//TODO-child-content-list//a');
+    //     await expect(childItems).toHaveText(expectedOrder);
+    // }
 
     async verifyRearrangedTopic()
     {

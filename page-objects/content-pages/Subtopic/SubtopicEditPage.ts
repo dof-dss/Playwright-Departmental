@@ -96,7 +96,7 @@ export class SubtopicEditPage
     // ------------------------ actions related to edit subtopic ------------------------
 
     // fill in subtopic form elements - title summary topics long description etc
-    async editSubtopicForm(data: SubtopicEditSaveData)
+    async editSubtopicForm(data: SubtopicEditSaveData, updateSiteTopics: boolean = true)
     {
         await this.editSubtopicPageURLCheck();
         await this.editSubtopicTitle(data.subtopicTitle);
@@ -106,13 +106,16 @@ export class SubtopicEditPage
             bannerImageThin: data.bannerImageThin,
         });
         await this.createPages.enterRevisionLogMessage(data.revisionLogMessage);
-        await this.topics.selectSiteTopics(
-            data.topics[0] ?? null,
-            data.topics[1] ?? null,
-            data.topics[2] ?? null,
-            data.topics[3] ?? null,
-            true,
-        );
+        if (updateSiteTopics)
+        {
+            await this.topics.selectSiteTopics(
+                data.topics[0] ?? null,
+                data.topics[1] ?? null,
+                data.topics[2] ?? null,
+                data.topics[3] ?? null,
+                true,
+            );
+        }
         await this.editSubtopicSummary(data.subtopicSummary);
 
         if (data.subtopicLongDescription)

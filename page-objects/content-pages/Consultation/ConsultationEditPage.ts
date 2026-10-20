@@ -155,7 +155,7 @@ export class ConsultationEditPage
   async editConsultationRespondOnline(respondeOnline: string)
   {
     await this.testSteps.LogInfo(`Entering "${respondeOnline}" into the Respond Online field`);
-    await this.consultationRespondOnline.fill(respondeOnline);
+    await this.consultationRespondOnline.pressSequentially(respondeOnline);
   }
 
   // enter consultation consultation Email Address
@@ -175,21 +175,27 @@ export class ConsultationEditPage
   // ------------------------ actions related to create consultation  ------------------------
 
   // fill in consultation form elements - title summary topics etc
-  async editConsultationForm(data: ConsultationEditSaveData)
+  async editConsultationForm(data: ConsultationEditSaveData, updateSiteTopics: boolean = true, updateGlobalTopics: boolean = true)
   {
     await this.editConsultationPageURLCheck();
     await this.editConsultationTitle(data.consultationTitle);
     await this.editPubPublishedDate(data.consPubDate);
     await this.createPages.enterRevisionLogMessage(data.revisionLogMessage);
-    await this.topics.selectSiteTopics(
-      data.topics[0] ?? null,
-      data.topics[1] ?? null,
-      data.topics[2] ?? null,
-      data.topics[3] ?? null,
-      true,
-    );
-    await this.page.locator(`//span[text()="${this.testSetUpData.globalTopicForTest.globalTopic}"]/following-sibling::button`).click();
-    await this.topics.selectGlobalTopics(data.globalTopicChoice);
+    if (updateSiteTopics)
+    {
+      await this.topics.selectSiteTopics(
+        data.topics[0] ?? null,
+        data.topics[1] ?? null,
+        data.topics[2] ?? null,
+        data.topics[3] ?? null,
+        true,
+      );
+    }
+    if (updateGlobalTopics)
+    {
+      await this.page.locator(`//span[text()="${this.testSetUpData.globalTopicForTest.globalTopic}"]/following-sibling::button`).click();
+      await this.topics.selectGlobalTopics(data.globalTopicChoice);
+    }
     await this.editConsultationSummary(data.consultationSummary);
     await this.editConsultationStartDate(data.consultationStartDate);
     await this.editConsultationStartTime(data.consultationStartTime);

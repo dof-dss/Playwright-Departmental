@@ -750,7 +750,7 @@ test.describe('Full Topic Tests', { tag: ['@topics', '@regression', '@topicsuper
                 mandatoryFieldCheck: false
             });
 
-            await topicHelper.createTopicChildContentQuicklyAdd({
+            await topicHelper.createTopicChildContentTopicTree({
                 application: true,
                 article: true,
                 subtopic: true,
@@ -876,10 +876,13 @@ test.describe('Full Topic Tests', { tag: ['@topics', '@regression', '@topicsuper
                 mandatoryFieldCheck: false
             });
 
-            await topicHelper.createTopicChildContentQuicklyAdd({
+            await topicHelper.createTopicChildContentTopicTree({
                 application: true,
                 article: true,
                 subtopic: true,
+                consultation: true,
+                news: true,
+                publication: true,
             });
 
             // navigate back to parent topic 
@@ -890,13 +893,25 @@ test.describe('Full Topic Tests', { tag: ['@topics', '@regression', '@topicsuper
                 application: true,
                 article: true,
                 subtopic: true,
+                consultation: true,
+                news: true,
+                publication: true,
                 QuickPublish: false,
                 NeedsReview: false,
                 Published: true,
                 Archive: false
             });
 
-            // RETURN TO WHEN TOPICS BRANCH BACK
+            // edit child content nodes 
+            await topicHelper.editTopicChildContentNodes({
+                application: true,
+                article: true,
+                subtopic: true,
+                consultation: true,
+                news: true,
+                publication: true,
+            });
+
         });
 
     test('Full-Topic-TC07 - Delete - Ensure cannot delete Topic with child content by moderation sidebar but can when child content archived)', { tag: "@delete" },
@@ -907,7 +922,7 @@ test.describe('Full Topic Tests', { tag: ['@topics', '@regression', '@topicsuper
                 mandatoryFieldCheck: false
             });
 
-            await topicHelper.createTopicChildContentQuicklyAdd({
+            await topicHelper.createTopicChildContentTopicTree({
                 application: true,
                 article: true,
                 subtopic: true,

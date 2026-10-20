@@ -27,6 +27,7 @@ export interface EditSaveOptions
 {
     preview: boolean;
     topics?: (string | null)[];
+    preserveSiteTopics?: boolean;
 };
 
 export class SubtopicHelper
@@ -161,7 +162,7 @@ export class SubtopicHelper
         await this.moderationSideBar.clickEditContentButton();
 
         // set topics for test using select topics for site before filling subtopic edit form
-        if (!options.topics)
+        if (!options.preserveSiteTopics && !options.topics)
         {
             await this.topicsHelper.selectTopicForSite({ edit: true, triggeralert: false });
         }
@@ -173,7 +174,7 @@ export class SubtopicHelper
             topics: options.topics ?? this.topicsHelper.getTopics(),
             subtopicSummary: this.testData.Subtopic.summaryEdited,
             subtopicLongDescription: this.testData.Subtopic.longDescriptionEdited,
-        });
+        }, !options.preserveSiteTopics);
 
         // setting test set up data to new title
         this.testSetUpData.contentTitleforTest.contentTitle = this.testData.Subtopic.titleEdited;

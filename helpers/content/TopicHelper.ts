@@ -54,6 +54,13 @@ export interface CreateTopicChildContentOptions
     publication?: boolean;
 }
 
+export interface QuickAddTopicChildContentOptions
+{
+    application: boolean;
+    article: boolean;
+    subtopic: boolean;
+}
+
 export interface RemoveTopicChildContentOptions extends CreateTopicChildContentOptions
 {
     replacementTopic: string;
@@ -253,6 +260,7 @@ export class TopicHelper
 
     async createTopicChildContentTopicTree(options: CreateTopicChildContentOptions): Promise<void>
     {
+        const previousConsultationRespondOnline = this.testData.Consultation.respondeOnline;
         this.testData.SiteTopics.topic1 = this.testData.Topic.title;
         this.testSetUpData.saveAsOptionForTest.saveAsOption = this.testSetUpData.validSaveAsOptionList.draft;
 
@@ -296,6 +304,7 @@ export class TopicHelper
             {
                 this.testSetUpData.contentTypeforTest.contentType = this.testSetUpData.validContentTypeList.consultation;
                 this.testSetUpData.contentTitleforTest.contentTitle = this.testData.Consultation.title;
+                this.testData.Consultation.respondeOnline = 'EPN 02-2020 - Latest Information on the McCloud Judgement';
                 await new ConsultationHelper(this.page, this.testSetUpData, this.testData).createConsultation({
                     preview: false,
                     mandatoryFieldCheck: false,
@@ -326,10 +335,11 @@ export class TopicHelper
         {
             this.testSetUpData.contentTypeforTest.contentType = this.testSetUpData.validContentTypeList.topic;
             this.testSetUpData.contentTitleforTest.contentTitle = this.testData.Topic.title;
+            this.testData.Consultation.respondeOnline = previousConsultationRespondOnline;
         }
     }
 
-    async createTopicChildContentQuicklyAdd(options: CreateTopicChildContentOptions): Promise<void>
+    async createTopicChildContentQuicklyAdd(options: QuickAddTopicChildContentOptions): Promise<void>
     {
         await this.topicNodePage.topicNodeURLCheck();
         this.testData.SiteTopics.topic1 = this.testData.Topic.title;
@@ -432,6 +442,104 @@ export class TopicHelper
         {
             this.testSetUpData.contentTypeforTest.contentType = this.testSetUpData.validContentTypeList.topic;
             this.testSetUpData.contentTitleforTest.contentTitle = this.testData.Topic.title;
+        }
+    }
+
+    async editTopicChildContentNodes(options: CreateTopicChildContentOptions): Promise<void>
+    {
+        const previousSaveAsOption = this.testSetUpData.saveAsOptionForTest.saveAsOption;
+        const previousContentType = this.testSetUpData.contentTypeforTest.contentType;
+        const previousContentTitle = this.testSetUpData.contentTitleforTest.contentTitle;
+        const previousGlobalTopic = this.testSetUpData.globalTopicForTest.globalTopic;
+        const previousSiteTopic1 = this.testData.SiteTopics.topic1;
+        const previousEditedConsultationRespondOnline = this.testData.Consultation.respondeOnlineEdited;
+
+        this.testData.SiteTopics.topic1 = this.testData.Topic.title;
+        this.testSetUpData.saveAsOptionForTest.saveAsOption = this.testSetUpData.validSaveAsOptionList.published;
+        const selectedChildren = [
+            {
+                selected: options.application,
+                kind: 'application',
+                contentType: this.testSetUpData.validContentTypeList.application,
+                title: this.testData.Application.title,
+            },
+            {
+                selected: options.article,
+                kind: 'article',
+                contentType: this.testSetUpData.validContentTypeList.article,
+                title: this.testData.Article.title,
+            },
+            {
+                selected: options.subtopic,
+                kind: 'subtopic',
+                contentType: this.testSetUpData.validContentTypeList.subtopic,
+                title: this.testData.Subtopic.title,
+            },
+            {
+                selected: options.consultation,
+                kind: 'consultation',
+                contentType: this.testSetUpData.validContentTypeList.consultation,
+                title: this.testData.Consultation.title,
+            },
+            {
+                selected: options.news,
+                kind: 'news',
+                contentType: this.testSetUpData.validContentTypeList.news,
+                title: this.testData.News.title,
+            },
+            {
+                selected: options.publication,
+                kind: 'publication',
+                contentType: this.testSetUpData.validContentTypeList.publication,
+                title: this.testData.Publication.title,
+            },
+        ].filter(child => child.selected);
+
+        try
+        {
+            for (const child of selectedChildren)
+            {
+                this.testSetUpData.contentTypeforTest.contentType = child.contentType;
+                this.testSetUpData.contentTitleforTest.contentTitle = child.title;
+                await this.navigateToCreatedContentHelper.navigateToCreatedContent({ active: true, deleted: false });
+
+                if (child.kind === 'application')
+                {
+                    this.testData.Application.LinkURL = 'Civil Service Pay';
+                    this.testData.Application.LinkText = 'Civil Service Pay';
+                    await new ApplicationHelper(this.page, this.testSetUpData, this.testData).editApplication({ preview: false, preserveSiteTopics: true, preserveGlobalTopics: true });
+                }
+                else if (child.kind === 'article')
+                {
+                    await new ArticleHelper(this.page, this.testSetUpData, this.testData).editArticle({ preview: false, preserveSiteTopics: true, preserveGlobalTopics: true });
+                }
+                else if (child.kind === 'subtopic')
+                {
+                    await new SubtopicHelper(this.page, this.testSetUpData, this.testData).editSubtopic({ preview: false, preserveSiteTopics: true });
+                }
+                else if (child.kind === 'consultation')
+                {
+                    this.testData.Consultation.respondeOnlineEdited = 'Civil Service Pay';
+                    await new ConsultationHelper(this.page, this.testSetUpData, this.testData).editConsultation({ preview: false, preserveSiteTopics: true, preserveGlobalTopics: true });
+                }
+                else if (child.kind === 'news')
+                {
+                    await new NewsHelper(this.page, this.testSetUpData, this.testData).editNews({ preview: false, preserveSiteTopics: true, preserveGlobalTopics: true });
+                }
+                else if (child.kind === 'publication')
+                {
+                    await new PublicationHelper(this.page, this.testSetUpData, this.testData).editPublication({ preview: false, preserveSiteTopics: true, preserveGlobalTopics: true });
+                }
+            }
+        }
+        finally
+        {
+            this.testSetUpData.contentTypeforTest.contentType = previousContentType;
+            this.testSetUpData.contentTitleforTest.contentTitle = previousContentTitle;
+            this.testSetUpData.saveAsOptionForTest.saveAsOption = previousSaveAsOption;
+            this.testSetUpData.globalTopicForTest.globalTopic = previousGlobalTopic;
+            this.testData.SiteTopics.topic1 = previousSiteTopic1;
+            this.testData.Consultation.respondeOnlineEdited = previousEditedConsultationRespondOnline;
         }
     }
 

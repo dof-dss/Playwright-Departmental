@@ -95,20 +95,26 @@ export class ArticleEditPage
   // ------------------------ actions related to edit article  ------------------------
 
   // fill in article form elements - title summary topics etc
-  async editArticleForm(data: ArticleEditSaveData)
+  async editArticleForm(data: ArticleEditSaveData, updateSiteTopics: boolean = true, updateGlobalTopics: boolean = true)
   {
     await this.editArticlePageURLCheck();
     await this.editArticleTitle(data.articleTitle);
     await this.createPages.enterRevisionLogMessage(data.revisionLogMessage);
-    await this.topics.selectSiteTopics(
-      data.topics[0] ?? null,
-      data.topics[1] ?? null,
-      data.topics[2] ?? null,
-      data.topics[3] ?? null,
-      true,
-    );
-    await this.page.locator(`//span[text()="${this.testSetUpData.globalTopicForTest.globalTopic}"]/following-sibling::button`).click();
-    await this.topics.selectGlobalTopics(data.globalTopicChoice);
+    if (updateSiteTopics)
+    {
+      await this.topics.selectSiteTopics(
+        data.topics[0] ?? null,
+        data.topics[1] ?? null,
+        data.topics[2] ?? null,
+        data.topics[3] ?? null,
+        true,
+      );
+    }
+    if (updateGlobalTopics)
+    {
+      await this.page.locator(`//span[text()="${this.testSetUpData.globalTopicForTest.globalTopic}"]/following-sibling::button`).click();
+      await this.topics.selectGlobalTopics(data.globalTopicChoice);
+    }
     await this.editArticleSummary(data.articleSummary);
     await this.ckeditor.enterCKEditorBody(data.articleBodyField);
   }
