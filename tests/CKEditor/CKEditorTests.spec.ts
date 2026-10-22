@@ -35,59 +35,8 @@ test.describe('CKEditor Body Field Author Tests', { tag: ['@ckEditor', '@regress
         mandatoryFieldCheck: false,
       });
 
-      // for anon verification content type needs changed to articleCKEditorFull for search as anon to work correctly
-      testSetUpData.contentTypeforTest.contentType = testSetUpData.validContentTypeList.articleCKEditorFull;
-
-      // searching as anon to ensure content is not viewable as draft
-      await anonymousHelper.searchAsAnon({ edited: false });
-
-      // log back in and naviagte to content 
-      await loginHelper.loginWithValidUser();
-      await navigateToCreatedContentHelper.navigateToCreatedContent({
-        active: true,
-        deleted: false
-      });
-
-      // moderating to needs review 
-      await contentModerationHelper.authorModerateContent({
-        NeedsReview: true,
-      });
-
-      // searching as anon to ensure content is not viewable as needs review 
-      await anonymousHelper.searchAsAnon({ edited: false });
 
     });
-
-  // test('CKEditor-Auth-TC02 - Create - Create Article content as an "Author", perform mandatory field check and preview content',
-  //   async ({ articleHelper, anonymousHelper, loginHelper, contentModerationHelper, navigateToCreatedContentHelper, testSetUpData }) =>
-  //   {
-  //     await articleHelper.createArticleWithImportedFromWord({
-  //       preview: true,
-  //       mandatoryFieldCheck: false,
-  //     });
-
-  //     // for anon verification content type needs changed to articleCKEditorImportWord for search as anon to work correctly
-  //     testSetUpData.contentTypeforTest.contentType = testSetUpData.validContentTypeList.articleCKEditorImportWord;
-
-  //     // searching as anon to ensure content is not viewable as draft
-  //     await anonymousHelper.searchAsAnon({ edited: false });
-
-  //     // log back in and naviagte to content 
-  //     await loginHelper.loginWithValidUser();
-  //     await navigateToCreatedContentHelper.navigateToCreatedContent({
-  //       active: true,
-  //       deleted: false
-  //     });
-
-  //     // moderating to needs review 
-  //     await contentModerationHelper.authorModerateContent({
-  //       NeedsReview: true,
-  //     });
-
-  //     // searching as anon to ensure content is not viewable as needs review 
-  //     await anonymousHelper.searchAsAnon({ edited: false });
-
-  //   });
 });
 
 test.describe('CKEditor Body Field Article Supervisor Tests', { tag: ['@ckEditor', '@regression', '@supervisor'] }, () =>
@@ -125,33 +74,6 @@ test.describe('CKEditor Body Field Article Supervisor Tests', { tag: ['@ckEditor
       // for anon verification content type needs changed to articleCKEditorFull for search as anon to work correctly
       testSetUpData.contentTypeforTest.contentType = testSetUpData.validContentTypeList.articleCKEditorFull;
 
-      // searching as anon to ensure content is not viewable as draft
-      await anonymousHelper.searchAsAnon({ edited: false });
-
-      // log back in and naviagte to content 
-      await loginHelper.loginWithValidUser();
-      await navigateToCreatedContentHelper.navigateToCreatedContent({
-        active: true,
-        deleted: false
-      });
-
-      // moderating to needs review 
-      await contentModerationHelper.supervisorModerateContent({
-        NeedsReview: true,
-        Published: false,
-        Archive: false
-      });
-
-      // searching as anon to ensure content is not viewable as needs review 
-      await anonymousHelper.searchAsAnon({ edited: false });
-
-      // log back in and naviagte to content 
-      await loginHelper.loginWithValidUser();
-      await navigateToCreatedContentHelper.navigateToCreatedContent({
-        active: true,
-        deleted: false
-      });
-
       // moderating to published  
       await contentModerationHelper.supervisorModerateContent({
         NeedsReview: false,
@@ -162,92 +84,7 @@ test.describe('CKEditor Body Field Article Supervisor Tests', { tag: ['@ckEditor
       // searching as anon to ensure content is viewable as it is published 
       await anonymousHelper.searchAsAnon({ edited: false });
 
-      // log back in and naviagte to content 
-      await loginHelper.loginWithValidUser();
-      await navigateToCreatedContentHelper.navigateToCreatedContent({
-        active: true,
-        deleted: false
-      });
 
-      // moderating to archived  
-      await contentModerationHelper.supervisorModerateContent({
-        NeedsReview: false,
-        Published: false,
-        Archive: true
-      });
-
-      // searching as anon to ensure content is viewable as it is published 
-      await anonymousHelper.searchAsAnon({ edited: false });
 
     });
-
-  // test('CKEditor-Super-TC02 - Create - Create Article content as an "Supervisor", perform mandatory field check and preview content',
-  //   async ({ articleHelper, anonymousHelper, loginHelper, contentModerationHelper, navigateToCreatedContentHelper, testSetUpData }) =>
-  //   {
-  //     // creating article as a draft and performing mandatory field check
-  //     console.log(testSetUpData.contentTitleforTest.contentTitle + ' - creating content with this title');
-
-  //     await articleHelper.createArticleWithImportedFromWord({
-  //       preview: true,
-  //       mandatoryFieldCheck: false,
-  //     });
-
-  //     // for anon verification content type needs changed to articleCKEditorImportWord for search as anon to work correctly
-  //     testSetUpData.contentTypeforTest.contentType = testSetUpData.validContentTypeList.articleCKEditorImportWord;
-
-  //     // searching as anon to ensure content is not viewable as draft
-  //     await anonymousHelper.searchAsAnon({ edited: false });
-
-  //     // log back in and naviagte to content 
-  //     await loginHelper.loginWithValidUser();
-  //     await navigateToCreatedContentHelper.navigateToCreatedContent({
-  //       active: true,
-  //       deleted: false
-  //     });
-
-  //     // moderating to needs review 
-  //     await contentModerationHelper.supervisorModerateContent({
-  //       NeedsReview: true,
-  //       Published: false,
-  //       Archive: false
-  //     });
-
-  //     // searching as anon to ensure content is not viewable as needs review 
-  //     await anonymousHelper.searchAsAnon({ edited: false });
-
-  //     // log back in and naviagte to content 
-  //     await loginHelper.loginWithValidUser();
-  //     await navigateToCreatedContentHelper.navigateToCreatedContent({
-  //       active: true,
-  //       deleted: false
-  //     });
-
-  //     // moderating to published  
-  //     await contentModerationHelper.supervisorModerateContent({
-  //       NeedsReview: false,
-  //       Published: true,
-  //       Archive: false
-  //     });
-
-  //     // searching as anon to ensure content is viewable as it is published 
-  //     await anonymousHelper.searchAsAnon({ edited: false });
-
-  //     // log back in and naviagte to content 
-  //     await loginHelper.loginWithValidUser();
-  //     await navigateToCreatedContentHelper.navigateToCreatedContent({
-  //       active: true,
-  //       deleted: false
-  //     });
-
-  //     // moderating to archived  
-  //     await contentModerationHelper.supervisorModerateContent({
-  //       NeedsReview: false,
-  //       Published: false,
-  //       Archive: true
-  //     });
-
-  //     // searching as anon to ensure content is viewable as it is published 
-  //     await anonymousHelper.searchAsAnon({ edited: false });
-
-  //   });
 });

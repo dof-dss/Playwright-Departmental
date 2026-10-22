@@ -337,7 +337,7 @@ export class ArticleNodePage
 
             // verify ckeditor img is embeded
             await this.testSteps.LogInfo('Verifying Body Field image is embeded - NEEDS MANUAL ATTENTION');
-            await expect(this.page.locator('//div[@class="media-image"]/img')).toBeVisible();
+            await expect(this.page.locator('//figure/img')).toBeVisible();
 
 
             // verify ckeditor audio file is embeded
@@ -346,7 +346,7 @@ export class ArticleNodePage
 
             // specail symbol 1
             await this.testSteps.LogInfo('Verifying  "$" from special characters is visible"');
-            await expect(this.page.getByText('$')).toBeVisible();
+            await expect(this.page.getByText('$')).toBeVisible();//figure/img
 
             // specail symbol 2
             await this.testSteps.LogInfo('Verifying  "‱" from special characters is visible"');
