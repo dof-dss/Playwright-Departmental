@@ -84,7 +84,7 @@ export class NewsNodePage
 
         // verify image is uploaded and displayed (does not verify if it is correct image just that it is on page)
         await this.testSteps.LogInfo('Verifying image is visible');
-        await expect(this.page.locator('//div[@class="media-image"]/img')).toBeVisible();
+        await expect(this.page.locator('//figure/img')).toBeVisible();
 
         // verify body field
         await this.testSteps.LogInfo(`Verifying Body "${this.testData.News.body}" is visible`);

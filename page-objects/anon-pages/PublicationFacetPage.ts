@@ -25,8 +25,8 @@ export class PublicationFacetPage
         this.testSteps = new TestSteps();
 
         // locators 
-        this.publicationFacetSearchField = page.locator('#edit-search--2');
-        this.publicationFacetSearchButton = page.locator('#edit-submit-publications-search--2');
+        this.publicationFacetSearchField = page.getByTestId('publications-search--keywords');
+        this.publicationFacetSearchButton = page.getByTestId('publications-search--search');
         this.facetFilterType = this.page.getByRole('button', { name: 'Publication type' });
         this.facetFilterTopic = this.page.getByRole('button', { name: 'Publication topics' });
         this.facetFilterPublicationDate = this.page.getByRole('button', { name: 'Publication date' });

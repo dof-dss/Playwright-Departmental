@@ -24,10 +24,10 @@ export class ConsultationFacetPage
         this.testSteps = new TestSteps();
 
         // locators 
-        this.consultationFacetSearchField = page.locator('#edit-search--2');
-        this.consultationFacetSearchButton = page.locator('#edit-submit-consultations-search--2');
-        this.facetFilterTopic = this.page.getByRole('button', { name: 'Consultation topic' })
-        this.facetFilterConsultationDate = this.page.getByRole('button', { name: 'Publication date' })
+        this.consultationFacetSearchField = page.getByTestId('consultations-search--keywords');
+        this.consultationFacetSearchButton = page.getByTestId('consultations-search--search');
+        this.facetFilterTopic = this.page.getByRole('button', { name: 'Consultation topic' });
+        this.facetFilterConsultationDate = this.page.getByRole('button', { name: 'Publication date' });
     }
 
     // url check using isolated test data for current site being tested
@@ -42,7 +42,7 @@ export class ConsultationFacetPage
     {
         await this.testSteps.LogInfo(`Entering "${searchTerm}" into the Title field`);
         await expect(this.consultationFacetSearchField).toBeEnabled();
-        await this.consultationFacetSearchField.fill(searchTerm)
+        await this.consultationFacetSearchField.fill(searchTerm);
     }
 
     // click site search button 
@@ -63,14 +63,14 @@ export class ConsultationFacetPage
     async clickFacetFilterTopicFilter()
     {
         await this.testSteps.LogInfo(`Filtering consultations by topic "${this.testData.SiteTopics.topic1}"`);
-           await this.page.locator(`//a/span[contains(text(),"${this.testData.SiteTopics.topic1}")]`).click();
+        await this.page.locator(`//a/span[contains(text(),"${this.testData.SiteTopics.topic1}")]`).click();
     }
 
     // click consultation facet filter topic span
     async clickFacetFilterTopicEditedFilter()
     {
         await this.testSteps.LogInfo(`Filtering consultations by edited topic "${this.testData.SiteTopics.topic2}"`);
-           await this.page.locator(`//a/span[contains(text(),"${this.testData.SiteTopics.topic2}")]`).click();
+        await this.page.locator(`//a/span[contains(text(),"${this.testData.SiteTopics.topic2}")]`).click();
     }
 
     // click consultation facet filter publication date span

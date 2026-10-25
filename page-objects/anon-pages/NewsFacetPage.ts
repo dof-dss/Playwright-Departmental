@@ -24,8 +24,8 @@ export class NewsFacetPage
         this.testSteps = new TestSteps();
 
         // locators 
-        this.newsFacetSearchField = page.locator('#edit-search--3');
-        this.newsFacetSearchButton = page.locator('#edit-submit-news-search--3');
+        this.newsFacetSearchField = page.getByTestId('news-search--keywords');
+        this.newsFacetSearchButton = page.getByTestId('news-search--search');
         this.facetFilterTopic = this.page.getByRole('button', { name: 'Topic' });
         this.facetFilterPublicationDate = this.page.getByRole('button', { name: 'Publication date' });
     }
