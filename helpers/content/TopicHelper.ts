@@ -227,6 +227,27 @@ export class TopicHelper
         await this.topicNodePage.verifyRearrangedTopic();
     }
 
+    async verifyTopicDeletionIsBlocked()
+    {
+        await this.topicNodePage.topicNodeURLCheck();
+        await this.moderationSideBar.openModerationSideBar();
+        await this.moderationSideBar.verifyDeleteIsBlocked();
+    }
+
+    async verifyTopicArchivingIsBlocked()
+    {
+        await this.topicNodePage.topicNodeURLCheck();
+        await this.moderationSideBar.openModerationSideBar();
+        await this.moderationSideBar.verifyArchiveIsBlocked();
+    }
+
+    async verifyTopicIsArchived()
+    {
+        await this.topicNodePage.topicNodeURLCheck();
+        await this.moderationSideBar.openModerationSideBar();
+        await this.moderationSideBar.verifyCurrentState('Archived');
+    }
+
     // delete Topic method
     async deleteTopic(options: DeleteOptions)
     {
@@ -253,7 +274,7 @@ export class TopicHelper
         }
     }
 
-    async verifyTopicChildContentVisibility(options: CreateTopicChildContentOptions)
+    async verifyTopicChildContentVisibility(options: CreateTopicChildContentOptions & { edited?: boolean })
     {
         await this.topicNodePage.verifyTopicChildContentVisibility(options);
     }

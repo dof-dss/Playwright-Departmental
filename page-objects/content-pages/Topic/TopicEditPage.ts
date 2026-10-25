@@ -107,6 +107,10 @@ export class TopicEditPage
     {
         await this.editTopicPageURLCheck();
         await this.editTopicTitle(data.topicTitle);
+        if (data.hideListing)
+        {
+            await this.toggleHideListing();
+        }
         await this.uploadMediaHelper.uploadBannerImagesWorkflow({
             bannerImage: data.bannerImage,
             bannerImageEdit: data.bannerImageEdit,
@@ -116,11 +120,13 @@ export class TopicEditPage
         await this.createPages.enterRevisionLogMessage(data.revisionLogMessage);
         await this.editTopicSummary(data.topicSummary);
         await this.ckeditor.enterCKEditorBody(data.topicLongDescription);
-
-        if (data.hideListing)
-        {
-            await this.toggleHideListing();
-        }
+        await expect(this.page.locator('//input[contains(@id,"edit-field-photo-selection-0-remove-button")]')).toBeEnabled();
+        await this.page.locator('//input[contains(@id,"edit-field-photo-selection-0-remove-button")]').click();
+        await this.page.waitForTimeout(1000);
+        await this.uploadMediaHelper.uploadImageWorkflow({
+            original: false,
+            edited: true
+        });
     }
 
     async editTopicUsingDragAndDrop()

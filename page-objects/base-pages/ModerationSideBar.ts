@@ -182,6 +182,28 @@ export class ModerationSideBar
         await this.deletebutton.click();
     }
 
+    async verifyDeleteIsBlocked()
+    {
+        await this.testSteps.LogInfo('Verifying Delete is disabled because the Topic has active child pages');
+        const blockedDelete = this.page.locator('.ui-dialog-off-canvas div.moderation-sidebar-link')
+            .filter({ hasText: /^Delete$/ });
+        await expect(blockedDelete).toBeVisible();
+        await expect(blockedDelete).toHaveAttribute('disabled', 'disabled');
+        await expect(blockedDelete).toHaveAttribute('title', 'This content has active child pages. It cannot be deleted until child pages have been reallocated to a different topic, archived or deleted.');
+        await expect(this.deletebutton).toBeHidden();
+    }
+
+    async verifyArchiveIsBlocked()
+    {
+        await this.testSteps.LogInfo('Verifying Archive is disabled because the Topic has active child pages');
+        const blockedArchive = this.page.locator('.ui-dialog-off-canvas div.moderation-sidebar-link')
+            .filter({ hasText: /^Archive$/ });
+        await expect(blockedArchive).toBeVisible();
+        await expect(blockedArchive).toHaveAttribute('disabled', 'disabled');
+        await expect(blockedArchive).toHaveAttribute('title', 'This content has active child pages. It cannot be archived until child pages have been reallocated to a different topic, archived or deleted.');
+        await expect(this.archivebutton).toBeHidden();
+    }
+
 
     async clickShowRevisionsButton()
     {
