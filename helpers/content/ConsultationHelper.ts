@@ -135,7 +135,10 @@ export class ConsultationHelper
 
         // Save and verify
         await this.createPage.clickSaveButton();
-        await this.consultationNodePage.consultationNodeURLCheck();
+        if (this.testSetUpData.saveAsOptionForTest.saveAsOption !== this.testSetUpData.validSaveAsOptionList.archived)
+        {
+            await this.consultationNodePage.consultationNodeURLCheck();
+        }
         await this.consultationNodePage.verifyConsultation({
             preview: true,
             topics: this.topicsHelper.getTopics()
@@ -289,7 +292,6 @@ export class ConsultationHelper
     }
 
 }
-
 
 
 

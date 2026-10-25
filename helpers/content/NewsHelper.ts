@@ -135,7 +135,10 @@ export class NewsHelper
 
         // Save and verify
         await this.createPage.clickSaveButton();
-        await this.newsNodePage.newsNodeURLCheck();
+        if (this.testSetUpData.saveAsOptionForTest.saveAsOption !== this.testSetUpData.validSaveAsOptionList.archived)
+        {
+            await this.newsNodePage.newsNodeURLCheck();
+        }
         await this.newsNodePage.verifyNews({
             topics: this.topicsHelper.getTopics()
         });
@@ -259,7 +262,6 @@ export class NewsHelper
     }
 
 }
-
 
 
 

@@ -1040,10 +1040,15 @@ test.describe('Full Topic Tests', { tag: ['@topics', '@regression', '@topicsuper
 
         });
 
-    for (const moderationState of ['Draft', 'Needs Review', 'Published', 'Archived'])
+    for (const { moderationState, saveAsOption } of [
+        { moderationState: 'Draft', saveAsOption: 'draft' },
+        { moderationState: 'Needs Review', saveAsOption: 'needsreview' },
+        { moderationState: 'Published', saveAsOption: 'published' },
+        { moderationState: 'Archived', saveAsOption: 'archived' },
+    ] as const)
     {
         test(`Full-Topic-TC08 - Delete - Ensure Topic can be deleted with Consultation, News and Publication in ${moderationState}`, { tag: "@delete" },
-            async ({ topicHelper, contentModerationHelper, navigateToCreatedContentHelper, anonymousHelper, topicVisibilityHelper, testData }) =>
+            async ({ topicHelper, navigateToCreatedContentHelper, anonymousHelper, topicVisibilityHelper, testData }) =>
             {
                 await topicHelper.createTopic({
                     preview: false,
@@ -1057,23 +1062,7 @@ test.describe('Full Topic Tests', { tag: ['@topics', '@regression', '@topicsuper
                     consultation: true,
                     news: true,
                     publication: true,
-                });
-
-                if (moderationState !== 'Draft')
-                {
-                    await contentModerationHelper.topicSupervisorModerateAllChildrenContent({
-                        application: false,
-                        article: false,
-                        subtopic: false,
-                        consultation: true,
-                        news: true,
-                        publication: true,
-                        QuickPublish: false,
-                        NeedsReview: moderationState === 'Needs Review',
-                        Published: moderationState === 'Published',
-                        Archive: moderationState === 'Archived'
-                    });
-                }
+                }, saveAsOption);
 
                 await navigateToCreatedContentHelper.navigateToCreatedContent({ active: true, deleted: false });
                 await topicHelper.deleteTopic({ delete: true, cancel: false });
@@ -1142,5 +1131,46 @@ test.describe('Full Topic Tests', { tag: ['@topics', '@regression', '@topicsuper
             await topicVisibilityHelper.verifyTopicOnHomepage({ title: testData.Topic.title, shouldBeVisible: false, edited: false });
             await topicVisibilityHelper.verifyTopicOnTopicsPage({ title: testData.Topic.title, shouldBeVisible: false, edited: false });
         });
+
+    for (const { moderationState, saveAsOption } of [
+        { moderationState: 'Draft', saveAsOption: 'draft' },
+        { moderationState: 'Needs Review', saveAsOption: 'needsreview' },
+        { moderationState: 'Published', saveAsOption: 'published' },
+        { moderationState: 'Archived', saveAsOption: 'archived' },
+    ] as const)
+    {
+        test(`Full-Topic-TC10 - Archive - Ensure Topic can be archived with Consultation, News and Publication in ${moderationState}`, { tag: "@archive" },
+            async ({ topicHelper, contentModerationHelper, navigateToCreatedContentHelper, anonymousHelper, topicVisibilityHelper, testData }) =>
+            {
+                await topicHelper.createTopic({
+                    preview: false,
+                    mandatoryFieldCheck: false
+                });
+
+                await topicHelper.createTopicChildContentTopicTree({
+                    application: false,
+                    article: false,
+                    subtopic: false,
+                    consultation: true,
+                    news: true,
+                    publication: true,
+                }, saveAsOption);
+
+                await navigateToCreatedContentHelper.navigateToCreatedContent({ active: true, deleted: false });
+                await contentModerationHelper.topicSupervisorModerateContent({
+                    QuickPublish: false,
+                    NeedsReview: false,
+                    Published: false,
+                    Archive: true
+                });
+
+                await navigateToCreatedContentHelper.navigateToCreatedContent({ active: true, deleted: false });
+                await topicHelper.verifyTopicIsArchived();
+
+                await anonymousHelper.searchAsAnon({ edited: false });
+                await topicVisibilityHelper.verifyTopicOnHomepage({ title: testData.Topic.title, shouldBeVisible: false, edited: false });
+                await topicVisibilityHelper.verifyTopicOnTopicsPage({ title: testData.Topic.title, shouldBeVisible: false, edited: false });
+            });
+    }
 
 });

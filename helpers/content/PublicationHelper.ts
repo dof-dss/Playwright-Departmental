@@ -138,7 +138,10 @@ export class PublicationHelper
 
         // Save and verify
         await this.createPage.clickSaveButton();
-        await this.publicationNodePage.publicationNodeURLCheck();
+        if (this.testSetUpData.saveAsOptionForTest.saveAsOption !== this.testSetUpData.validSaveAsOptionList.archived)
+        {
+            await this.publicationNodePage.publicationNodeURLCheck();
+        }
         await this.publicationNodePage.verifyPublication({
             topics: this.topicsHelper.getTopics()
         });
@@ -445,7 +448,6 @@ export class PublicationHelper
 
 
 }
-
 
 
 

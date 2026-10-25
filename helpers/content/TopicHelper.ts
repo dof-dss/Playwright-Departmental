@@ -279,11 +279,15 @@ export class TopicHelper
         await this.topicNodePage.verifyTopicChildContentVisibility(options);
     }
 
-    async createTopicChildContentTopicTree(options: CreateTopicChildContentOptions): Promise<void>
+    async createTopicChildContentTopicTree(
+        options: CreateTopicChildContentOptions,
+        saveAsOption: keyof typeof TestSetUpData.validSaveAsOptionList = 'draft'
+    ): Promise<void>
     {
+        const previousSaveAsOption = this.testSetUpData.saveAsOptionForTest.saveAsOption;
         const previousConsultationRespondOnline = this.testData.Consultation.respondeOnline;
         this.testData.SiteTopics.topic1 = this.testData.Topic.title;
-        this.testSetUpData.saveAsOptionForTest.saveAsOption = this.testSetUpData.validSaveAsOptionList.draft;
+        this.testSetUpData.saveAsOptionForTest.saveAsOption = this.testSetUpData.validSaveAsOptionList[saveAsOption];
 
         try
         {
@@ -357,6 +361,7 @@ export class TopicHelper
             this.testSetUpData.contentTypeforTest.contentType = this.testSetUpData.validContentTypeList.topic;
             this.testSetUpData.contentTitleforTest.contentTitle = this.testData.Topic.title;
             this.testData.Consultation.respondeOnline = previousConsultationRespondOnline;
+            this.testSetUpData.saveAsOptionForTest.saveAsOption = previousSaveAsOption;
         }
     }
 
