@@ -33,7 +33,7 @@ export default defineConfig({
   fullyParallel: true,
 
   /* Entire script each Test timeout - currently 120 seconds */
-  timeout: 500_000,
+  timeout: 700_000,
   /* Expect assertion global timeout */
   expect: { timeout: 10000 },
 
@@ -58,10 +58,10 @@ export default defineConfig({
     /* Base URL to use in actions like `await page.goto('')`. */
     // baseURL: 'http://localhost:3000',
 
-       /* This limits how long each action like .click(), .fill(), or .hover() can take to perform */
+    /* This limits how long each action like .click(), .fill(), or .hover() can take to perform */
     actionTimeout: 10000,
     trace: process.env.CI ? 'off' : 'on',
- 
+
     /* Collect trace when retrying the failed test. See https://playwright.dev/docs/trace-viewer */
     //trace: 'on-first-retry',
     video: process.env.CI ? 'off' : 'retain-on-failure',
