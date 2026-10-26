@@ -32,7 +32,7 @@ export default defineConfig({
   /* Run tests in files in parallel */
   fullyParallel: true,
 
-  /* Entire script each Test timeout - currently 120 seconds */
+  /* Entire script each Test timeout - currently 700 seconds */
   timeout: 700_000,
   /* Expect assertion global timeout */
   expect: { timeout: 10000 },
@@ -60,11 +60,11 @@ export default defineConfig({
 
     /* This limits how long each action like .click(), .fill(), or .hover() can take to perform */
     actionTimeout: 10000,
-    trace: process.env.CI ? 'off' : 'on',
+    trace: process.env.CI || os.platform() === 'linux' ? 'off' : 'retain-on-failure',
 
     /* Collect trace when retrying the failed test. See https://playwright.dev/docs/trace-viewer */
     //trace: 'on-first-retry',
-    video: process.env.CI ? 'off' : 'retain-on-failure',
+    video: process.env.CI || os.platform() === 'linux' ? 'off' : 'retain-on-failure',
     screenshot: 'only-on-failure',
     /* Support running in DDev which will have invalid browser TLS certificates */
     ignoreHTTPSErrors: true,
