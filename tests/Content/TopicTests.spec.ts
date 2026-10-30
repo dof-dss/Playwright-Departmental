@@ -1040,14 +1040,14 @@ test.describe('Full Topic Tests', { tag: ['@topics', '@regression', '@topicsuper
 
         });
 
-    for (const { moderationState, saveAsOption } of [
+    for (const [index, { moderationState, saveAsOption }] of ([
         { moderationState: 'Draft', saveAsOption: 'draft' },
         { moderationState: 'Needs Review', saveAsOption: 'needsreview' },
         { moderationState: 'Published', saveAsOption: 'published' },
         { moderationState: 'Archived', saveAsOption: 'archived' },
-    ] as const)
+    ] as const).entries())
     {
-        test(`Full-Topic-TC08 - Delete - Ensure Topic can be deleted with Consultation, News and Publication in ${moderationState}`, { tag: "@delete" },
+        test(`Full-Topic-TC08.${index + 1} - Delete - Ensure Topic can be deleted with Consultation, News and Publication in ${moderationState}`, { tag: "@delete" },
             async ({ topicHelper, navigateToCreatedContentHelper, anonymousHelper, topicVisibilityHelper, testData }) =>
             {
                 await topicHelper.createTopic({
@@ -1132,14 +1132,14 @@ test.describe('Full Topic Tests', { tag: ['@topics', '@regression', '@topicsuper
             await topicVisibilityHelper.verifyTopicOnTopicsPage({ title: testData.Topic.title, shouldBeVisible: false, edited: false });
         });
 
-    for (const { moderationState, saveAsOption } of [
+    for (const [index, { moderationState, saveAsOption }] of ([
         { moderationState: 'Draft', saveAsOption: 'draft' },
         { moderationState: 'Needs Review', saveAsOption: 'needsreview' },
         { moderationState: 'Published', saveAsOption: 'published' },
         { moderationState: 'Archived', saveAsOption: 'archived' },
-    ] as const)
+    ] as const).entries())
     {
-        test(`Full-Topic-TC10 - Archive - Ensure Topic can be archived with Consultation, News and Publication in ${moderationState}`, { tag: "@archive" },
+        test(`Full-Topic-TC10.${index + 1} - Archive - Ensure Topic can be archived with Consultation, News and Publication in ${moderationState}`, { tag: "@archive" },
             async ({ topicHelper, contentModerationHelper, navigateToCreatedContentHelper, anonymousHelper, topicVisibilityHelper, testData }) =>
             {
                 await topicHelper.createTopic({
