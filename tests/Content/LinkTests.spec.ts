@@ -1,7 +1,7 @@
 import { TestSteps } from '@poms/base-pages/TestSteps';
 import { test } from '@fixtures/MyFixtures';
 
-test.describe('Link Supervisor Tests', { tag: ['@link', '@regression', '@supervisor'] }, () =>
+test.describe('Link Supervisor Tests', { tag: ['@link', '@regression', '@homepage_supervisor'] }, () =>
 {
   // Pass the fixture for Link Supervisors into the beforeEach hook
   test.beforeEach(async ({ loginHelper, testSetUpData, testData }, testInfo) =>
@@ -385,7 +385,7 @@ test.describe('Link Supervisor Tests', { tag: ['@link', '@regression', '@supervi
       });
     });
 
-  test('Link-Super-TC12 - Value Checker - Create and Publish link, ensure no more than 9 quick links are displayed', { tag: '@valueChecker' },
+  test('Link-Super-TC12 - Value Checker - Create and Publish link, ensure no more than 9 quick links are displayed', { tag: '@value_checker' },
     async ({ linkHelper, anonymousHelper, contentModerationHelper, testSetUpData, testData, homePage }) =>
     {
       // creating link as a draft and performing mandatory field check
@@ -418,3 +418,5 @@ test.describe('Link Supervisor Tests', { tag: ['@link', '@regression', '@supervi
       await homePage.verifyQuickLinksMaxItems();
     });
 });
+
+

@@ -228,7 +228,7 @@ test.describe('Event Author Tests', { tag: ['@event', '@regression', '@author'] 
     });
   });
 
-  test('EVENT-Auth-TC08 - Topics - Ensure only 3 Topics can be added', { tag: '@topicsAlert' }, async ({ eventHelper, topicsTreeHelper }) =>
+  test('EVENT-Auth-TC08 - Topics - Ensure only 3 Topics can be added', { tag: '@topics_alert' }, async ({ eventHelper, topicsTreeHelper }) =>
   {
     //Overriding to trigger alert - trying to add 4 but maximum is 3
     await topicsTreeHelper.selectTopicForSite({
@@ -606,7 +606,7 @@ test.describe('Event Supervisor Tests', { tag: ['@event', '@regression', '@super
     });
   });
 
-  test('EVENT-Super-TC08 - Topics - Ensure only 3 Topics can be added', { tag: '@topicsAlert' }, async ({ eventHelper, topicsTreeHelper }) =>
+  test('EVENT-Super-TC08 - Topics - Ensure only 3 Topics can be added', { tag: '@topics_alert' }, async ({ eventHelper, topicsTreeHelper }) =>
   {
     //Overriding to trigger alert - trying to add 4 but maximum is 3
     await topicsTreeHelper.selectTopicForSite({
@@ -666,3 +666,4 @@ test.describe('Event Supervisor Tests', { tag: ['@event', '@regression', '@super
   });
 
 });
+

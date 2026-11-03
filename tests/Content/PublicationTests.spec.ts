@@ -230,7 +230,7 @@ test.describe('Publication Author Tests', { tag: ['@publication', '@regression',
     });
   });
 
-  test('Publication-Auth-TC08 - Topics - Ensure only 3 Topics can be added', { tag: '@topicsAlert' }, async ({ publicationHelper, topicsTreeHelper, testSetUpData }) =>
+  test('Publication-Auth-TC08 - Topics - Ensure only 3 Topics can be added', { tag: '@topics_alert' }, async ({ publicationHelper, topicsTreeHelper, testSetUpData }) =>
   {
     //Overriding to trigger alert - trying to add 4 but maximum is 3
     await topicsTreeHelper.selectTopicForSite({
@@ -636,7 +636,7 @@ test.describe('Publication Supervisor Tests', { tag: ['@publication', '@regressi
     });
   });
 
-  test('Publication-Super-TC08 - Topics - Ensure only 3 Topics can be added', { tag: '@topicsAlert' }, async ({ publicationHelper, anonymousHelper, loginHelper, contentModerationHelper, navigateToCreatedContentHelper, topicsTreeHelper }) =>
+  test('Publication-Super-TC08 - Topics - Ensure only 3 Topics can be added', { tag: '@topics_alert' }, async ({ publicationHelper, anonymousHelper, loginHelper, contentModerationHelper, navigateToCreatedContentHelper, topicsTreeHelper }) =>
   {
 
     //Overriding to trigger alert - trying to add 4 but maximum is 3
@@ -742,7 +742,7 @@ test.describe('Publication Supervisor Tests', { tag: ['@publication', '@regressi
 
 });
 
-test.describe('Publication Stats Author Tests', { tag: ['@publication', '@regression', '@statsAuthor'] }, () =>
+test.describe('Publication Stats Author Tests', { tag: ['@publication', '@regression', '@stats_author'] }, () =>
 {
   // Pass the fixture for Publication Authors into the beforeEach hook
   test.beforeEach(async ({ loginHelper, testSetUpData, testData }, testInfo) =>
@@ -970,7 +970,7 @@ test.describe('Publication Stats Author Tests', { tag: ['@publication', '@regres
     });
   });
 
-  test('Publication-Stats-Auth-TC08 - Topics - Ensure only 3 Topics can be added', { tag: '@topicsAlert' }, async ({ publicationHelper, topicsTreeHelper, testSetUpData }) =>
+  test('Publication-Stats-Auth-TC08 - Topics - Ensure only 3 Topics can be added', { tag: '@topics_alert' }, async ({ publicationHelper, topicsTreeHelper, testSetUpData }) =>
   {
     //Overriding to trigger alert - trying to add 4 but maximum is 3
     await topicsTreeHelper.selectTopicForSite({
@@ -1078,7 +1078,7 @@ test.describe('Publication Stats Author Tests', { tag: ['@publication', '@regres
 
 });
 
-test.describe('Publication Stats Supervisor Tests', { tag: ['@publication', '@regression', '@statsSupervisor'] }, () =>
+test.describe('Publication Stats Supervisor Tests', { tag: ['@publication', '@regression', '@stats_supervisor'] }, () =>
 {
   // Pass the fixture for Publication Authors into the beforeEach hook
   test.beforeEach(async ({ loginHelper, testSetUpData, testData }, testInfo) =>
@@ -1382,7 +1382,7 @@ test.describe('Publication Stats Supervisor Tests', { tag: ['@publication', '@re
     });
   });
 
-  test('Publication-Stats-Super-TC08 - Topics - Ensure only 3 Topics can be added', { tag: '@topicsAlert' }, async ({ publicationHelper, anonymousHelper, loginHelper, contentModerationHelper, navigateToCreatedContentHelper, topicsTreeHelper }) =>
+  test('Publication-Stats-Super-TC08 - Topics - Ensure only 3 Topics can be added', { tag: '@topics_alert' }, async ({ publicationHelper, anonymousHelper, loginHelper, contentModerationHelper, navigateToCreatedContentHelper, topicsTreeHelper }) =>
   {
 
     //Overriding to trigger alert - trying to add 4 but maximum is 3
@@ -1491,3 +1491,4 @@ test.describe('Publication Stats Supervisor Tests', { tag: ['@publication', '@re
   });
 
 });
+

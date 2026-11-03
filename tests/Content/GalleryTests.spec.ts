@@ -300,7 +300,7 @@ test.describe('Gallery Author Tests', { tag: ['@gallery', '@regression', '@autho
     });
   });
 
-  test('Gallery-Auth-TC08 - Topics - Ensure only 3 Topics can be added', { tag: '@topicsAlert' }, async ({ galleryHelper, topicsTreeHelper, testSetUpData }) =>
+  test('Gallery-Auth-TC08 - Topics - Ensure only 3 Topics can be added', { tag: '@topics_alert' }, async ({ galleryHelper, topicsTreeHelper, testSetUpData }) =>
   {
     //Overriding to trigger alert - trying to add 4 but maximum is 3
     await topicsTreeHelper.selectTopicForSite({
@@ -747,7 +747,7 @@ test.describe('Gallery Supervisor Tests', { tag: ['@gallery', '@regression', '@s
     });
   });
 
-  test('Gallery-Super-TC08 - Topics - Ensure only 3 Topics can be added', { tag: '@topicsAlert' }, async ({ galleryHelper, topicsTreeHelper, testSetUpData }) =>
+  test('Gallery-Super-TC08 - Topics - Ensure only 3 Topics can be added', { tag: '@topics_alert' }, async ({ galleryHelper, topicsTreeHelper, testSetUpData }) =>
   {
     //Overriding to trigger alert - trying to add 4 but maximum is 3
     await topicsTreeHelper.selectTopicForSite({
@@ -807,3 +807,4 @@ test.describe('Gallery Supervisor Tests', { tag: ['@gallery', '@regression', '@s
   });
 
 });
+

@@ -232,7 +232,7 @@ test.describe('Article Author Tests', { tag: ['@article', '@regression', '@autho
       });
     });
 
-  test('ART-Auth-TC08 - Topics - Ensure only 3 Topics can be added', { tag: '@topicsAlert' },
+  test('ART-Auth-TC08 - Topics - Ensure only 3 Topics can be added', { tag: '@topics_alert' },
     async ({ articleHelper, topicsTreeHelper }) =>
     {
       //Overriding to trigger alert - trying to add 4 but maximum is 3
@@ -612,7 +612,7 @@ test.describe('Article Supervisor Tests', { tag: ['@article', '@regression', '@s
     });
   });
 
-  test('ART-Super-TC08 - Topics - Ensure only 3 Topics can be added', { tag: '@topicsAlert' }, async ({ articleHelper, topicsTreeHelper, testSetUpData }) =>
+  test('ART-Super-TC08 - Topics - Ensure only 3 Topics can be added', { tag: '@topics_alert' }, async ({ articleHelper, topicsTreeHelper, testSetUpData }) =>
   {
     //Overriding to trigger alert - trying to add 4 but maximum is 3
     await topicsTreeHelper.selectTopicForSite({

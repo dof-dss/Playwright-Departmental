@@ -3,7 +3,7 @@ import { test } from '@fixtures/MyFixtures';
 import { ModerationSideBar } from '@poms/base-pages/ModerationSideBar';
 import { BasePage } from '@poms/base-pages/BasePage';
 
-test.describe('Secure Publication Stats Author Tests', { tag: ['@securePublication', '@regression', '@statsAuthor'] }, () =>
+test.describe('Secure Publication Stats Author Tests', { tag: ['@secure_publication', '@regression', '@stats_author'] }, () =>
 {
   // Pass the fixture for Secure Publication stats Authors into the beforeEach hook
   test.beforeEach(async ({ loginHelper, testSetUpData, testData }, testInfo) =>
@@ -372,7 +372,7 @@ test.describe('Secure Publication Stats Author Tests', { tag: ['@securePublicati
       });
     });
 
-  test('Secure-Publication-Auth-TC10 - Topics - Ensure only 3 Topics can be added', { tag: '@topicsAlert' }, async ({ publicationHelper, topicsTreeHelper, testSetUpData }) =>
+  test('Secure-Publication-Auth-TC10 - Topics - Ensure only 3 Topics can be added', { tag: '@topics_alert' }, async ({ publicationHelper, topicsTreeHelper, testSetUpData }) =>
   {
     //Overriding to trigger alert - trying to add 4 but maximum is 3
     await topicsTreeHelper.selectTopicForSite({
@@ -455,7 +455,7 @@ test.describe('Secure Publication Stats Author Tests', { tag: ['@securePublicati
 
 });
 
-test.describe('Secure Publication Stats Supervisor Tests', { tag: ['@securePublication', '@regression', '@statsSupervisor'] }, () =>
+test.describe('Secure Publication Stats Supervisor Tests', { tag: ['@secure_publication', '@regression', '@stats_supervisor'] }, () =>
 {
   // Pass the fixture for secure Publication Stats Supervisors into the beforeEach hook
   test.beforeEach(async ({ loginHelper, testSetUpData, testData }, testInfo) =>
@@ -831,7 +831,7 @@ test.describe('Secure Publication Stats Supervisor Tests', { tag: ['@securePubli
       });
     });
 
-  test('Secure-Publication-Super-TC10 - Topics - Ensure only 3 Topics can be added', { tag: '@topicsAlert' },
+  test('Secure-Publication-Super-TC10 - Topics - Ensure only 3 Topics can be added', { tag: '@topics_alert' },
     async ({ publicationHelper, anonymousHelper, loginHelper, contentModerationHelper, navigateToCreatedContentHelper, topicsTreeHelper, testSetUpData }) =>
     {
 
@@ -901,3 +901,5 @@ test.describe('Secure Publication Stats Supervisor Tests', { tag: ['@securePubli
 
 
 });
+
+
