@@ -2,7 +2,7 @@ import { TestSteps } from '@poms/base-pages/TestSteps';
 import { test } from '@fixtures/MyFixtures';
 import { TopicVisibilityHelper } from '@helpers/general/TopicVisibilityHelper';
 
-test.describe('Empty Subtopic Tests', { tag: ['@subtopics', '@development', '@topicsupervisor'] }, () =>
+test.describe('Empty Subtopic Tests', { tag: ['@subtopics', '@regression', '@topic_supervisor'] }, () =>
 {
     test.beforeEach(async ({ loginHelper, testSetUpData, testData }, testInfo) =>
     {
@@ -300,7 +300,7 @@ test.describe('Empty Subtopic Tests', { tag: ['@subtopics', '@development', '@to
             });
         });
 
-    test('Empty-Subtopic-TC08 - Archived Subtopic should not be displayed in topics tree', { tag: "@visibility" },
+    test('Empty-Subtopic-TC08 - Archived Subtopic should not be displayed in topics tree', { tag: "@Topics_tree_visibility" },
         async ({ subtopicHelper, applicationHelper, topicsTreeHelper, contentModerationHelper, anonymousHelper, topicVisibilityHelper, testData, testSetUpData }) =>
         {
             // creating content
@@ -324,7 +324,7 @@ test.describe('Empty Subtopic Tests', { tag: ['@subtopics', '@development', '@to
             await topicsTreeHelper.verifyTopicNotVisibleInSiteTopicsTree(testData.Topic.title);
         });
 
-    test('Empty-Subtopic-TC09 - Emsure that Hide Listing functionality prevents Subtopic being listed on parent topic pages and home page', { tag: "@visibility" },
+    test('Empty-Subtopic-TC09 - Emsure that Hide Listing functionality prevents Subtopic being listed on parent topic pages and home page', {},
         async ({ subtopicHelper, contentModerationHelper, anonymousHelper, topicVisibilityHelper, testData }) =>
         {
             await subtopicHelper.createSubtopic({
@@ -348,5 +348,7 @@ test.describe('Empty Subtopic Tests', { tag: ['@subtopics', '@development', '@to
             await topicVisibilityHelper.verifySubtopicViaHomepage({ title: testData.Subtopic.title, shouldBeVisible: false, edited: false });
         });
 });
+
+
 
 

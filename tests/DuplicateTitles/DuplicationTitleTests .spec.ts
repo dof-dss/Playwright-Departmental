@@ -2,7 +2,7 @@ import { TestSteps } from '@poms/base-pages/TestSteps';
 import { test } from '@fixtures/MyFixtures';
 import { ModerationSideBar } from '@poms/base-pages/ModerationSideBar';
 
-test.describe('Duplicate Title Author Tests', { tag: ['@duplicateTitle', '@regression', '@author'] }, () =>
+test.describe('Duplicate Title Author Tests', { tag: ['@duplicate_title', '@regression', '@author'] }, () =>
 {
   // Pass the fixture for Application Authors into the beforeEach hook
   test.beforeEach(async ({ loginHelper, testSetUpData, testData }, testInfo) =>
@@ -92,7 +92,7 @@ test.describe('Duplicate Title Author Tests', { tag: ['@duplicateTitle', '@regre
     });
 });
 
-test.describe('Duplicate Title Supervisor Tests', { tag: ['@duplicateTitle', '@regression', '@supervisor'] }, () =>
+test.describe('Duplicate Title Supervisor Tests', { tag: ['@duplicate_title', '@regression', '@supervisor'] }, () =>
 {
   // Pass the fixture for Application Authors into the beforeEach hook
   test.beforeEach(async ({ loginHelper, testSetUpData, testData }, testInfo) =>

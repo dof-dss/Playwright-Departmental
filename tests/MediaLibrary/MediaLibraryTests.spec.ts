@@ -772,7 +772,7 @@ const roleConfigs: RoleConfig[] = [
     },
     {
         describeName: 'Media Library Stats Author Tests',
-        tag: '@statsAuthor',
+        tag: '@stats_author',
         testPrefix: 'MediaLibrary-Stats-Auth-TC',
         roleLabel: 'Stats Author',
         urlKey: 'finance_url',
@@ -782,7 +782,7 @@ const roleConfigs: RoleConfig[] = [
     },
     {
         describeName: 'Media Library Stats Supervisor Tests',
-        tag: '@statsSupervisor',
+        tag: '@stats_supervisor',
         testPrefix: 'MediaLibrary-Stats-Super-TC',
         roleLabel: 'Stats Supervisor',
         urlKey: 'finance_url',
@@ -794,7 +794,7 @@ const roleConfigs: RoleConfig[] = [
 
 for (const role of roleConfigs)
 {
-    test.describe(role.describeName, { tag: ['@mediaLibrary', '@regression', role.tag] }, () =>
+    test.describe(role.describeName, { tag: ['@media_library', '@regression', role.tag] }, () =>
     {
         test.beforeEach(async ({ loginHelper, testSetUpData, testData }, testInfo) =>
         {
@@ -831,3 +831,5 @@ for (const role of roleConfigs)
         }
     });
 }
+
+

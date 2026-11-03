@@ -230,7 +230,7 @@ test.describe('Consultation Author Tests', { tag: ['@consultation', '@regression
     });
   });
 
-  test('Consultation-Auth-TC08 - Topics - Ensure only 3 Topics can be added', { tag: '@topicsAlert' }, async ({ consultationHelper, topicsTreeHelper }) =>
+  test('Consultation-Auth-TC08 - Topics - Ensure only 3 Topics can be added', { tag: '@topics_alert' }, async ({ consultationHelper, topicsTreeHelper }) =>
   {
     //Overriding to trigger alert - trying to add 4 but maximum is 3
     await topicsTreeHelper.selectTopicForSite({
@@ -616,7 +616,7 @@ test.describe('Consultation Supervisor Tests', { tag: ['@consultation', '@regres
     });
   });
 
-  test('Consultation-Super-TC08 - Topics - Ensure only 3 Topics can be added', { tag: '@topicsAlert' }, async ({ consultationHelper, topicsTreeHelper }) =>
+  test('Consultation-Super-TC08 - Topics - Ensure only 3 Topics can be added', { tag: '@topics_alert' }, async ({ consultationHelper, topicsTreeHelper }) =>
   {
     //Overriding to trigger alert - trying to add 4 but maximum is 3
     await topicsTreeHelper.selectTopicForSite({

@@ -20,7 +20,7 @@ const roleConfigs = [
     describeName: 'Content Visibility Media Library Author Tests',
     testPrefix: 'CVML-AUTH-TC',
     usernameKey: 'author_username',
-    passwordKey: 'author_password', 
+    passwordKey: 'author_password',
     tag: '@author'
   },
   {
@@ -56,7 +56,7 @@ const roleConfigs = [
     testPrefix: 'CVML-HOME-SUP-TC',
     usernameKey: 'homepage_supervisor_username',
     passwordKey: 'homepage_supervisor_password',
-    tag: '@home_supervisor'
+    tag: '@homepage_supervisor'
   }
 
 
@@ -64,7 +64,7 @@ const roleConfigs = [
 
 for (const role of roleConfigs)
 {
-  test.describe(role.describeName, { tag: ['@regression', '@contentVisibilityMediaLibrary', ...('tag' in role ? [role.tag] : [])] }, () =>
+  test.describe(role.describeName, { tag: ['@regression', '@content_visibility_media_library', ...('tag' in role ? [role.tag] : [])] }, () =>
   {
     for (const [index, urlTarget] of urlTargets.entries())
     {
@@ -86,7 +86,7 @@ for (const role of roleConfigs)
           await loginHelper.loginWithValidUser();
         });
 
-        test(`${testCaseId} - ${urlTarget.label} - Verify Correct Media Library Content visibility`, 
+        test(`${testCaseId} - ${urlTarget.label} - Verify Correct Media Library Content visibility`,
           async ({ page, testSetUpData }) =>
           {
             const contentVisibilityHelper = new ContentVisibilityHelper(page, testSetUpData);
@@ -96,3 +96,6 @@ for (const role of roleConfigs)
     }
   });
 }
+
+
+

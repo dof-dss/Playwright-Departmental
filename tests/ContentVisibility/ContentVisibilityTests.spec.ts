@@ -56,7 +56,7 @@ const roleConfigs = [
     testPrefix: 'CV-HOME-SUP-TC',
     usernameKey: 'homepage_supervisor_username',
     passwordKey: 'homepage_supervisor_password',
-    tag: '@home_supervisor'
+    tag: '@homepage_supervisor'
   }
 
 
@@ -64,7 +64,7 @@ const roleConfigs = [
 
 for (const role of roleConfigs)
 {
-  test.describe(role.describeName, { tag: ['@regression', '@contentVisibility', ...('tag' in role ? [role.tag] : [])] }, () =>
+  test.describe(role.describeName, { tag: ['@regression', '@content_availability_per_user', ...('tag' in role ? [role.tag] : [])] }, () =>
   {
     for (const [index, urlTarget] of urlTargets.entries())
     {
@@ -96,5 +96,8 @@ for (const role of roleConfigs)
     }
   });
 }
+
+
+
 
 

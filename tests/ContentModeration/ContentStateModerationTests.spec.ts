@@ -2,7 +2,7 @@ import { TestSteps } from '@poms/base-pages/TestSteps';
 import { test } from '@fixtures/MyFixtures';
 import { ModerationSideBar } from '@poms/base-pages/ModerationSideBar';
 
-test.describe('Moderation Author Tests', { tag: ['@moderationStates','@regression', '@author'] }, () =>
+test.describe('Moderation Author Tests', { tag: ['@moderation_states','@regression', '@author'] }, () =>
 {
   // Pass the fixture for Application Authors into the beforeEach hook
   test.beforeEach(async ({ loginHelper, testSetUpData, testData }, testInfo) =>
@@ -73,7 +73,7 @@ test.describe('Moderation Author Tests', { tag: ['@moderationStates','@regressio
     });
 });
 
-test.describe('Moderation Supervisor Tests', { tag: ['@moderationStates', '@regression', '@supervisor'] }, () =>
+test.describe('Moderation Supervisor Tests', { tag: ['@moderation_states', '@regression', '@supervisor'] }, () =>
 {
   // Pass the fixture for Application Authors into the beforeEach hook
   test.beforeEach(async ({ loginHelper, testSetUpData, testData }, testInfo) =>
@@ -313,7 +313,7 @@ test.describe('Moderation Supervisor Tests', { tag: ['@moderationStates', '@regr
   });
 });
 
-test.describe('Moderation Stats Author Tests', { tag: ['@moderationStates', '@regression', '@statsAuthor'] }, () =>
+test.describe('Moderation Stats Author Tests', { tag: ['@moderation_states', '@regression', '@stats_author'] }, () =>
 {
   // Pass the fixture for Application Authors into the beforeEach hook
   test.beforeEach(async ({ loginHelper, testSetUpData, testData }, testInfo) =>
@@ -384,7 +384,7 @@ test.describe('Moderation Stats Author Tests', { tag: ['@moderationStates', '@re
     });
 });
 
-test.describe('Moderation Stats Supervisor Tests', { tag: ['@moderationStates', '@regression', '@statsSupervisor'] }, () =>
+test.describe('Moderation Stats Supervisor Tests', { tag: ['@moderation_states', '@regression', '@stats_supervisor'] }, () =>
 {
   // Pass the fixture for Application Authors into the beforeEach hook
   test.beforeEach(async ({ loginHelper, testSetUpData, testData }, testInfo) =>
@@ -660,7 +660,7 @@ test.describe('Moderation Stats Supervisor Tests', { tag: ['@moderationStates', 
   });
 });
 
-test.describe('Moderation Topics Supervisor Tests', { tag: ['@moderationStates', '@regression', '@topicsSupervisor'] }, () =>
+test.describe('Moderation Topics Supervisor Tests', { tag: ['@moderation_states', '@regression', '@topic_supervisor'] }, () =>
 {
   // Pass the fixture for Application Authors into the beforeEach hook
   test.beforeEach(async ({ loginHelper, testSetUpData, testData }, testInfo) =>
@@ -936,7 +936,7 @@ test.describe('Moderation Topics Supervisor Tests', { tag: ['@moderationStates',
   });
 });
 
-test.describe('Moderation HomePage Supervisor Tests', { tag: ['@moderationStates', '@regression', '@homepageSupervisor'] }, () =>
+test.describe('Moderation HomePage Supervisor Tests', { tag: ['@moderation_states', '@regression', '@homepage_supervisor'] }, () =>
 {
   // Pass the fixture for Application Authors into the beforeEach hook
   test.beforeEach(async ({ loginHelper, testSetUpData, testData }, testInfo) =>
@@ -1211,3 +1211,6 @@ test.describe('Moderation HomePage Supervisor Tests', { tag: ['@moderationStates
     await anonymousHelper.searchAsAnon({ edited: false });
   });
 });
+
+
+

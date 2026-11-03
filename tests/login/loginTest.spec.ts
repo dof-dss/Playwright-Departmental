@@ -4,7 +4,7 @@ import { TestSetUpData } from '../../test-data/TestDataObject';
 import { TestSteps } from '@poms/base-pages/TestSteps';
 
 
-test.describe('Login Tests', { tag: ['@loginTests', '@regression'] }, () =>
+test.describe('Login Tests', { tag: ['@login_tests', '@regression'] }, () =>
 {
 
   test('should login successfully with valid credentials', async ({ page }) =>
@@ -58,3 +58,4 @@ test.describe('Login Tests', { tag: ['@loginTests', '@regression'] }, () =>
   });
 
 });
+
