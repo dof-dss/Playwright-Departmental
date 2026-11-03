@@ -62,8 +62,8 @@ export class EventNodePage
     //   await expect(this.page.locator(this.topicLinkXPath(topics[3]!))).toBeHidden();
     // }
 
-    // await this.testSteps.LogInfo(`Verifying Event start date and time "${this.testData.Event.verifyStartDateAndTime} - ${this.testData.Event.verifyEndDateAndTime}" is visible`);
-    // await expect(this.page.locator(`//p[text()[normalize-space(.)="${this.testData.Event.verifyStartDateAndTime} — ${this.testData.Event.verifyEndDateAndTime}"]]`)).toBeVisible();
+    await this.testSteps.LogInfo(`Verifying Event start date and time "${this.testData.Event.verifyStartDateAndTime} - ${this.testData.Event.verifyEndDateAndTime}" is visible`);
+    await expect(this.page.locator(`//p[text()[normalize-space(.)="${this.testData.Event.verifyStartDateAndTime} — ${this.testData.Event.verifyEndDateAndTime}"]]`)).toBeVisible();
 
     await this.testSteps.LogInfo(`Verifying Venue "${this.testData.Event.venue}" is visible`);
     await expect(this.page.getByText(this.testData.Event.venue)).toBeVisible();
