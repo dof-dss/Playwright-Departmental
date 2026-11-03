@@ -3,7 +3,7 @@ import { test } from '@fixtures/MyFixtures';
 import { ModerationSideBar } from '@poms/base-pages/ModerationSideBar';
 import { TestData } from '@tdata/TestDataObject';
 
-test.describe('CKEditor Body Field Author Tests', { tag: ['@ckEditor', '@regression', '@author'] }, () =>
+test.describe('CKEditor Body Field Author Tests', { tag: ['@ck_editor', '@regression', '@author'] }, () =>
 {
   // Pass the fixture for Article Authors into the beforeEach hook
   test.beforeEach(async ({ loginHelper, testSetUpData, testData }, testInfo) =>
@@ -39,7 +39,7 @@ test.describe('CKEditor Body Field Author Tests', { tag: ['@ckEditor', '@regress
     });
 });
 
-test.describe('CKEditor Body Field Article Supervisor Tests', { tag: ['@ckEditor', '@regression', '@supervisor'] }, () =>
+test.describe('CKEditor Body Field Article Supervisor Tests', { tag: ['@ck_editor', '@regression', '@supervisor'] }, () =>
 {
   // Pass the fixture for Article Authors into the beforeEach hook
   test.beforeEach(async ({ loginHelper, testSetUpData, testData }, testInfo) =>
@@ -88,3 +88,4 @@ test.describe('CKEditor Body Field Article Supervisor Tests', { tag: ['@ckEditor
 
     });
 });
+

@@ -228,7 +228,7 @@ test.describe('Contact Author Tests', { tag: ['@contact', '@regression', '@autho
     });
   });
 
-  test('CONTACT-Auth-TC08 - Topics - Ensure only 3 Topics can be added', { tag: '@topicsAlert' }, async ({ contactHelper, topicsTreeHelper }) =>
+  test('CONTACT-Auth-TC08 - Topics - Ensure only 3 Topics can be added', { tag: '@topics_alert' }, async ({ contactHelper, topicsTreeHelper }) =>
   {
     //Overriding to trigger alert - trying to add 4 but maximum is 3
     await topicsTreeHelper.selectTopicForSite({
@@ -606,7 +606,7 @@ test.describe('Contact Supervisor Tests', { tag: ['@contact', '@regression', '@s
     });
   });
 
-  test('CONTACT-Super-TC08 - Topics - Ensure only 3 Topics can be added', { tag: '@topicsAlert' }, async ({ contactHelper, topicsTreeHelper }) =>
+  test('CONTACT-Super-TC08 - Topics - Ensure only 3 Topics can be added', { tag: '@topics_alert' }, async ({ contactHelper, topicsTreeHelper }) =>
   {
     //Overriding to trigger alert - trying to add 4 but maximum is 3
     await topicsTreeHelper.selectTopicForSite({

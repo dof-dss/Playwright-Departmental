@@ -2,7 +2,7 @@ import { TestSteps } from '@poms/base-pages/TestSteps';
 import { test } from '@fixtures/MyFixtures';
 import { TopicVisibilityHelper } from '@helpers/general/TopicVisibilityHelper';
 
-test.describe('Empty Topic Tests', { tag: ['@topics', '@development', '@topicsupervisor'] }, () =>
+test.describe('Empty Topic Tests', { tag: ['@topics', '@regression', '@topic_supervisor'] }, () =>
 {
     // Pass the fixture for Topic Supervisor into the beforeEach hook
     test.beforeEach(async ({ loginHelper, testSetUpData, testData }, testInfo) =>
@@ -296,7 +296,7 @@ test.describe('Empty Topic Tests', { tag: ['@topics', '@development', '@topicsup
             });
         });
 
-    test('Empty-Topic-TC08 - Archived Topic should not be displayed in topics tree', { tag: "@visibility" },
+    test('Empty-Topic-TC08 - Archived Topic should not be displayed in topics tree', { tag: "@@Topics_tree_visibility" },
         async ({ topicHelper, applicationHelper, topicsTreeHelper, contentModerationHelper, anonymousHelper, topicVisibilityHelper, testData, testSetUpData }) =>
         {
             // creating content
@@ -319,7 +319,7 @@ test.describe('Empty Topic Tests', { tag: ['@topics', '@development', '@topicsup
             await topicsTreeHelper.verifyTopicNotVisibleInSiteTopicsTree(testData.Topic.title);
         });
 
-    test('Empty-Topic-TC09 - Emsure that Hide Listing functionality prevents Topic being listed on parent topic pages and home page', { tag: "@visibility" },
+    test('Empty-Topic-TC09 - Emsure that Hide Listing functionality prevents Topic being listed on parent topic pages and home page', {  },
         async ({ topicHelper, contentModerationHelper, anonymousHelper, topicVisibilityHelper, testData }) =>
         {
             await topicHelper.createTopic({
@@ -343,7 +343,7 @@ test.describe('Empty Topic Tests', { tag: ['@topics', '@development', '@topicsup
         });
 });
 
-test.describe('Full Topic Tests', { tag: ['@topics', '@regression', '@topicsupervisor'] }, () =>
+test.describe('Full Topic Tests', { tag: ['@topics', '@regression', '@topic_supervisor'] }, () =>
 {
     // Pass the fixture for Topic Supervisor into the beforeEach hook
     test.beforeEach(async ({ loginHelper, testSetUpData, testData }, testInfo) =>

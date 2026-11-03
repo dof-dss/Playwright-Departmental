@@ -2,7 +2,7 @@ import { TestSteps } from '@poms/base-pages/TestSteps';
 import { test } from '@fixtures/MyFixtures';
 import { ModerationSideBar } from '@poms/base-pages/ModerationSideBar';
 
-test.describe('Protected Area Author Tests', { tag: ['@protectedArea', '@regression', '@author'] }, () =>
+test.describe('Protected Area Author Tests', { tag: ['@protected_area', '@regression', '@author'] }, () =>
 {
   // Pass the fixture for Protected Area Authors into the beforeEach hook
   test.beforeEach(async ({ loginHelper, testSetUpData, testData }, testInfo) =>
@@ -230,7 +230,7 @@ test.describe('Protected Area Author Tests', { tag: ['@protectedArea', '@regress
       });
     });
 
-  test('PA-Auth-TC08 - Topics - Ensure only 3 Topics can be added', { tag: '@topicsAlert' }, async ({ protectedAreaHelper, topicsTreeHelper }) =>
+  test('PA-Auth-TC08 - Topics - Ensure only 3 Topics can be added', { tag: '@topics_alert' }, async ({ protectedAreaHelper, topicsTreeHelper }) =>
   {
     //Overriding to trigger alert - trying to add 4 but maximum is 3
     await topicsTreeHelper.selectTopicForSite({
@@ -311,7 +311,7 @@ test.describe('Protected Area Author Tests', { tag: ['@protectedArea', '@regress
   });
 });
 
-test.describe('Protected Area Supervisor Tests', { tag: ['@protectedArea', '@regression', '@supervisor'] }, () =>
+test.describe('Protected Area Supervisor Tests', { tag: ['@protected_area', '@regression', '@supervisor'] }, () =>
 {
   // Pass the fixture for Protected Area Supervisors into the beforeEach hook
   test.beforeEach(async ({ loginHelper, testSetUpData, testData }, testInfo) =>
@@ -604,7 +604,7 @@ test.describe('Protected Area Supervisor Tests', { tag: ['@protectedArea', '@reg
     });
   });
 
-  test('PA-Super-TC08 - Topics - Ensure only 3 Topics can be added', { tag: '@topicsAlert' }, async ({ protectedAreaHelper, topicsTreeHelper }) =>
+  test('PA-Super-TC08 - Topics - Ensure only 3 Topics can be added', { tag: '@topics_alert' }, async ({ protectedAreaHelper, topicsTreeHelper }) =>
   {
     //Overriding to trigger alert - trying to add 4 but maximum is 3
     await topicsTreeHelper.selectTopicForSite({
@@ -662,3 +662,5 @@ test.describe('Protected Area Supervisor Tests', { tag: ['@protectedArea', '@reg
     });
   });
 });
+
+

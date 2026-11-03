@@ -228,7 +228,7 @@ test.describe('Application Author Tests', { tag: ['@application', '@regression',
     });
   });
 
-  test('APP-Auth-TC08 - Topics - Ensure only 3 Topics can be added', { tag: '@topicsAlert' }, async ({ applicationHelper, topicsTreeHelper }) =>
+  test('APP-Auth-TC08 - Topics - Ensure only 3 Topics can be added', { tag: '@topics_alert' }, async ({ applicationHelper, topicsTreeHelper }) =>
   {
     //Overriding to trigger alert - trying to add 4 but maximum is 3
     await topicsTreeHelper.selectTopicForSite({
@@ -606,7 +606,7 @@ test.describe('Application Supervisor Tests', { tag: ['@application', '@regressi
     });
   });
 
-  test('APP-Super-TC08 - Topics - Ensure only 3 Topics can be added', { tag: '@topicsAlert' }, async ({ applicationHelper, topicsTreeHelper }) =>
+  test('APP-Super-TC08 - Topics - Ensure only 3 Topics can be added', { tag: '@topics_alert' }, async ({ applicationHelper, topicsTreeHelper }) =>
   {
     //Overriding to trigger alert - trying to add 4 but maximum is 3
     await topicsTreeHelper.selectTopicForSite({

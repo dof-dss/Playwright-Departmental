@@ -2,7 +2,7 @@ import { TestSteps } from '@poms/base-pages/TestSteps';
 import { test } from '@fixtures/MyFixtures';
 import { ModerationSideBar } from '@poms/base-pages/ModerationSideBar';
 
-test.describe('Heritage Site Author Tests', { tag: ['@heritageSite', '@regression', '@author'] }, () =>
+test.describe('Heritage Site Author Tests', { tag: ['@heritage_site', '@regression', '@author'] }, () =>
 {
   // Pass the fixture for Heritage Site Authors into the beforeEach hook
   test.beforeEach(async ({ loginHelper, testSetUpData, testData }, testInfo) =>
@@ -295,7 +295,7 @@ test.describe('Heritage Site Author Tests', { tag: ['@heritageSite', '@regressio
     });
 });
 
-test.describe('Heritage Site Supervisor Tests', { tag: ['@heritageSite', '@regression', '@supervisor'] }, () =>
+test.describe('Heritage Site Supervisor Tests', { tag: ['@heritage_site', '@regression', '@supervisor'] }, () =>
 {
   // Pass the fixture for Heritage Site Supervisors into the beforeEach hook
   test.beforeEach(async ({ loginHelper, testSetUpData, testData }, testInfo) =>
@@ -637,3 +637,4 @@ test.describe('Heritage Site Supervisor Tests', { tag: ['@heritageSite', '@regre
 
 
 });
+

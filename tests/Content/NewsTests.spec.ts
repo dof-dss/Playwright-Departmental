@@ -230,7 +230,7 @@ test.describe('News Author Tests', { tag: ['@news', '@regression', '@author'] },
     });
   });
 
-  test('News-Auth-TC08 - Topics - Ensure only 3 Topics can be added', { tag: '@topicsAlert' }, async ({ newsHelper, topicsTreeHelper }) =>
+  test('News-Auth-TC08 - Topics - Ensure only 3 Topics can be added', { tag: '@topics_alert' }, async ({ newsHelper, topicsTreeHelper }) =>
   {
     //Overriding to trigger alert - trying to add 4 but maximum is 3
     await topicsTreeHelper.selectTopicForSite({
@@ -608,7 +608,7 @@ test.describe('News Supervisor Tests', { tag: ['@news', '@regression', '@supervi
     });
   });
 
-  test('News-Super-TC08 - Topics - Ensure only 3 Topics can be added', { tag: '@topicsAlert' }, async ({ newsHelper, topicsTreeHelper }) =>
+  test('News-Super-TC08 - Topics - Ensure only 3 Topics can be added', { tag: '@topics_alert' }, async ({ newsHelper, topicsTreeHelper }) =>
   {
     //Overriding to trigger alert - trying to add 4 but maximum is 3
     await topicsTreeHelper.selectTopicForSite({

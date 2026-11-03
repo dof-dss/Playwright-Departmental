@@ -13,7 +13,7 @@ test.describe('QA Account Management Configuration', () =>
         await testSteps.LogInfo(testInfo.title);
     });
 
-    test('Enable QA Accounts', { tag: "@EnableQAAccounts" },
+    test('Enable QA Accounts', { tag: "@enable_qa_accounts" },
         async ({ page, testSetUpData }) =>
         {
             const testSteps = new TestSteps();
@@ -32,7 +32,7 @@ test.describe('QA Account Management Configuration', () =>
             await expect(page).toHaveURL(`${testSetUpData.qaAccounts.finance_url_ddev}/origins-qa/api/users/enable/${testSetUpData.qaAccounts.qaAccountManagementToken}`);
         });
 
-    test('Disable QA Accounts', { tag: "@DisableQAAccounts" },
+    test('Disable QA Accounts', { tag: "@disable_qa_accounts" },
         async ({ page, testSetUpData }) =>
         {
             const testSteps = new TestSteps();

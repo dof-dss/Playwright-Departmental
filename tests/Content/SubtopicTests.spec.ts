@@ -2,7 +2,7 @@ import { TestSteps } from '@poms/base-pages/TestSteps';
 import { test } from '@fixtures/MyFixtures';
 import { TopicVisibilityHelper } from '@helpers/general/TopicVisibilityHelper';
 
-test.describe('Empty Subtopic Tests', { tag: ['@subtopics', '@development', '@topicsupervisor'] }, () =>
+test.describe('Empty Subtopic Tests', { tag: ['@subtopics', '@regression', '@topic_supervisor'] }, () =>
 {
     test.beforeEach(async ({ loginHelper, testSetUpData, testData }, testInfo) =>
     {
@@ -303,7 +303,7 @@ test.describe('Empty Subtopic Tests', { tag: ['@subtopics', '@development', '@to
             });
         });
 
-    test('Empty-Subtopic-TC08 - Archived Subtopic should not be displayed in topics tree', { tag: "@visibility" },
+    test('Empty-Subtopic-TC08 - Archived Subtopic should not be displayed in topics tree', { tag: "@Topics_tree_visibility" },
         async ({ subtopicHelper, applicationHelper, topicsTreeHelper, contentModerationHelper, anonymousHelper, topicVisibilityHelper, testData, testSetUpData }) =>
         {
             // creating content
@@ -352,5 +352,7 @@ test.describe('Full Subtopic Tests', { tag: ['@subtopics', '@regression', '@topi
 
 
 });
+
+
 
 
