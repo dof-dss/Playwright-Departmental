@@ -11,7 +11,7 @@ export class RevisionPage
     private readonly revertRevisionButton: Locator;
     private readonly revertDropDown: Locator;
     private readonly deleteRevisionButton: Locator;
-    private readonly viewContent: Locator
+    private readonly viewContent: Locator;
 
     // constructor
     constructor(private readonly page: Page)
@@ -21,9 +21,9 @@ export class RevisionPage
 
         this.compareRevisionsButton = page.getByRole('button', { name: 'Compare selected revisions' });
         // WILL NEED UPDATED WHEN TOPICS IS FIXED
-        this.revertRevisionButton = page.locator('//p[text()="This is an automated revision log message (Draft)"]//parent::td//following-sibling::td//a[text()="Revert"]')
-        this.revertDropDown = page.locator('//p[text()="This is an automated revision log message (Draft)"]//parent::td//following-sibling::td//button')
-        this.deleteRevisionButton = page.locator('//p[text()="This is an automated revision log message (Draft)"]//parent::td//following-sibling::td//a[text()="Delete"]')
+        this.revertRevisionButton = page.locator('//p[text()="This is an automated revision log message (Draft)"]//parent::td//following-sibling::td//a[text()="Revert"]');
+        this.revertDropDown = page.locator('//p[text()="This is an automated revision log message (Draft)"]//parent::td//following-sibling::td//button');
+        this.deleteRevisionButton = page.locator('//p[text()="This is an automated revision log message (Draft)"]//parent::td//following-sibling::td//a[text()="Delete"]');
         this.viewContent = page.getByRole('link', { name: 'View' });
     }
 
@@ -53,8 +53,8 @@ export class RevisionPage
     // Clicking Revert revisions button
     async clickRevertRevisionsButton()
     {
-        await this.testSteps.LogInfo('Clicking Revert revisions button');
-        await this.revertRevisionButton.click();
+        await this.testSteps.LogInfo('Clicking first Revert revisions button');
+        await this.page.getByRole('link', { name: 'Revert', exact: true }).first().click();
     }
 
     // Clicking Compare selected revisions button
@@ -63,6 +63,5 @@ export class RevisionPage
         await this.testSteps.LogInfo('Clicking View revisions link');
         await this.viewContent.click();
     }
-
 
 }

@@ -31,6 +31,7 @@ export interface RevertRevisionsOptions
 {
     revert: boolean;
     cancel: boolean;
+    topicArchivedRevert?: boolean;
 };
 
 export class RevisionHelper
@@ -229,7 +230,7 @@ export class RevisionHelper
         await this.revisionPage.revisionPageURLCheck();
         // clicking Revert Button - DO NOT DELETE
         await this.revisionPage.clickRevertRevisionsButton();
-        // Reverting Revision URL Checl
+        // Reverting Revision URL Check
         await this.revertRevisionsPage.revertRevisionsPageURLCheck();
 
         if (option.revert === true)
@@ -354,7 +355,14 @@ export class RevisionHelper
                 edited: true,
             });
         }
+
+        if (option.topicArchivedRevert === true)
+        {
+            await this.revertRevisionsPage.clickRevert();
+            await this.revertRevisionsPage.revertRevisionCofirmationCheck();
+            await this.revisionPage.revisionPageURLCheck();
+            this.testSetUpData.moderationStateForTest.moderationState = this.testSetUpData.validModerationStates.archived;
+        }
+
     }
-
-
 }

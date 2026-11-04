@@ -25,6 +25,8 @@ import { SubtopicCreatePage } from '@poms/content-pages/Subtopic/SubtopicCreateP
 import { SubtopicNodePage } from '@poms/content-pages/Subtopic/SubtopicNodePage';
 import { Topics } from '@poms/base-pages/Topics';
 import { NavigateToCreatedContentHelper } from '@helpers/general/NavigateToCreatedContentHelper';
+import { RevisionPage } from '@poms/base-pages/RevisionPage';
+import { RevertRevisionsPage } from '@poms/base-pages/RevertRevisionsPage';
 
 export interface SaveOptions
 {
@@ -83,6 +85,8 @@ export class TopicHelper
     private readonly siteTopics: Topics;
     private readonly navigateToCreatedContentHelper: NavigateToCreatedContentHelper;
     private readonly subtopicNodePage: SubtopicNodePage;
+    private readonly revisionPage: RevisionPage;
+    private readonly revertRevisionsPage: RevertRevisionsPage;
 
     // constructor
     constructor(
@@ -106,6 +110,8 @@ export class TopicHelper
         this.siteTopics = new Topics(page, testSetUpData, testData);
         this.navigateToCreatedContentHelper = new NavigateToCreatedContentHelper(page, testSetUpData, testData);
         this.subtopicNodePage = new SubtopicNodePage(page, testSetUpData, testData);
+        this.revisionPage = new RevisionPage(page);
+        this.revertRevisionsPage = new RevertRevisionsPage(page);
     }
 
     // navigation method
@@ -248,6 +254,28 @@ export class TopicHelper
         await this.moderationSideBar.verifyCurrentState('Archived');
     }
 
+    async verifyCannotRevertToPreviousArchivedRevision()
+    {
+        await this.topicNodePage.topicNodeURLCheck();
+        await this.moderationSideBar.openModerationSideBar();
+        await this.moderationSideBar.clickShowRevisionsButton();
+        await this.revisionPage.revisionPageURLCheck();
+        await this.revisionPage.clickRevertRevisionsButton();
+        await this.revertRevisionsPage.verifyRevertButtonIsDisabled();
+    }
+
+    async revertToPreviousArchivedRevision()
+    {
+        await this.topicNodePage.topicNodeURLCheck();
+        await this.moderationSideBar.openModerationSideBar();
+        await this.moderationSideBar.clickShowRevisionsButton();
+        await this.revisionPage.revisionPageURLCheck();
+        await this.revisionPage.clickRevertRevisionsButton();
+        await this.revertRevisionsPage.revertRevisionsPageURLCheck();
+        await this.revertRevisionsPage.clickRevert();
+        await this.revertRevisionsPage.revertRevisionCofirmationCheck();
+    }
+
     // delete Topic method
     async deleteTopic(options: DeleteOptions)
     {
@@ -274,7 +302,7 @@ export class TopicHelper
         }
     }
 
-    async verifyTopicChildContentVisibility(options: CreateTopicChildContentOptions & { edited?: boolean })
+    async verifyTopicChildContentVisibility(options: CreateTopicChildContentOptions & { edited?: boolean; })
     {
         await this.topicNodePage.verifyTopicChildContentVisibility(options);
     }
