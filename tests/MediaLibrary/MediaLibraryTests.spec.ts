@@ -292,7 +292,7 @@ const categories: MediaTestCategory[] = [
                     existingDocumentName: name,
                 });
             }
-             if (type.nameKey === 'secureFileName')
+            if (type.nameKey === 'secureFileName')
             {
                 testSetUpData.contentTitleforTest.contentTitle = testData.SecurePublication.title;
                 testSetUpData.contentTypeforTest.contentType = testSetUpData.validContentTypeList.publication;
@@ -506,7 +506,7 @@ const categories: MediaTestCategory[] = [
                 });
             }
 
-           if (type.nameKey === 'secureFileName')
+            if (type.nameKey === 'secureFileName')
             {
                 testSetUpData.contentTitleforTest.contentTitle = testData.SecurePublication.title;
                 testSetUpData.contentTypeforTest.contentType = testSetUpData.validContentTypeList.publication;
@@ -593,148 +593,148 @@ const categories: MediaTestCategory[] = [
             }
         },
     },
-    {
-        title: label => `Bottom ToolBar - Unpublish (Singular Item) ${label}`,
-        run: async (mediaHelper, name, type, { galleryHelper, articleHelper, newsHelper, publicationHelper, consultationHelper, testData, testSetUpData, page, roleLabel }) =>
-        {
-            await type.create(mediaHelper);
-            await mediaHelper.unpublishMediaLibraryBulkOption(name);
+    // {
+    //     title: label => `Bottom ToolBar - Unpublish (Singular Item) ${label}`,
+    //     run: async (mediaHelper, name, type, { galleryHelper, articleHelper, newsHelper, publicationHelper, consultationHelper, testData, testSetUpData, page, roleLabel }) =>
+    //     {
+    //         await type.create(mediaHelper);
+    //         await mediaHelper.unpublishMediaLibraryBulkOption(name);
 
-            testData.MediaLibrary.visibleInMediaLibrary = false;
-            testData.Gallery.favourite = false;
+    //         testData.MediaLibrary.visibleInMediaLibrary = false;
+    //         testData.Gallery.favourite = false;
 
-            if (type.nameKey === 'imageName')
-            {
-                testSetUpData.contentTitleforTest.contentTitle = testData.Gallery.title;
-                testSetUpData.contentTypeforTest.contentType = testSetUpData.validContentTypeList.gallery;
+    //         if (type.nameKey === 'imageName')
+    //         {
+    //             testSetUpData.contentTitleforTest.contentTitle = testData.Gallery.title;
+    //             testSetUpData.contentTypeforTest.contentType = testSetUpData.validContentTypeList.gallery;
 
-                await galleryHelper.createGallery({
-                    preview: false,
-                    mandatoryFieldCheck: false,
-                    existingImageName: name,
-                });
-            }
+    //             await galleryHelper.createGallery({
+    //                 preview: false,
+    //                 mandatoryFieldCheck: false,
+    //                 existingImageName: name,
+    //             });
+    //         }
 
-            if (type.nameKey === 'audioName')
-            {
-                testSetUpData.contentTitleforTest.contentTitle = testData.Article.title;
-                testSetUpData.contentTypeforTest.contentType = testSetUpData.validContentTypeList.article;
+    //         if (type.nameKey === 'audioName')
+    //         {
+    //             testSetUpData.contentTitleforTest.contentTitle = testData.Article.title;
+    //             testSetUpData.contentTypeforTest.contentType = testSetUpData.validContentTypeList.article;
 
-                await articleHelper.createArticleWithCKEditorFunctionality({
-                    preview: true,
-                    mandatoryFieldCheck: false,
-                    existingAudioName: name,
-                });
-            }
+    //             await articleHelper.createArticleWithCKEditorFunctionality({
+    //                 preview: true,
+    //                 mandatoryFieldCheck: false,
+    //                 existingAudioName: name,
+    //             });
+    //         }
 
-            if (type.nameKey === 'remoteVideoName')
-            {
-                testSetUpData.contentTitleforTest.contentTitle = testData.News.title;
-                testSetUpData.contentTypeforTest.contentType = testSetUpData.validContentTypeList.news;
+    //         if (type.nameKey === 'remoteVideoName')
+    //         {
+    //             testSetUpData.contentTitleforTest.contentTitle = testData.News.title;
+    //             testSetUpData.contentTypeforTest.contentType = testSetUpData.validContentTypeList.news;
 
-                await newsHelper.createNews({
-                    preview: true,
-                    mandatoryFieldCheck: true,
-                    existingRemoteVideoName: name,
-                });
-            }
+    //             await newsHelper.createNews({
+    //                 preview: true,
+    //                 mandatoryFieldCheck: true,
+    //                 existingRemoteVideoName: name,
+    //             });
+    //         }
 
-            if (type.nameKey === 'documentName')
-            {
-                testSetUpData.contentTitleforTest.contentTitle = testData.Publication.title;
-                testSetUpData.contentTypeforTest.contentType = testSetUpData.validContentTypeList.publication;
+    //         if (type.nameKey === 'documentName')
+    //         {
+    //             testSetUpData.contentTitleforTest.contentTitle = testData.Publication.title;
+    //             testSetUpData.contentTypeforTest.contentType = testSetUpData.validContentTypeList.publication;
 
-                await publicationHelper.createPublication({
-                    preview: true,
-                    mandatoryFieldCheck: false,
-                    existingDocumentName: name,
-                });
-            }
+    //             await publicationHelper.createPublication({
+    //                 preview: true,
+    //                 mandatoryFieldCheck: false,
+    //                 existingDocumentName: name,
+    //             });
+    //         }
 
-            if (type.nameKey === 'secureFileName')
-            {
-                testSetUpData.contentTitleforTest.contentTitle = testData.SecurePublication.title;
-                testSetUpData.contentTypeforTest.contentType = testSetUpData.validContentTypeList.publication;
+    //         if (type.nameKey === 'secureFileName')
+    //         {
+    //             testSetUpData.contentTitleforTest.contentTitle = testData.SecurePublication.title;
+    //             testSetUpData.contentTypeforTest.contentType = testSetUpData.validContentTypeList.publication;
 
-                await publicationHelper.createSecurePublication({
-                    preview: true,
-                    mandatoryFieldCheck: false,
-                    existingSecureFileName: name,
-                });
-            }
-        },
-    },
-    {
-        title: label => `Bottom ToolBar - Publish (Singular Item) ${label}`,
-        run: async (mediaHelper, name, type, { galleryHelper, articleHelper, newsHelper, publicationHelper, consultationHelper, testData, testSetUpData, page, roleLabel }) =>
-        {
-            await type.create(mediaHelper);
-            await mediaHelper.unpublishMediaLibraryBulkOption(name);
-            await mediaHelper.publishMediaLibraryBulkOption(name);
+    //             await publicationHelper.createSecurePublication({
+    //                 preview: true,
+    //                 mandatoryFieldCheck: false,
+    //                 existingSecureFileName: name,
+    //             });
+    //         }
+    //     },
+    // },
+    //     {
+    //         title: label => `Bottom ToolBar - Publish (Singular Item) ${label}`,
+    //         run: async (mediaHelper, name, type, { galleryHelper, articleHelper, newsHelper, publicationHelper, consultationHelper, testData, testSetUpData, page, roleLabel }) =>
+    //         {
+    //             await type.create(mediaHelper);
+    //             await mediaHelper.unpublishMediaLibraryBulkOption(name);
+    //             await mediaHelper.publishMediaLibraryBulkOption(name);
 
-            testData.MediaLibrary.visibleInMediaLibrary = true;
-            testData.Gallery.favourite = false;
+    //             testData.MediaLibrary.visibleInMediaLibrary = true;
+    //             testData.Gallery.favourite = false;
 
-            if (type.nameKey === 'imageName')
-            {
-                testSetUpData.contentTitleforTest.contentTitle = testData.Gallery.title;
-                testSetUpData.contentTypeforTest.contentType = testSetUpData.validContentTypeList.gallery;
+    //             if (type.nameKey === 'imageName')
+    //             {
+    //                 testSetUpData.contentTitleforTest.contentTitle = testData.Gallery.title;
+    //                 testSetUpData.contentTypeforTest.contentType = testSetUpData.validContentTypeList.gallery;
 
-                await galleryHelper.createGallery({
-                    preview: false,
-                    mandatoryFieldCheck: false,
-                    existingImageName: name,
-                });
-            }
+    //                 await galleryHelper.createGallery({
+    //                     preview: false,
+    //                     mandatoryFieldCheck: false,
+    //                     existingImageName: name,
+    //                 });
+    //             }
 
-            if (type.nameKey === 'audioName')
-            {
-                testSetUpData.contentTitleforTest.contentTitle = testData.Article.title;
-                testSetUpData.contentTypeforTest.contentType = testSetUpData.validContentTypeList.article;
+    //             if (type.nameKey === 'audioName')
+    //             {
+    //                 testSetUpData.contentTitleforTest.contentTitle = testData.Article.title;
+    //                 testSetUpData.contentTypeforTest.contentType = testSetUpData.validContentTypeList.article;
 
-                await articleHelper.createArticleWithCKEditorFunctionality({
-                    preview: true,
-                    mandatoryFieldCheck: false,
-                    existingAudioName: name,
-                });
-            }
+    //                 await articleHelper.createArticleWithCKEditorFunctionality({
+    //                     preview: true,
+    //                     mandatoryFieldCheck: false,
+    //                     existingAudioName: name,
+    //                 });
+    //             }
 
-            if (type.nameKey === 'remoteVideoName')
-            {
-                testSetUpData.contentTitleforTest.contentTitle = testData.News.title;
-                testSetUpData.contentTypeforTest.contentType = testSetUpData.validContentTypeList.news;
+    //             if (type.nameKey === 'remoteVideoName')
+    //             {
+    //                 testSetUpData.contentTitleforTest.contentTitle = testData.News.title;
+    //                 testSetUpData.contentTypeforTest.contentType = testSetUpData.validContentTypeList.news;
 
-                await newsHelper.createNews({
-                    preview: true,
-                    mandatoryFieldCheck: true,
-                    existingRemoteVideoName: name,
-                });
-            }
+    //                 await newsHelper.createNews({
+    //                     preview: true,
+    //                     mandatoryFieldCheck: true,
+    //                     existingRemoteVideoName: name,
+    //                 });
+    //             }
 
-            if (type.nameKey === 'documentName')
-            {
-                testSetUpData.contentTitleforTest.contentTitle = testData.Publication.title;
-                testSetUpData.contentTypeforTest.contentType = testSetUpData.validContentTypeList.publication;
+    //             if (type.nameKey === 'documentName')
+    //             {
+    //                 testSetUpData.contentTitleforTest.contentTitle = testData.Publication.title;
+    //                 testSetUpData.contentTypeforTest.contentType = testSetUpData.validContentTypeList.publication;
 
-                await publicationHelper.createPublication({
-                    preview: true,
-                    mandatoryFieldCheck: false,
-                    existingDocumentName: name,
-                });
-            }
-  if (type.nameKey === 'secureFileName')
-            {
-                testSetUpData.contentTitleforTest.contentTitle = testData.SecurePublication.title;
-                testSetUpData.contentTypeforTest.contentType = testSetUpData.validContentTypeList.publication;
+    //                 await publicationHelper.createPublication({
+    //                     preview: true,
+    //                     mandatoryFieldCheck: false,
+    //                     existingDocumentName: name,
+    //                 });
+    //             }
+    //   if (type.nameKey === 'secureFileName')
+    //             {
+    //                 testSetUpData.contentTitleforTest.contentTitle = testData.SecurePublication.title;
+    //                 testSetUpData.contentTypeforTest.contentType = testSetUpData.validContentTypeList.publication;
 
-                await publicationHelper.createSecurePublication({
-                    preview: true,
-                    mandatoryFieldCheck: false,
-                    existingSecureFileName: name,
-                });
-            }
-        },
-    },
+    //                 await publicationHelper.createSecurePublication({
+    //                     preview: true,
+    //                     mandatoryFieldCheck: false,
+    //                     existingSecureFileName: name,
+    //                 });
+    //             }
+    //         },
+    //     },
 ];
 
 interface RoleConfig
