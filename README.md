@@ -14,12 +14,14 @@ Duplicate usersecrets.env.sample to usersecrets.env and complete the 'valid user
 
 To run the entire test suite use:
 
-`npx playwright test`
+`npx playwright test --grep '@regression'`
+
+`npx playwright test --grep '@regression' --project chromium`
 
 To run individual tests or a directory of tests use:
 
-`npx playwright test homepage.spec.ts`
+`npx playwright test --grep 'ART-Super-TC02' tests/Content/ArticleTests.spec.ts --project chromium`
 
-`npx playwright test tests/content/ tests/ckeditor/`
+`npx playwright test tests/Content/ApplicationTests.spec.ts`
 
 For more examples look at the [Playwright running-tests page](https://playwright.dev/docs/running-tests).
