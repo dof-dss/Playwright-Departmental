@@ -1,4 +1,4 @@
-import { Page } from '@playwright/test';
+import { Page, expect } from '@playwright/test';
 import { BasePage } from '@poms/base-pages/BasePage';
 import { TopicCreatePage } from '@poms/content-pages/Topic/TopicCreatePage';
 import { TopicEditPage } from '@poms/content-pages/Topic/TopicEditPage';
@@ -27,6 +27,7 @@ import { Topics } from '@poms/base-pages/Topics';
 import { NavigateToCreatedContentHelper } from '@helpers/general/NavigateToCreatedContentHelper';
 import { RevisionPage } from '@poms/base-pages/RevisionPage';
 import { RevertRevisionsPage } from '@poms/base-pages/RevertRevisionsPage';
+import { TestSteps } from '@poms/base-pages/TestSteps';
 
 export interface SaveOptions
 {
@@ -44,6 +45,7 @@ export interface DeleteOptions
 {
     delete: boolean;
     cancel: boolean;
+    deleteAltChildContentWarning?: boolean;
 };
 
 export interface CreateTopicChildContentOptions
@@ -87,6 +89,7 @@ export class TopicHelper
     private readonly subtopicNodePage: SubtopicNodePage;
     private readonly revisionPage: RevisionPage;
     private readonly revertRevisionsPage: RevertRevisionsPage;
+    private readonly testSteps: TestSteps;
 
     // constructor
     constructor(
@@ -112,6 +115,7 @@ export class TopicHelper
         this.subtopicNodePage = new SubtopicNodePage(page, testSetUpData, testData);
         this.revisionPage = new RevisionPage(page);
         this.revertRevisionsPage = new RevertRevisionsPage(page);
+        this.testSteps = new TestSteps();
     }
 
     // navigation method
@@ -299,6 +303,48 @@ export class TopicHelper
             await this.deletePage.deleteNodePageURLCheck();
             await this.deletePage.clickCancel();
             await this.topicNodePage.topicNodeURLCheck();
+        }
+
+        if (options.deleteAltChildContentWarning === true)
+        {
+            await this.deletePage.verifyDeleteTopicWarning();
+            await this.deletePage.clickDeleteTopicWarning();
+
+            // consultation child content entity usage verification
+            await this.testSteps.LogInfo('Verifying visibility of Consultation link for ' + this.testData.Consultation.title);
+            await expect(this.page.getByRole('link', { name: this.testData.Consultation.title })).toBeVisible();
+
+            await this.testSteps.LogInfo('Clicking on Consultation link for ' + this.testData.Consultation.title);
+            await this.page.getByRole('link', { name: this.testData.Consultation.title }).click();
+
+            await this.testSteps.LogInfo('Verifying ' + this.testData.Consultation.title + ' page');
+            await expect(this.page.locator(`//h1[text()[normalize-space(.)="${this.testData.Consultation.title}"]]`)).toBeVisible();
+
+            // navigate back to entity usage page
+            await this.page.goBack();
+
+            // news child content entity usage verification
+            await this.testSteps.LogInfo('Verifying visibility of News link for ' + this.testData.News.title);
+            await expect(this.page.getByRole('link', { name: this.testData.News.title })).toBeVisible();
+
+            await this.testSteps.LogInfo('Clicking on News link for ' + this.testData.News.title);
+            await this.page.getByRole('link', { name: this.testData.News.title }).click();
+
+            await this.testSteps.LogInfo('Verifying ' + this.testData.News.title + ' page');
+            await expect(this.page.getByRole('heading', { name: this.testData.News.title })).toBeVisible();
+
+            // navigate back to entity usage page
+            await this.page.goBack();
+
+            // publication child content entity usage verification
+            await this.testSteps.LogInfo('Verifying visibility of Publication link for ' + this.testData.Publication.title);
+            await expect(this.page.getByRole('link', { name: this.testData.Publication.title })).toBeVisible();
+
+            await this.testSteps.LogInfo('Clicking on Publication link for ' + this.testData.Publication.title);
+            await this.page.getByRole('link', { name: this.testData.Publication.title }).click();
+
+            await this.testSteps.LogInfo('Verifying ' + this.testData.Publication.title + ' page');
+            await expect(this.page.getByRole('heading', { name: this.testData.Publication.title })).toBeVisible();
         }
     }
 

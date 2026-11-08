@@ -1169,6 +1169,11 @@ test.describe('Full Topic Tests', { tag: ['@topics', '@regression', '@topic_supe
                     publication: true,
                 }, saveAsOption);
 
+                // navigate to the created content before verifying delete warning message about child content
+                await navigateToCreatedContentHelper.navigateToCreatedContent({ active: true, deleted: false });
+                await topicHelper.deleteTopic({ delete: false, cancel: false, deleteAltChildContentWarning: true });
+
+                // navigating back to the created content before performing the actual delete
                 await navigateToCreatedContentHelper.navigateToCreatedContent({ active: true, deleted: false });
                 await topicHelper.deleteTopic({ delete: true, cancel: false });
                 await navigateToCreatedContentHelper.navigateToCreatedContent({ active: false, deleted: true });
