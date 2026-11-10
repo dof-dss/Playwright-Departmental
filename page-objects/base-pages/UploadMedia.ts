@@ -332,6 +332,7 @@ export class UploadMedia
         const filePath = path.join(process.cwd(), 'FileUploadSamples', imageFileName);
         await this.testSteps.LogInfo(`Uploading image "${imageFileName}" from files`);
         // resolves to whichever of the two upload fields is actually present
+        await expect(this.uploadAttachmentField.or(this.mediaUploadImageField)).toBeVisible();
         await this.uploadAttachmentField.or(this.mediaUploadImageField).setInputFiles(filePath);
 
     }
