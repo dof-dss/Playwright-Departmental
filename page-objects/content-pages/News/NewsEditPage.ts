@@ -180,12 +180,15 @@ export class NewsEditPage
     await this.editPublicationDate(data.pubDate);
     await this.editNewsTeaser(data.newsteaser);
     await this.page.waitForTimeout(1000);
-    await expect(this.page.locator('//input[contains(@id,"edit-field-video-selection-0-remove-button")]')).toBeEnabled();
-    await this.page.locator('//input[contains(@id,"edit-field-video-selection-0-remove-button")]').click();
-    await this.page.waitForTimeout(1000);
-    await expect(this.page.locator('//input[contains(@id,"edit-field-photo-selection-0-remove-button")]')).toBeEnabled();
-    await this.page.locator('//input[contains(@id,"edit-field-photo-selection-0-remove-button")]').click();
-    await this.page.waitForTimeout(1000);
+    const removeVideoButton = this.page.locator('//input[contains(@id,"edit-field-video-selection-0-remove-button")]');
+    await expect(removeVideoButton).toBeEnabled();
+    await removeVideoButton.click();
+    await expect(removeVideoButton).toBeHidden();
+
+    const removePhotoButton = this.page.locator('//input[contains(@id,"edit-field-photo-selection-0-remove-button")]');
+    await expect(removePhotoButton).toBeEnabled();
+    await removePhotoButton.click();
+    await expect(removePhotoButton).toBeHidden();
     await this.uploadMediaHelper.uploadImageWorkflow({
       original: false,
       edited: true
