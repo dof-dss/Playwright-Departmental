@@ -1639,7 +1639,30 @@ test.describe('Full Topic Tests', { tag: ['@topics', '@regression', '@topic_supe
             });
         });
 
+    for (const [index, { moderationState, saveAsOption }] of ([
+        { moderationState: 'Draft', saveAsOption: 'draft' },
+        { moderationState: 'Needs Review', saveAsOption: 'needsreview' },
+    ] as const).entries())
+    {
+        test(`Full-Topic-TC18.${index + 1} - Warning - Ensure Topic child content displays warning message when Topic is in ${moderationState}`, { tag: "@archive" },
+            async ({ topicHelper, contentModerationHelper, navigateToCreatedContentHelper, anonymousHelper, topicVisibilityHelper, testSetUpData, testData }) =>
+            {
+                // Map the state key to its Save as dropdown value.
+                testSetUpData.saveAsOptionForTest.saveAsOption = testSetUpData.validSaveAsOptionList[saveAsOption];
+                await topicHelper.createTopic({
+                    preview: false,
+                    mandatoryFieldCheck: false
+                });
 
+                await topicHelper.createTopicChildContentTopicTree({
+                    application: true,
+                    article: true,
+                    subtopic: true
+                }, "published", { verifyUnpublishedTopicWarning: true });
+
+
+            });
+    }
 
 
 

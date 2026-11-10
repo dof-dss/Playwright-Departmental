@@ -356,7 +356,7 @@ export class TopicHelper
     async createTopicChildContentTopicTree(
         options: CreateTopicChildContentOptions,
         saveAsOption: keyof typeof TestSetUpData.validSaveAsOptionList = 'draft',
-        childContentOptions?: { useEditedTitle?: boolean; }
+        childContentOptions?: { useEditedTitle?: boolean; verifyUnpublishedTopicWarning?: boolean; }
     ): Promise<void>
     {
         const previousSaveAsOption = this.testSetUpData.saveAsOptionForTest.saveAsOption;
@@ -384,6 +384,11 @@ export class TopicHelper
                     preview: false,
                     mandatoryFieldCheck: false,
                 });
+                if (childContentOptions?.verifyUnpublishedTopicWarning)
+                {
+                    const applicationNodePage = new ApplicationNodePage(this.page, this.testSetUpData, this.testData);
+                    await applicationNodePage.verifyUnpublishedTopicWarning();
+                }
             }
 
             if (options.article)
@@ -394,6 +399,11 @@ export class TopicHelper
                     preview: false,
                     mandatoryFieldCheck: false,
                 });
+                if (childContentOptions?.verifyUnpublishedTopicWarning)
+                {
+                    const articleNodePage = new ArticleNodePage(this.page, this.testSetUpData, this.testData);
+                    await articleNodePage.verifyUnpublishedTopicWarning();
+                }
             }
 
             if (options.subtopic)
@@ -406,6 +416,11 @@ export class TopicHelper
                     customTopicNeeded: false,
                     topics: [this.testData.Topic.title],
                 });
+                if (childContentOptions?.verifyUnpublishedTopicWarning)
+                {
+                    const subtopicNodePage = new SubtopicNodePage(this.page, this.testSetUpData, this.testData);
+                    await subtopicNodePage.verifyUnpublishedTopicWarning();
+                }
             }
 
             if (options.consultation)
