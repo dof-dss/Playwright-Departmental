@@ -23,10 +23,21 @@ export class TopicComparePage
 
         await this.testSteps.LogInfo('Verifying the Topic summary revision diff');
         const topicSummary = this.page.locator('//main//h1/following-sibling::div[1]');
-        await expect(topicSummary.locator('del').first()).toHaveText('a');
-        await expect(topicSummary.locator('ins').first()).toHaveText('an edited');
+        await expect(topicSummary.locator('del').filter({ hasText: /^a$/ })).toHaveText('a');
+        await expect(topicSummary.locator('ins').filter({ hasText: /^an edited$/ })).toHaveText('an edited');
 
         await this.testSteps.LogInfo('Verifying the Topic body revision diff');
         await expect(topicSummary.locator('p ins')).toHaveText('edited');
+    }
+
+    async verifyTopicChildContentNotShownOnComparePage()
+    {
+        await this.testSteps.LogInfo('Verifying that topic child content is not shown on the compare page');
+
+        // Verify that no child content sections are visible on the compare page
+        const childContentSections = this.page.locator('main').locator('text=/Application|Article|Subtopic|Consultation|News|Publication/');
+        await expect(childContentSections).toHaveCount(0);
+
+        await this.testSteps.LogInfo('Confirmed that no topic child content is displayed on the revision compare page');
     }
 }
