@@ -355,11 +355,20 @@ export class TopicHelper
 
     async createTopicChildContentTopicTree(
         options: CreateTopicChildContentOptions,
-        saveAsOption: keyof typeof TestSetUpData.validSaveAsOptionList = 'draft'
+        saveAsOption: keyof typeof TestSetUpData.validSaveAsOptionList = 'draft',
+        childContentOptions?: { useEditedTitle?: boolean; }
     ): Promise<void>
     {
         const previousSaveAsOption = this.testSetUpData.saveAsOptionForTest.saveAsOption;
         const previousConsultationRespondOnline = this.testData.Consultation.respondeOnline;
+        const previousTopicTitle = this.testData.Topic.title;
+
+        // If useEditedTitle is true, use the edited title to find the parent topic
+        if (childContentOptions?.useEditedTitle)
+        {
+            this.testData.Topic.title = this.testData.Topic.titleEdited;
+        }
+
         this.testData.SiteTopics.topic1 = this.testData.Topic.title;
         this.testSetUpData.saveAsOptionForTest.saveAsOption = this.testSetUpData.validSaveAsOptionList[saveAsOption];
 
@@ -436,6 +445,8 @@ export class TopicHelper
             this.testSetUpData.contentTitleforTest.contentTitle = this.testData.Topic.title;
             this.testData.Consultation.respondeOnline = previousConsultationRespondOnline;
             this.testSetUpData.saveAsOptionForTest.saveAsOption = previousSaveAsOption;
+            // Restore the previous topic title (for TC17 which needs original title after method completes)
+            this.testData.Topic.title = previousTopicTitle;
         }
     }
 

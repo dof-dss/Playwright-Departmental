@@ -180,7 +180,7 @@ test.describe('Empty Topic Tests', { tag: ['@topics', '@regression', '@topic_sup
             await topicVisibilityHelper.verifyTopicOnTopicsPage({ title: testData.Topic.title, shouldBeVisible: false, edited: false });
         });
 
-    test('Empty-Topic-TC04 - Compare revisions- Edit empty Topic content and ensure user is able to Compare revisions', { tag: "@revision" },
+    test('Empty-Topic-TC04 - Compare revisions - Edit empty Topic content and ensure user is able to Compare revisions', { tag: "@revision" },
         async ({ topicHelper, revisionHelper, testSetUpData }) =>
         {
             // creating content
@@ -1435,6 +1435,212 @@ test.describe('Full Topic Tests', { tag: ['@topics', '@regression', '@topic_supe
             });
     }
 
+    test('Full-Topic-TC14 - Revision - Create a topic and add child content one by one, verifying no new revisions are created', { tag: "@revision" },
+        async ({ topicHelper, navigateToCreatedContentHelper, revisionHelper }) =>
+        {
+            await topicHelper.createTopic({
+                preview: false,
+                mandatoryFieldCheck: false
+            });
+
+            await navigateToCreatedContentHelper.navigateToCreatedContent({ active: true, deleted: false });
+            const initialRevisionCount = 1;
+            await revisionHelper.verifyRevisionCount(initialRevisionCount);
+            const childContentTypes = ['application', 'article', 'subtopic', 'consultation', 'news', 'publication'] as const;
+
+            for (const childContentType of childContentTypes)
+            {
+                await test.step(`Create ${childContentType} and verify no new topic revision`, async () =>
+                {
+                    await revisionHelper.revisionPage.goBack();
+                    await topicHelper.createTopicChildContentTopicTree({
+                        application: false,
+                        article: false,
+                        subtopic: false,
+                        consultation: false,
+                        news: false,
+                        publication: false,
+                        [childContentType]: true
+                    });
+
+                    await navigateToCreatedContentHelper.navigateToCreatedContent({ active: true, deleted: false });
+                    await revisionHelper.verifyRevisionCount(initialRevisionCount);
+                });
+            }
+        });
+
+    test('Full-Topic-TC15 - Revision - Create a full topic with Application, remove it, then add an edit Topic and add an Article and verify child content does not show on revision compare', { tag: "@revision" },
+        async ({ topicHelper, revisionHelper, navigateToCreatedContentHelper, testSetUpData, testData }) =>
+        {
+            // set save as option to draft to create first revision as draft 
+            testSetUpData.saveAsOptionForTest.saveAsOption = testSetUpData.validSaveAsOptionList.draft;
+
+            // Create initial topic with only Application child content - First Revision
+            await topicHelper.createTopic({
+                preview: false,
+                mandatoryFieldCheck: false
+            });
+
+            await topicHelper.createTopicChildContentTopicTree({
+                application: true,
+                article: false,
+                subtopic: false,
+            });
+
+            // Navigate back to parent topic and remove Application child content via topics tree
+            await navigateToCreatedContentHelper.navigateToCreatedContent({ active: true, deleted: false });
+
+            await topicHelper.removeChildContentByTopicTree({
+                application: true,
+                article: false,
+                subtopic: false,
+                replacementTopic: 'Finance',
+            });
+
+            // overriding test data so that Edit test saves as Needs Review
+            testSetUpData.saveAsOptionForTest.saveAsOption = testSetUpData.validSaveAsOptionList.needsreview;
+
+            // edit the topic to create a new revision
+            await navigateToCreatedContentHelper.navigateToCreatedContent({ active: true, deleted: false });
+            await topicHelper.editTopic({ preview: false });
+
+            // Now add new child content (Article, Subtopic, Consultation, News, Publication) - Second Revision
+            // useEditedTitle=true because the topic was just edited
+            await topicHelper.createTopicChildContentTopicTree({
+                application: false,
+                article: true,
+                subtopic: false
+            }, 'draft', { useEditedTitle: true });
+
+            // Navigate to revisions and compare the two revisions
+            await navigateToCreatedContentHelper.navigateToCreatedContent({ active: true, deleted: false });
+
+            // Restore edited title for navigation (was restored to original by createTopicChildContentTopicTree)
+            testData.Topic.title = testData.Topic.titleEdited;
+            testSetUpData.contentTitleforTest.contentTitle = testData.Topic.titleEdited;
+
+            // Compare the revisions and verify that topic child content is not shown on compare page
+            await revisionHelper.compareRevisions();
+
+            // Verify that no topic child content appears on the compare page
+            await revisionHelper.topicComparePage.verifyTopicChildContentNotShownOnComparePage();
+        });
+
+    test('Full-Topic-TC16 - Revision - Create a topic with Application, keep it, then edit Topic and add an Article and delete a revision to verify both child content items are displayed', { tag: "@revision" },
+        async ({ topicHelper, revisionHelper, navigateToCreatedContentHelper, testSetUpData, testData }) =>
+        {
+            // set save as option to draft to create first revision as draft 
+            testSetUpData.saveAsOptionForTest.saveAsOption = testSetUpData.validSaveAsOptionList.draft;
+
+            // Create initial topic with only Application child content - First Revision
+            await topicHelper.createTopic({
+                preview: false,
+                mandatoryFieldCheck: false
+            });
+
+            await topicHelper.createTopicChildContentTopicTree({
+                application: true,
+                article: false,
+                subtopic: false,
+            });
+
+            // overriding test data so that Edit test saves as Needs Review
+            testSetUpData.saveAsOptionForTest.saveAsOption = testSetUpData.validSaveAsOptionList.needsreview;
+
+            // edit the topic to create a new revision without removing Application
+            await navigateToCreatedContentHelper.navigateToCreatedContent({ active: true, deleted: false });
+            await topicHelper.editTopic({ preview: false });
+
+            // Now add new child content (Article) - Second Revision
+            // useEditedTitle=true because the topic was just edited
+            await topicHelper.createTopicChildContentTopicTree({
+                application: false,
+                article: true,
+                subtopic: false
+            }, 'draft', { useEditedTitle: true });
+
+            // Navigate to revisions and delete a revision
+            await navigateToCreatedContentHelper.navigateToCreatedContent({ active: true, deleted: false });
+
+            // Delete a revision
+            await revisionHelper.deleteRevisions({
+                delete: true,
+                cancel: false
+            });
+
+            // Restore edited title for navigation (was restored to original by createTopicChildContentTopicTree)
+            testData.Topic.title = testData.Topic.titleEdited;
+            testSetUpData.contentTitleforTest.contentTitle = testData.Topic.titleEdited;
+
+            // Navigate back to verify both child content items are displayed
+            await navigateToCreatedContentHelper.navigateToCreatedContent({ active: true, deleted: false });
+
+            // Verify that both Application and Article child content appear
+            await topicHelper.verifyTopicChildContentVisibility({
+                application: true,
+                article: true,
+                subtopic: false
+            });
+        });
+
+    test('Full-Topic-TC17 - Revision - Create a topic with Application, keep it, then edit Topic and add an Article and revert a revision to verify both child content items are displayed', { tag: "@revision" },
+        async ({ topicHelper, revisionHelper, navigateToCreatedContentHelper, testSetUpData, testData }) =>
+        {
+            // set save as option to draft to create first revision as draft 
+            testSetUpData.saveAsOptionForTest.saveAsOption = testSetUpData.validSaveAsOptionList.draft;
+
+            // Create initial topic with only Application child content - First Revision
+            await topicHelper.createTopic({
+                preview: false,
+                mandatoryFieldCheck: false
+            });
+
+            await topicHelper.createTopicChildContentTopicTree({
+                application: true,
+                article: false,
+                subtopic: false,
+            });
+
+            // overriding test data so that Edit test saves as Needs Review
+            testSetUpData.saveAsOptionForTest.saveAsOption = testSetUpData.validSaveAsOptionList.needsreview;
+
+            // edit the topic to create a new revision without removing Application
+            await navigateToCreatedContentHelper.navigateToCreatedContent({ active: true, deleted: false });
+            await topicHelper.editTopic({ preview: false });
+
+            // Now add new child content (Article) - Second Revision
+            // useEditedTitle=true because the topic was just edited, will be restored by the method automatically
+            await topicHelper.createTopicChildContentTopicTree({
+                application: false,
+                article: true,
+                subtopic: false
+            }, 'draft', { useEditedTitle: true });
+
+            // Navigate to revisions and revert a revision
+            await navigateToCreatedContentHelper.navigateToCreatedContent({ active: true, deleted: false });
+
+            // Revert a revision
+            await revisionHelper.revertRevisions({
+                revert: true,
+                cancel: false
+            });
+
+            // testData.Topic.title is already back to original from createTopicChildContentTopicTree's finally block
+            testSetUpData.contentTitleforTest.contentTitle = testData.Topic.title;
+
+            // Navigate back to verify both child content items are displayed
+            await navigateToCreatedContentHelper.navigateToCreatedContent({ active: true, deleted: false });
+
+            // Verify that both Application and Article child content appear
+            await topicHelper.verifyTopicChildContentVisibility({
+                application: true,
+                article: true,
+                subtopic: false
+            });
+        });
+
+
+
+
+
 });
-
-
