@@ -49,6 +49,7 @@ export class SecurePublicationEditPage
   private readonly publicationSummaryField: Locator;
   private readonly publicationExternalLinkField: Locator;
   private readonly publicationLinkTextField: Locator;
+  private readonly removeSecurePublicationFileButton: Locator;
 
   // constructor
   constructor(
@@ -81,6 +82,7 @@ export class SecurePublicationEditPage
     this.publicationSummaryField = page.locator('#edit-field-summary-0-value');
     this.publicationExternalLinkField = page.locator('#edit-field-external-publication-0-uri');
     this.publicationLinkTextField = page.locator('#edit-field-external-publication-0-title');
+    this.removeSecurePublicationFileButton = page.locator('//input[contains(@id,"edit-field-publication-secure-files-selection-0-remove-button")]');
   }
 
   // ------------------------ asserts ------------------------
@@ -188,6 +190,14 @@ export class SecurePublicationEditPage
     await this.publicationLinkTextField.fill(publicationLinkText);
   }
 
+  async removeExistingSecurePublicationFile()
+  {
+    await this.testSteps.LogInfo('Removing the existing secure publication file');
+    await expect(this.removeSecurePublicationFileButton).toBeEnabled();
+    await this.removeSecurePublicationFileButton.click();
+    await expect(this.removeSecurePublicationFileButton).toBeHidden();
+  }
+
   // ------------------------ actions related to edit publication  ------------------------
 
   // fill in secure publication form elements - title summary topics etc
@@ -213,8 +223,7 @@ export class SecurePublicationEditPage
     await this.topics.replaceGlobalTopic(data.globalTopicChoice);
     await this.editPubType(data.securePublicationType);
     await this.editPublicationSummary(data.securePublicationSummary);
-    await expect(this.page.locator('//input[contains(@id,"edit-field-publication-secure-files-selection-0-remove-button")]')).toBeEnabled();
-    await this.page.locator('//input[contains(@id,"edit-field-publication-secure-files-selection-0-remove-button")]').click();
+    await this.removeExistingSecurePublicationFile();
     await this.ckeditor.enterCKEditorBody(data.securePublicationBodyField);
     await this.uploadMediaHelper.uploadSecureAttachmentWorkflow({
       original: false,

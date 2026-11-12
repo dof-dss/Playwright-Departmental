@@ -64,6 +64,7 @@ export class PublicationEditPage
   private readonly publicationSummaryField: Locator;
   private readonly publicationExternalLinkField: Locator;
   private readonly publicationLinkTextField: Locator;
+  private readonly removePublicationFileButton: Locator;
 
   // constructor
   constructor(
@@ -96,6 +97,7 @@ export class PublicationEditPage
     this.publicationSummaryField = page.locator('#edit-field-summary-0-value');
     this.publicationExternalLinkField = page.locator('#edit-field-external-publication-0-uri');
     this.publicationLinkTextField = page.locator('#edit-field-external-publication-0-title');
+    this.removePublicationFileButton = page.locator('//input[contains(@id,"edit-field-publication-files-selection-0-remove-button")]');
   }
 
   // ------------------------ asserts ------------------------
@@ -196,6 +198,14 @@ export class PublicationEditPage
     await this.publicationLinkTextField.fill(publicationLinkText);
   }
 
+  async removeExistingPublicationFile()
+  {
+    await this.testSteps.LogInfo('Removing the existing publication file');
+    await expect(this.removePublicationFileButton).toBeEnabled();
+    await this.removePublicationFileButton.click();
+    await expect(this.removePublicationFileButton).toBeHidden();
+  }
+
   // ------------------------ actions related to edit publication  ------------------------
 
   // fill in publication form elements - title summary topics etc
@@ -229,8 +239,7 @@ export class PublicationEditPage
     }
     await this.editPubType(data.pubType);
     await this.editPublicationSummary(data.publicationSummary);
-    await expect(this.page.locator('//input[contains(@id,"edit-field-publication-files-selection-0-remove-button")]')).toBeEnabled();
-    await this.page.locator('//input[contains(@id,"edit-field-publication-files-selection-0-remove-button")]').click();
+    await this.removeExistingPublicationFile();
     await this.ckeditor.enterCKEditorBody(data.publicationBodyField);
     await this.uploadMediaHelper.uploadAttachmentWorkflow({
       original: false,

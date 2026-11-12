@@ -36,6 +36,7 @@ export class TopicEditPage
     private readonly topicTitleField: Locator;
     private readonly hideListingCheckbox: Locator;
     private readonly topicSummaryField: Locator;
+    private readonly removeTopicPhotoButton: Locator;
 
     // constructor
     constructor(
@@ -59,6 +60,7 @@ export class TopicEditPage
         this.topicTitleField = page.locator('#edit-title-0-value');
         this.hideListingCheckbox = page.locator('#edit-hide-listing');
         this.topicSummaryField = page.locator('#edit-field-summary-0-value');
+        this.removeTopicPhotoButton = page.locator('//input[contains(@id,"edit-field-photo-selection-0-remove-button")]');
     }
 
     // ------------------------ asserts ------------------------
@@ -100,6 +102,14 @@ export class TopicEditPage
         await this.hideListingCheckbox.click();
     }
 
+    async removeExistingTopicPhoto()
+    {
+        await this.testSteps.LogInfo('Removing the existing topic photo');
+        await expect(this.removeTopicPhotoButton).toBeEnabled();
+        await this.removeTopicPhotoButton.click();
+        await expect(this.removeTopicPhotoButton).toBeHidden();
+    }
+
     // ------------------------ actions related to edit topic ------------------------
 
     // fill in topic form elements - title summary long description etc
@@ -120,9 +130,7 @@ export class TopicEditPage
         await this.createPages.enterRevisionLogMessage(data.revisionLogMessage);
         await this.editTopicSummary(data.topicSummary);
         await this.ckeditor.enterCKEditorBody(data.topicLongDescription);
-        await expect(this.page.locator('//input[contains(@id,"edit-field-photo-selection-0-remove-button")]')).toBeEnabled();
-        await this.page.locator('//input[contains(@id,"edit-field-photo-selection-0-remove-button")]').click();
-        await this.page.waitForTimeout(1000);
+        await this.removeExistingTopicPhoto();
         await this.uploadMediaHelper.uploadImageWorkflow({
             original: false,
             edited: true

@@ -44,6 +44,8 @@ export class NewsEditPage
   private readonly newsIntroParagraphField: Locator;
   private readonly newsPublicationDate: Locator;
   private readonly newsTeaserField: Locator;
+  private readonly removeNewsVideoButton: Locator;
+  private readonly removeNewsPhotoButton: Locator;
 
   // error messages
   // private readonly titleFieldIsRequired: Locator;
@@ -78,6 +80,8 @@ export class NewsEditPage
     this.newsIntroParagraphField = page.locator('#edit-field-summary-0-value');
     this.newsTeaserField = page.locator('#edit-field-teaser-0-value');
     this.newsPublicationDate = page.locator('#edit-field-published-date-0-value-date');
+    this.removeNewsVideoButton = page.locator('//input[contains(@id,"edit-field-video-selection-0-remove-button")]');
+    this.removeNewsPhotoButton = page.locator('//input[contains(@id,"edit-field-photo-selection-0-remove-button")]');
 
     // Error messages
     // this.titleFieldIsRequired = page.getByText("Title field is required.");
@@ -139,6 +143,22 @@ export class NewsEditPage
     await this.newsTeaserField.fill(newsTeaser);
   }
 
+  async removeExistingNewsVideo()
+  {
+    await this.testSteps.LogInfo('Removing the existing news video');
+    await expect(this.removeNewsVideoButton).toBeEnabled();
+    await this.removeNewsVideoButton.click();
+    await expect(this.removeNewsVideoButton).toBeHidden();
+  }
+
+  async removeExistingNewsPhoto()
+  {
+    await this.testSteps.LogInfo('Removing the existing news photo');
+    await expect(this.removeNewsPhotoButton).toBeEnabled();
+    await this.removeNewsPhotoButton.click();
+    await expect(this.removeNewsPhotoButton).toBeHidden();
+  }
+
   // ------------------------ actions related to create news  ------------------------
 
   // Mandatory Field Check news
@@ -173,22 +193,14 @@ export class NewsEditPage
     await this.editNewsType(data.newsType);
     if (updateGlobalTopics)
     {
-      await this.page.locator(`//span[text()="${this.testSetUpData.globalTopicForTest.globalTopic}"]/following-sibling::button`).click();
-      await this.topics.selectGlobalTopics(data.globalTopicChoice);
+      await this.topics.replaceGlobalTopic(data.globalTopicChoice);
     }
     await this.editNewsIntroParagraph(data.newsIntoParagraph);
     await this.editPublicationDate(data.pubDate);
     await this.editNewsTeaser(data.newsteaser);
     await this.page.waitForTimeout(1000);
-    const removeVideoButton = this.page.locator('//input[contains(@id,"edit-field-video-selection-0-remove-button")]');
-    await expect(removeVideoButton).toBeEnabled();
-    await removeVideoButton.click();
-    await expect(removeVideoButton).toBeHidden();
-
-    const removePhotoButton = this.page.locator('//input[contains(@id,"edit-field-photo-selection-0-remove-button")]');
-    await expect(removePhotoButton).toBeEnabled();
-    await removePhotoButton.click();
-    await expect(removePhotoButton).toBeHidden();
+    await this.removeExistingNewsVideo();
+    await this.removeExistingNewsPhoto();
     await this.uploadMediaHelper.uploadImageWorkflow({
       original: false,
       edited: true
