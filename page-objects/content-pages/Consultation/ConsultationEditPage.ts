@@ -193,8 +193,7 @@ export class ConsultationEditPage
     }
     if (updateGlobalTopics)
     {
-      await this.page.locator(`//span[text()="${this.testSetUpData.globalTopicForTest.globalTopic}"]/following-sibling::button`).click();
-      await this.topics.selectGlobalTopics(data.globalTopicChoice);
+      await this.topics.replaceGlobalTopic(data.globalTopicChoice);
     }
     await this.editConsultationSummary(data.consultationSummary);
     await this.editConsultationStartDate(data.consultationStartDate);

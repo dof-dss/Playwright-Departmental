@@ -47,6 +47,13 @@ export class Topics
         await this.clickGlobalTopicChoice.click();
     }
 
+    async replaceGlobalTopic(globalTopicChoice: string)
+    {
+        await this.testSteps.LogInfo(`Clicking the button for existing Global topic "${this.testSetUpData.globalTopicForTest.globalTopic}"`);
+        await this.page.locator(`//span[text()="${this.testSetUpData.globalTopicForTest.globalTopic}"]/following-sibling::button`).click();
+        await this.selectGlobalTopics(globalTopicChoice);
+    }
+
     // select global topic
     async selectSiteTopics(topic1: string | null, topic2: string | null, topic3: string | null, topic4: string | null, edittest: boolean = false)
     {

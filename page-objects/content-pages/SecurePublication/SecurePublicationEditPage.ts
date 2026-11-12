@@ -210,8 +210,7 @@ export class SecurePublicationEditPage
       data.topics[3] ?? null,
       true,
     );
-    await this.page.locator(`//span[text()="${this.testSetUpData.globalTopicForTest.globalTopic}"]/following-sibling::button`).click();
-    await this.topics.selectGlobalTopics(data.globalTopicChoice);
+    await this.topics.replaceGlobalTopic(data.globalTopicChoice);
     await this.editPubType(data.securePublicationType);
     await this.editPublicationSummary(data.securePublicationSummary);
     await expect(this.page.locator('//input[contains(@id,"edit-field-publication-secure-files-selection-0-remove-button")]')).toBeEnabled();

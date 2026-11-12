@@ -112,8 +112,7 @@ export class ArticleEditPage
     }
     if (updateGlobalTopics)
     {
-      await this.page.locator(`//span[text()="${this.testSetUpData.globalTopicForTest.globalTopic}"]/following-sibling::button`).click();
-      await this.topics.selectGlobalTopics(data.globalTopicChoice);
+      await this.topics.replaceGlobalTopic(data.globalTopicChoice);
     }
     await this.editArticleSummary(data.articleSummary);
     await this.ckeditor.enterCKEditorBody(data.articleBodyField);
