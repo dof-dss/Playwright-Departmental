@@ -96,6 +96,18 @@ export class GalleryEditPage
     await this.gallerySummaryField.fill(gallerySummary);
   }
 
+  async removeExistingGalleryImages()
+  {
+    for (let index = 4; index >= 0; index--)
+    {
+      await this.testSteps.LogInfo(`Removing existing gallery image ${index + 1}`);
+      const removeButton = this.page.locator(`//input[contains(@id,"edit-field-gallery-images-selection-${index}-remove-button")]`);
+      await expect(removeButton).toBeEnabled();
+      await removeButton.click();
+      await expect(removeButton).toBeHidden();
+    }
+  }
+
   // ------------------------ actions related to edit gallery  ------------------------
 
   // fill in gallery form elements - title summary topics etc
@@ -111,31 +123,9 @@ export class GalleryEditPage
       data.topics[3] ?? null,
       true,
     );
-    await this.page.locator(`//span[text()="${this.testSetUpData.globalTopicForTest.globalTopic}"]/following-sibling::button`).click();
-    await this.topics.selectGlobalTopics(data.globalTopicChoice);
+    await this.topics.replaceGlobalTopic(data.globalTopicChoice);
     await this.editGallerySummary(data.gallerySummary);
-
-    // Removing of image 5
-    await this.page.waitForTimeout(1000);
-    await expect(this.page.locator('//input[contains(@id,"edit-field-gallery-images-selection-4-remove-button")]')).toBeEnabled();
-    await this.page.locator('//input[contains(@id,"edit-field-gallery-images-selection-4-remove-button")]').click();
-    // Removing of image 4
-    await this.page.waitForTimeout(1000);
-    await expect(this.page.locator('//input[contains(@id,"edit-field-gallery-images-selection-3-remove-button")]')).toBeEnabled();
-    await this.page.locator('//input[contains(@id,"edit-field-gallery-images-selection-3-remove-button")]').click();
-    // Removing of image 3
-    await this.page.waitForTimeout(1000);
-    await expect(this.page.locator('//input[contains(@id,"edit-field-gallery-images-selection-2-remove-button")]')).toBeEnabled();
-    await this.page.locator('//input[contains(@id,"edit-field-gallery-images-selection-2-remove-button")]').click();
-    // Removing of image 2
-    await this.page.waitForTimeout(1000);
-    await expect(this.page.locator('//input[contains(@id,"edit-field-gallery-images-selection-1-remove-button")]')).toBeEnabled();
-    await this.page.locator('//input[contains(@id,"edit-field-gallery-images-selection-1-remove-button")]').click();
-    // Removing of image 1
-    await this.page.waitForTimeout(1000);
-    await expect(this.page.locator('//input[contains(@id,"edit-field-gallery-images-selection-0-remove-button")]')).toBeEnabled();
-    await this.page.locator('//input[contains(@id,"edit-field-gallery-images-selection-0-remove-button")]').click();
-
+    await this.removeExistingGalleryImages();
     await this.ckeditor.enterCKEditorBody(data.galleryBodyField);
     await this.uploadMediaHelper.uploadGalleryImageWorkflow({
       gallery: false,
