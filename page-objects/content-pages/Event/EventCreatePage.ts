@@ -168,11 +168,8 @@ export class EventCreatePage
   {
     await this.page.waitForTimeout(500);
     await this.testSteps.LogInfo(`Entering "${eventRegistrationLink}" into Document and selecting matching item`);
-    //await this.documentField.click();
     await this.eventRegistrationLinkField.pressSequentially(eventRegistrationLink);
-    //await this.page.locator('ul.ui-autocomplete').getByText(eventRegistrationLink, { exact: false }).click();
-    await this.page.getByText(eventRegistrationLink, { exact: false }).first().click();
-  
+    await this.page.locator('ul.ui-autocomplete:visible').getByText(eventRegistrationLink, { exact: true }).click();
   }
 
   async enterEventLinkText(eventLinkText: string)
