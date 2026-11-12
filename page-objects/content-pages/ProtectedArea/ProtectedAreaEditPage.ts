@@ -47,7 +47,7 @@ export class ProtectedAreaEditPage
     this.protectedAreaTypeSelect = page.getByLabel('Protected area type');
     this.featureTypeSelect = page.getByLabel('Feature type');
     this.countySelect = page.getByLabel('County', { exact: true });
-    this.councilSelect = page.getByLabel('Council');
+    this.councilSelect = page.getByLabel('Council', { exact: true });
     this.documentField = page.getByRole('textbox', { name: 'Document' });
   }
 
