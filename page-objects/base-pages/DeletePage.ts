@@ -24,7 +24,9 @@ export class DeletePage
     // locators
     this.deleteButton = page.getByRole('button', { name: 'Delete' });
     this.cancelButton = page.getByRole('link', { name: 'Cancel' });
-    this.childContentWarningMessage = page.getByRole('paragraph', { name: '3 content item uses this topic in its Site topics field. Deleting this topic will remove it from that content item. ' });
+    this.childContentWarningMessage = page.locator('p.messages--warning[data-drupal-selector="edit-description"]').filter({
+      hasText: '3 content items use this topic in their Site topics field. Deleting this topic will remove it from those content items.'
+    });
     this.viewContentReferencingTopicButton = page.getByRole('link', { name: 'View content referencing this topic.' });
   }
 
