@@ -398,18 +398,22 @@ export class UploadMedia
     {
         // alt text
         await this.testSteps.LogInfo(`Entering media Alt text "${addMediaAltText}"`);
+        await expect(this.mediAltTextField).toBeVisible();
         await this.mediAltTextField.fill(addMediaAltText);
 
         // title
         await this.testSteps.LogInfo(`Entering media Title "${addMediaTitle}"`);
+        await expect(this.mediaTitleField).toBeVisible();
         await this.mediaTitleField.fill(addMediaTitle);
 
         // caption
         await this.testSteps.LogInfo(`Entering media Caption "${addMediaCaption}"`);
+        await expect(this.mediaCaptionField).toBeVisible();
         await this.mediaCaptionField.fill(addMediaCaption);
 
         // name
         await this.testSteps.LogInfo(`Entering media name "${addMediaName}"`);
+        await expect(this.mediaNameField).toBeVisible();
         await this.mediaNameField.fill(addMediaName);
     }
 
@@ -417,14 +421,17 @@ export class UploadMedia
     {
         // alt text
         await this.testSteps.LogInfo(`Entering media Alt text "${addMediaAltText}"`);
+        await expect(this.mediAltTextFieldLibrary).toBeVisible();
         await this.mediAltTextFieldLibrary.fill(addMediaAltText);
 
         // title
         await this.testSteps.LogInfo(`Entering media Title "${addMediaTitle}"`);
+        await expect(this.mediaTitleFieldLibrary).toBeVisible();
         await this.mediaTitleFieldLibrary.fill(addMediaTitle);
 
         // caption
         await this.testSteps.LogInfo(`Entering media Caption "${addMediaCaption}"`);
+        await expect(this.mediaCaptionFieldLibrary).toBeVisible();
         await this.mediaCaptionFieldLibrary.fill(addMediaCaption);
     }
 
@@ -436,9 +443,21 @@ export class UploadMedia
         for (let i = 0; i < details.length; i++)
         {
             const values = details[i];
+
+            await this.testSteps.LogInfo(`Entering media Alt text "${values.alt}"`);
+            await expect(this.page.locator(`//input[contains(@id, "edit-media-${i}-fields-field-media-image-0-alt")]`)).toBeVisible();
             await this.page.fill(`//input[contains(@id, "edit-media-${i}-fields-field-media-image-0-alt")]`, values.alt);
+
+            await this.testSteps.LogInfo(`Entering media Title "${values.title}"`);
+            await expect(this.page.locator(`//input[contains(@id, "edit-media-${i}-fields-field-media-image-0-title")]`)).toBeVisible();
             await this.page.fill(`//input[contains(@id, "edit-media-${i}-fields-field-media-image-0-title")]`, values.title);
+
+            await this.testSteps.LogInfo(`Entering media Caption "${values.caption}"`);
+            await expect(this.page.locator(`//input[contains(@id, "edit-media-${i}-fields-field-caption-0-value")]`)).toBeVisible();
             await this.page.fill(`//input[contains(@id, "edit-media-${i}-fields-field-caption-0-value")]`, values.caption);
+
+            await this.testSteps.LogInfo(`Entering media Name "${values.name}"`);
+            await expect(this.page.locator(`//input[contains(@id, "edit-media-${i}-fields-name-0-value")]`)).toBeVisible();
             await this.page.fill(`//input[contains(@id, "edit-media-${i}-fields-name-0-value")]`, values.name);
         }
     }
@@ -449,6 +468,7 @@ export class UploadMedia
     {
 
         await this.testSteps.LogInfo('Verifying media name field option is enabled');
+        await expect(this.mediaNameField).toBeVisible();
         await expect(this.mediaNameField).toBeEnabled();
 
         await this.testSteps.LogInfo(`Entering media name "${addMediaName}"`);
@@ -462,6 +482,7 @@ export class UploadMedia
     async clickMediaSave()
     {
         await this.testSteps.LogInfo('Clicking Save');
+        await expect(this.addMediaSave).toBeVisible();
         await this.addMediaSave.click();
     }
 
