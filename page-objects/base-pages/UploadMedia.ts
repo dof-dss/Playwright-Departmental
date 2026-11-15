@@ -61,6 +61,7 @@ export class UploadMedia
     private readonly mediaNameField: Locator;
 
     private readonly addMediaSave: Locator;
+    private readonly removeMediaButton: Locator;
     private readonly mediaSearchNameField: Locator;
     private readonly applyFiltersButton: Locator;
     private readonly insertSelectedButton: Locator;
@@ -134,6 +135,7 @@ export class UploadMedia
         this.mediaNameField = page.locator('//input[contains(@id,"edit-media-0-fields-name-0-value")]');
 
         this.addMediaSave = page.locator('//button[text()="Save"]');
+        this.removeMediaButton = page.locator('//*[contains(@id, "edit-remove-button")]');
         this.mediaSearchNameField = page.locator('//input[contains(@id,"edit-name")]');
         this.applyFiltersButton = page.locator('//input[contains(@id,"edit-submit-media-library")]');
         this.insertSelectedButton = page.locator('//button[text()="Insert selected"]');
@@ -334,6 +336,8 @@ export class UploadMedia
         // resolves to whichever of the two upload fields is actually present
         await expect(this.uploadAttachmentField.or(this.mediaUploadImageField)).toBeVisible();
         await this.uploadAttachmentField.or(this.mediaUploadImageField).setInputFiles(filePath);
+        await this.testSteps.LogInfo(`Verifying remove media button is visible confirm file upload process has succeeded`);
+        await expect(this.removeMediaButton).toBeVisible();
     }
 
     // Upload mulitple gallery images
@@ -353,6 +357,8 @@ export class UploadMedia
             gallery4FilePath,
             gallery5FilePath
         ]);
+        await this.testSteps.LogInfo(`Verifying remove media button is visible confirm file upload process has succeeded`);
+        await expect(this.removeMediaButton.first()).toBeVisible();
     }
 
     // Upload image
