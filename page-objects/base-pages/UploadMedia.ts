@@ -198,7 +198,7 @@ export class UploadMedia
     // click Add secure media button for attachments on edit page 
     async clickEditPageAddSecureMediaAttachmentButton()
     {
-        await this.testSteps.LogInfo('Clicking Add secure media attachment Button');
+        await this.testSteps.LogInfo('Clicking Add secure media attachment Button while editing');
         await this.editPageAddSecureMediaAttachmentPublicationButton.click();
     }
 
@@ -334,7 +334,6 @@ export class UploadMedia
         // resolves to whichever of the two upload fields is actually present
         await expect(this.uploadAttachmentField.or(this.mediaUploadImageField)).toBeVisible();
         await this.uploadAttachmentField.or(this.mediaUploadImageField).setInputFiles(filePath);
-
     }
 
     // Upload mulitple gallery images
@@ -387,7 +386,7 @@ export class UploadMedia
     async ImportWordFile(WordFile: string)
     {
         const filePath = path.join(process.cwd(), 'FileUploadSamples', WordFile);
-        await this.testSteps.LogInfo(`Uploading image "${WordFile}" from files`);
+        await this.testSteps.LogInfo(`Uploading Word document "${WordFile}" from files`);
         await this.importWordFileInputField.setInputFiles(filePath);
     }
 
@@ -491,7 +490,7 @@ export class UploadMedia
     // Enter Media Seach name
     async enterMediaSearchTitleField(mediaSearchName: string)
     {
-        await this.testSteps.LogInfo(`Entering media name "${mediaSearchName}" in search field`);
+        await this.testSteps.LogInfo(`Entering media title "${mediaSearchName}" in search field`);
         await this.mediaSearchNameField.pressSequentially(mediaSearchName);
     }
 
@@ -521,7 +520,7 @@ export class UploadMedia
     //verify Attachment is uploaded 
     async verifyAttachmentUploaded()
     {
-        await this.testSteps.LogInfo('Verifying Attachement is uploaded');
+        await this.testSteps.LogInfo('Verifying attachment is uploaded');
 
         // looking for 'x' button to remove to ensure it has been properly uploaded
         if (this.testSetUpData.contentTypeforTest.contentType === this.testSetUpData.validContentTypeList.publication)
@@ -539,7 +538,7 @@ export class UploadMedia
     //verify Secure Attachment is uploaded 
     async verifySecureAttachmentUploaded()
     {
-        await this.testSteps.LogInfo('Verifying Secure Attachement is uploaded');
+        await this.testSteps.LogInfo('Verifying secure attachment is uploaded');
         await expect(this.page.locator('//input[contains(@id,"edit-field-publication-secure-files-selection-0-remove-button")]')).toBeVisible();
         await expect(this.page.locator('//input[contains(@id,"edit-field-publication-secure-files-selection-0-remove-button")]')).toBeEnabled();
     }
