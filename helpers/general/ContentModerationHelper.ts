@@ -33,6 +33,7 @@ export interface TopicChildModerationStates extends TopicSupervisorModerationSta
 {
     application: boolean;
     article: boolean;
+    protectedarea: boolean;
     subtopic: boolean;
     consultation?: boolean;
     news?: boolean;
@@ -593,7 +594,7 @@ export class ContentModerationHelper
 
     async topicSupervisorModerateAllChildrenContent(options: TopicChildModerationStates)
     {
-        const { application, article, subtopic, consultation, news, publication, ...wantedState } = options;
+        const { application, article, protectedarea, subtopic, consultation, news, publication, ...wantedState } = options;
         const selectedChildren = [
             {
                 selected: application,
@@ -604,6 +605,11 @@ export class ContentModerationHelper
                 selected: article,
                 contentType: this.testSetUpData.validContentTypeList.article,
                 title: this.testdata.Article.title,
+            },
+            {
+                selected: protectedarea,
+                contentType: this.testSetUpData.validContentTypeList.protectedarea,
+                title: this.testdata.ProtectedArea.title,
             },
             {
                 selected: subtopic,

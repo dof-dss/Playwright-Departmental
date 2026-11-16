@@ -22,6 +22,7 @@ export interface SaveOptions
 export interface EditSaveOptions
 {
   preview: boolean;
+  preserveSiteTopics?: boolean;
 }
 
 export interface DeleteOptions
@@ -120,7 +121,10 @@ export class ProtectedAreaHelper
     await this.moderationSideBar.openModerationSideBar();
     await this.moderationSideBar.clickEditContentButton();
 
-    await this.topicsHelper.selectTopicForSite({ edit: true, triggeralert: false });
+    if (!options.preserveSiteTopics)
+    {
+      await this.topicsHelper.selectTopicForSite({ edit: true, triggeralert: false });
+    }
 
     await this.protectedAreaEditPage.editProtectedAreaForm({
       protectedAreaTitle: this.testData.ProtectedArea.titleEdited,

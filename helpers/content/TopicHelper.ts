@@ -17,10 +17,13 @@ import { SubtopicHelper } from '@helpers/content/SubtopicHelper';
 import { ConsultationHelper } from '@helpers/content/ConsultationHelper';
 import { NewsHelper } from '@helpers/content/NewsHelper';
 import { PublicationHelper } from '@helpers/content/PublicationHelper';
+import { ProtectedAreaHelper } from '@helpers/content/ProtectedAreaHelper';
 import { ApplicationCreatePage } from '@poms/content-pages/Application/ApplicationCreatePage';
 import { ApplicationNodePage } from '@poms/content-pages/Application/ApplicationNodePage';
 import { ArticleCreatePage } from '@poms/content-pages/Article/ArticleCreatePage';
 import { ArticleNodePage } from '@poms/content-pages/Article/ArticleNodePage';
+import { ProtectedAreaCreatePage } from '@poms/content-pages/ProtectedArea/ProtectedAreaCreatePage';
+import { ProtectedAreaNodePage } from '@poms/content-pages/ProtectedArea/ProtectedAreaNodePage';
 import { SubtopicCreatePage } from '@poms/content-pages/Subtopic/SubtopicCreatePage';
 import { SubtopicNodePage } from '@poms/content-pages/Subtopic/SubtopicNodePage';
 import { Topics } from '@poms/base-pages/Topics';
@@ -52,6 +55,7 @@ export interface CreateTopicChildContentOptions
 {
     application: boolean;
     article: boolean;
+    protectedarea: boolean;
     subtopic: boolean;
     consultation?: boolean;
     news?: boolean;
@@ -62,6 +66,7 @@ export interface QuickAddTopicChildContentOptions
 {
     application: boolean;
     article: boolean;
+    protectedarea: boolean;
     subtopic: boolean;
 }
 
@@ -378,8 +383,8 @@ export class TopicHelper
             {
                 this.testSetUpData.contentTypeforTest.contentType = this.testSetUpData.validContentTypeList.application;
                 this.testSetUpData.contentTitleforTest.contentTitle = this.testData.Application.title;
-                this.testData.Application.LinkURL = 'EPN 02-2020 - Latest Information on the McCloud Judgement';
-                this.testData.Application.LinkText = 'EPN 02-2020 - Latest Information on the McCloud Judgement';
+                this.testData.Application.LinkURL = 'External whistleblowing procedures on how to make a disclosure';
+                this.testData.Application.LinkText = 'External whistleblowing procedures on how to make a disclosure';
                 await new ApplicationHelper(this.page, this.testSetUpData, this.testData).createApplication({
                     preview: false,
                     mandatoryFieldCheck: false,
@@ -403,6 +408,21 @@ export class TopicHelper
                 {
                     const articleNodePage = new ArticleNodePage(this.page, this.testSetUpData, this.testData);
                     await articleNodePage.verifyUnpublishedTopicWarning();
+                }
+            }
+
+            if (options.protectedarea)
+            {
+                this.testSetUpData.contentTypeforTest.contentType = this.testSetUpData.validContentTypeList.protectedarea;
+                this.testSetUpData.contentTitleforTest.contentTitle = this.testData.ProtectedArea.title;
+                await new ProtectedAreaHelper(this.page, this.testSetUpData, this.testData).createProtectedArea({
+                    preview: false,
+                    mandatoryFieldCheck: false,
+                });
+                if (childContentOptions?.verifyUnpublishedTopicWarning)
+                {
+                    const protectedAreaNodePage = new ProtectedAreaNodePage(this.page, this.testSetUpData, this.testData);
+                    await protectedAreaNodePage.verifyUnpublishedTopicWarning();
                 }
             }
 
@@ -453,6 +473,7 @@ export class TopicHelper
                     mandatoryFieldCheck: false,
                 });
             }
+
         }
         finally
         {
@@ -493,8 +514,8 @@ export class TopicHelper
 
                 this.testSetUpData.contentTypeforTest.contentType = this.testSetUpData.validContentTypeList.application;
                 this.testSetUpData.contentTitleforTest.contentTitle = this.testData.Application.title;
-                this.testData.Application.LinkURL = 'EPN 02-2020 - Latest Information on the McCloud Judgement';
-                this.testData.Application.LinkText = 'EPN 02-2020 - Latest Information on the McCloud Judgement';
+                this.testData.Application.LinkURL = 'External whistleblowing procedures on how to make a disclosure';
+                this.testData.Application.LinkText = 'External whistleblowing procedures on how to make a disclosure';
                 const applicationCreatePage = new ApplicationCreatePage(this.page, this.testSetUpData, this.testData);
                 await applicationCreatePage.fillApplicationForm({
                     applicationTitle: this.testData.Application.title,
@@ -541,6 +562,33 @@ export class TopicHelper
                 await returnToParentTopic();
             }
 
+            if (options.protectedarea)
+            {
+                await this.moderationSideBar.openModerationSideBar();
+                await this.moderationSideBar.clickAddProtectedArea();
+
+                this.testSetUpData.contentTypeforTest.contentType = this.testSetUpData.validContentTypeList.protectedarea;
+                this.testSetUpData.contentTitleforTest.contentTitle = this.testData.ProtectedArea.title;
+                const protectedAreaCreatePage = new ProtectedAreaCreatePage(this.page, this.testSetUpData, this.testData);
+                await protectedAreaCreatePage.fillProtectedAreaForm({
+                    protectedAreaTitle: this.testData.ProtectedArea.title,
+                    revisionLogMessage: this.testData.ProtectedArea.revisionlog,
+                    topics,
+                    protectedAreaType: this.testData.ProtectedArea.type,
+                    featureType: this.testData.ProtectedArea.feature,
+                    county: this.testData.ProtectedArea.county,
+                    council: this.testData.ProtectedArea.council,
+                    document: this.testData.ProtectedArea.document,
+                    body: this.testData.ProtectedArea.body,
+                });
+                await this.createPage.chooseSaveAsType();
+                await this.createPage.clickSaveButton();
+                const protectedAreaNodePage = new ProtectedAreaNodePage(this.page, this.testSetUpData, this.testData);
+                await protectedAreaNodePage.protectedAreaNodeURLCheck();
+                await protectedAreaNodePage.verifyProtectedArea({ preview: false });
+                await returnToParentTopic();
+            }
+
             if (options.subtopic)
             {
                 await this.moderationSideBar.openModerationSideBar();
@@ -563,6 +611,7 @@ export class TopicHelper
                 await subtopicNodePage.verifySubtopic();
                 await returnToParentTopic();
             }
+
         }
         finally
         {
@@ -594,6 +643,12 @@ export class TopicHelper
                 kind: 'article',
                 contentType: this.testSetUpData.validContentTypeList.article,
                 title: this.testData.Article.title,
+            },
+            {
+                selected: options.protectedarea,
+                kind: 'protectedarea',
+                contentType: this.testSetUpData.validContentTypeList.protectedarea,
+                title: this.testData.ProtectedArea.title,
             },
             {
                 selected: options.subtopic,
@@ -643,6 +698,10 @@ export class TopicHelper
                 {
                     await new SubtopicHelper(this.page, this.testSetUpData, this.testData).editSubtopic({ preview: false, preserveSiteTopics: true });
                 }
+                else if (child.kind === 'protectedarea')
+                {
+                    await new ProtectedAreaHelper(this.page, this.testSetUpData, this.testData).editProtectedArea({ preview: false, preserveSiteTopics: true });
+                }
                 else if (child.kind === 'consultation')
                 {
                     this.testData.Consultation.respondeOnlineEdited = 'Civil Service Pay';
@@ -684,6 +743,12 @@ export class TopicHelper
                 contentType: this.testSetUpData.validContentTypeList.article,
                 title: this.testData.Article.title,
                 revisionLog: this.testData.Article.revisionlog,
+            },
+            {
+                selected: options.protectedarea,
+                contentType: this.testSetUpData.validContentTypeList.protectedarea,
+                title: this.testData.ProtectedArea.title,
+                revisionLog: this.testData.ProtectedArea.revisionlog,
             },
             {
                 selected: options.subtopic,
