@@ -336,7 +336,6 @@ export class UploadMedia
         // resolves to whichever of the two upload fields is actually present
         await expect(this.uploadAttachmentField.or(this.mediaUploadImageField)).toBeVisible();
         await this.uploadAttachmentField.or(this.mediaUploadImageField).setInputFiles(filePath);
-        await this.testSteps.LogInfo(`Verifying remove media button is visible confirm file upload process has succeeded`);
     }
 
     // Upload mulitple gallery images
