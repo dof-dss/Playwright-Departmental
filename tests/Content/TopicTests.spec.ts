@@ -14,7 +14,7 @@ test.describe('Empty Topic Tests', { tag: ['@topics', '@regression', '@topic_sup
         await testSteps.LogInfo(testInfo.title);
 
         // setting the isolated data for THIS specific test run
-        testSetUpData.urlForTest.url = testSetUpData.validTestURLList.finance_url;
+        testSetUpData.urlForTest.url = testSetUpData.validTestURLList.daera_url;
         testSetUpData.userForTest.username = testSetUpData.validUserList.topicsupervisor_username;
         testSetUpData.userForTest.password = testSetUpData.validUserList.topicsupervisor_password;
         testSetUpData.contentTypeforTest.contentType = testSetUpData.validContentTypeList.topic;
@@ -355,7 +355,7 @@ test.describe('Full Topic Tests', { tag: ['@topics', '@regression', '@topic_supe
         await testSteps.LogInfo(testInfo.title);
 
         // setting the isolated data for THIS specific test run
-        testSetUpData.urlForTest.url = testSetUpData.validTestURLList.finance_url;
+        testSetUpData.urlForTest.url = testSetUpData.validTestURLList.daera_url;
         testSetUpData.userForTest.username = testSetUpData.validUserList.topicsupervisor_username;
         testSetUpData.userForTest.password = testSetUpData.validUserList.topicsupervisor_password;
         testSetUpData.contentTypeforTest.contentType = testSetUpData.validContentTypeList.topic;
@@ -377,21 +377,23 @@ test.describe('Full Topic Tests', { tag: ['@topics', '@regression', '@topic_supe
             await topicHelper.createTopicChildContentTopicTree({
                 application: true,
                 article: true,
+                protectedarea: true,
                 subtopic: true,
                 consultation: true,
                 news: true,
-                publication: true
+                publication: true,
             });
 
-            // verify that Application, Article, Subtopic created Draft children are visible to the logged-in Topic Supervisor and Consultation, News, Publication are NOT visible if created
+            // verify core child content is visible to the logged-in Topic Supervisor and Consultation, News, Publication are not
             await navigateToCreatedContentHelper.navigateToCreatedContent({ active: true, deleted: false });
             await topicHelper.verifyTopicChildContentVisibility({
                 application: true,
                 article: true,
+                protectedarea: true,
                 subtopic: true,
                 consultation: false,
                 news: false,
-                publication: false
+                publication: false,
             });
 
 
@@ -403,10 +405,11 @@ test.describe('Full Topic Tests', { tag: ['@topics', '@regression', '@topic_supe
             await topicHelper.verifyTopicChildContentVisibility({
                 application: false,
                 article: false,
+                protectedarea: false,
                 subtopic: false,
                 consultation: false,
                 news: false,
-                publication: false
+                publication: false,
             });
 
             // verify published topic is visible on the topics page but Draft children are not
@@ -414,10 +417,11 @@ test.describe('Full Topic Tests', { tag: ['@topics', '@regression', '@topic_supe
             await topicHelper.verifyTopicChildContentVisibility({
                 application: false,
                 article: false,
+                protectedarea: false,
                 subtopic: false,
                 consultation: false,
                 news: false,
-                publication: false
+                publication: false,
             });
 
             ////////////////////////////////
@@ -435,6 +439,7 @@ test.describe('Full Topic Tests', { tag: ['@topics', '@regression', '@topic_supe
             await contentModerationHelper.topicSupervisorModerateAllChildrenContent({
                 application: true,
                 article: true,
+                protectedarea: true,
                 subtopic: true,
                 consultation: true,
                 news: true,
@@ -442,14 +447,15 @@ test.describe('Full Topic Tests', { tag: ['@topics', '@regression', '@topic_supe
                 QuickPublish: false,
                 NeedsReview: true,
                 Published: false,
-                Archive: false
+                Archive: false,
             });
 
-            // verify that Application, Article, Subtopic needs review children are visible to the logged-in Topic Supervisor and Consultation, News, Publication are not visible if created
+            // verify core child content in needs review is visible to the logged-in Topic Supervisor
             await navigateToCreatedContentHelper.navigateToCreatedContent({ active: true, deleted: false });
             await topicHelper.verifyTopicChildContentVisibility({
                 application: true,
                 article: true,
+                protectedarea: true,
                 subtopic: true,
                 consultation: false,
                 news: false,
@@ -464,6 +470,7 @@ test.describe('Full Topic Tests', { tag: ['@topics', '@regression', '@topic_supe
             await topicHelper.verifyTopicChildContentVisibility({
                 application: false,
                 article: false,
+                protectedarea: false,
                 subtopic: false,
                 consultation: false,
                 news: false,
@@ -475,6 +482,7 @@ test.describe('Full Topic Tests', { tag: ['@topics', '@regression', '@topic_supe
             await topicHelper.verifyTopicChildContentVisibility({
                 application: false,
                 article: false,
+                protectedarea: false,
                 subtopic: false,
                 consultation: false,
                 news: false,
@@ -496,6 +504,7 @@ test.describe('Full Topic Tests', { tag: ['@topics', '@regression', '@topic_supe
             await contentModerationHelper.topicSupervisorModerateAllChildrenContent({
                 application: true,
                 article: true,
+                protectedarea: true,
                 subtopic: true,
                 consultation: true,
                 news: true,
@@ -503,7 +512,7 @@ test.describe('Full Topic Tests', { tag: ['@topics', '@regression', '@topic_supe
                 QuickPublish: false,
                 NeedsReview: false,
                 Published: true,
-                Archive: false
+                Archive: false,
             });
 
             // verify that all needs review children are visible to the logged-in Topic Supervisor
@@ -511,6 +520,7 @@ test.describe('Full Topic Tests', { tag: ['@topics', '@regression', '@topic_supe
             await topicHelper.verifyTopicChildContentVisibility({
                 application: true,
                 article: true,
+                protectedarea: true,
                 subtopic: true,
                 consultation: true,
                 news: true,
@@ -525,6 +535,7 @@ test.describe('Full Topic Tests', { tag: ['@topics', '@regression', '@topic_supe
             await topicHelper.verifyTopicChildContentVisibility({
                 application: true,
                 article: true,
+                protectedarea: true,
                 subtopic: true,
                 consultation: true,
                 news: true,
@@ -536,6 +547,7 @@ test.describe('Full Topic Tests', { tag: ['@topics', '@regression', '@topic_supe
             await topicHelper.verifyTopicChildContentVisibility({
                 application: true,
                 article: true,
+                protectedarea: true,
                 subtopic: true,
                 consultation: true,
                 news: true,
@@ -557,6 +569,7 @@ test.describe('Full Topic Tests', { tag: ['@topics', '@regression', '@topic_supe
             await contentModerationHelper.topicSupervisorModerateAllChildrenContent({
                 application: true,
                 article: true,
+                protectedarea: true,
                 subtopic: true,
                 consultation: true,
                 news: true,
@@ -564,7 +577,7 @@ test.describe('Full Topic Tests', { tag: ['@topics', '@regression', '@topic_supe
                 QuickPublish: false,
                 NeedsReview: false,
                 Published: false,
-                Archive: true
+                Archive: true,
             });
 
             // verify that all newly archived children are NOT visible to the logged-in Topic Supervisor
@@ -572,6 +585,7 @@ test.describe('Full Topic Tests', { tag: ['@topics', '@regression', '@topic_supe
             await topicHelper.verifyTopicChildContentVisibility({
                 application: false,
                 article: false,
+                protectedarea: false,
                 subtopic: false,
                 consultation: false,
                 news: false,
@@ -586,6 +600,7 @@ test.describe('Full Topic Tests', { tag: ['@topics', '@regression', '@topic_supe
             await topicHelper.verifyTopicChildContentVisibility({
                 application: false,
                 article: false,
+                protectedarea: false,
                 subtopic: false,
                 consultation: false,
                 news: false,
@@ -597,6 +612,7 @@ test.describe('Full Topic Tests', { tag: ['@topics', '@regression', '@topic_supe
             await topicHelper.verifyTopicChildContentVisibility({
                 application: false,
                 article: false,
+                protectedarea: false,
                 subtopic: false,
                 consultation: false,
                 news: false,
@@ -615,6 +631,7 @@ test.describe('Full Topic Tests', { tag: ['@topics', '@regression', '@topic_supe
             await topicHelper.createTopicChildContentQuicklyAdd({
                 application: true,
                 article: true,
+                protectedarea: true,
                 subtopic: true,
             });
 
@@ -623,6 +640,7 @@ test.describe('Full Topic Tests', { tag: ['@topics', '@regression', '@topic_supe
             await topicHelper.verifyTopicChildContentVisibility({
                 application: true,
                 article: true,
+                protectedarea: true,
                 subtopic: true,
             });
 
@@ -634,6 +652,7 @@ test.describe('Full Topic Tests', { tag: ['@topics', '@regression', '@topic_supe
             await topicHelper.verifyTopicChildContentVisibility({
                 application: false,
                 article: false,
+                protectedarea: false,
                 subtopic: false,
             });
 
@@ -642,6 +661,7 @@ test.describe('Full Topic Tests', { tag: ['@topics', '@regression', '@topic_supe
             await topicHelper.verifyTopicChildContentVisibility({
                 application: false,
                 article: false,
+                protectedarea: false,
                 subtopic: false,
             });
 
@@ -660,11 +680,12 @@ test.describe('Full Topic Tests', { tag: ['@topics', '@regression', '@topic_supe
             await contentModerationHelper.topicSupervisorModerateAllChildrenContent({
                 application: true,
                 article: true,
+                protectedarea: true,
                 subtopic: true,
                 QuickPublish: false,
                 NeedsReview: true,
                 Published: false,
-                Archive: false
+                Archive: false,
             });
 
             // verify that all needs review children are visible to the logged-in Topic Supervisor
@@ -672,6 +693,7 @@ test.describe('Full Topic Tests', { tag: ['@topics', '@regression', '@topic_supe
             await topicHelper.verifyTopicChildContentVisibility({
                 application: true,
                 article: true,
+                protectedarea: true,
                 subtopic: true,
             });
 
@@ -683,6 +705,7 @@ test.describe('Full Topic Tests', { tag: ['@topics', '@regression', '@topic_supe
             await topicHelper.verifyTopicChildContentVisibility({
                 application: false,
                 article: false,
+                protectedarea: false,
                 subtopic: false,
             });
 
@@ -691,6 +714,7 @@ test.describe('Full Topic Tests', { tag: ['@topics', '@regression', '@topic_supe
             await topicHelper.verifyTopicChildContentVisibility({
                 application: false,
                 article: false,
+                protectedarea: false,
                 subtopic: false,
             });
 
@@ -709,11 +733,12 @@ test.describe('Full Topic Tests', { tag: ['@topics', '@regression', '@topic_supe
             await contentModerationHelper.topicSupervisorModerateAllChildrenContent({
                 application: true,
                 article: true,
+                protectedarea: true,
                 subtopic: true,
                 QuickPublish: false,
                 NeedsReview: false,
                 Published: true,
-                Archive: false
+                Archive: false,
             });
 
             // verify that all needs review children are visible to the logged-in Topic Supervisor
@@ -721,6 +746,7 @@ test.describe('Full Topic Tests', { tag: ['@topics', '@regression', '@topic_supe
             await topicHelper.verifyTopicChildContentVisibility({
                 application: true,
                 article: true,
+                protectedarea: true,
                 subtopic: true,
             });
 
@@ -732,6 +758,7 @@ test.describe('Full Topic Tests', { tag: ['@topics', '@regression', '@topic_supe
             await topicHelper.verifyTopicChildContentVisibility({
                 application: true,
                 article: true,
+                protectedarea: true,
                 subtopic: true,
             });
 
@@ -740,6 +767,7 @@ test.describe('Full Topic Tests', { tag: ['@topics', '@regression', '@topic_supe
             await topicHelper.verifyTopicChildContentVisibility({
                 application: true,
                 article: true,
+                protectedarea: true,
                 subtopic: true,
             });
 
@@ -758,11 +786,12 @@ test.describe('Full Topic Tests', { tag: ['@topics', '@regression', '@topic_supe
             await contentModerationHelper.topicSupervisorModerateAllChildrenContent({
                 application: true,
                 article: true,
+                protectedarea: true,
                 subtopic: true,
                 QuickPublish: false,
                 NeedsReview: false,
                 Published: false,
-                Archive: true
+                Archive: true,
             });
 
             // verify that all newly archived children are NOT visible to the logged-in Topic Supervisor
@@ -770,6 +799,7 @@ test.describe('Full Topic Tests', { tag: ['@topics', '@regression', '@topic_supe
             await topicHelper.verifyTopicChildContentVisibility({
                 application: false,
                 article: false,
+                protectedarea: false,
                 subtopic: false,
             });
 
@@ -781,6 +811,7 @@ test.describe('Full Topic Tests', { tag: ['@topics', '@regression', '@topic_supe
             await topicHelper.verifyTopicChildContentVisibility({
                 application: false,
                 article: false,
+                protectedarea: false,
                 subtopic: false,
             });
 
@@ -789,6 +820,7 @@ test.describe('Full Topic Tests', { tag: ['@topics', '@regression', '@topic_supe
             await topicHelper.verifyTopicChildContentVisibility({
                 application: false,
                 article: false,
+                protectedarea: false,
                 subtopic: false,
             });
         });
@@ -804,6 +836,7 @@ test.describe('Full Topic Tests', { tag: ['@topics', '@regression', '@topic_supe
             await topicHelper.createTopicChildContentTopicTree({
                 application: true,
                 article: true,
+                protectedarea: true,
                 subtopic: true,
             });
 
@@ -814,11 +847,12 @@ test.describe('Full Topic Tests', { tag: ['@topics', '@regression', '@topic_supe
             await contentModerationHelper.topicSupervisorModerateAllChildrenContent({
                 application: true,
                 article: true,
+                protectedarea: true,
                 subtopic: true,
                 QuickPublish: false,
                 NeedsReview: false,
                 Published: true,
-                Archive: false
+                Archive: false,
             });
 
             // searching as anon to ensure content is not viewable as draft
@@ -829,6 +863,7 @@ test.describe('Full Topic Tests', { tag: ['@topics', '@regression', '@topic_supe
             await topicHelper.verifyTopicChildContentVisibility({
                 application: true,
                 article: true,
+                protectedarea: true,
                 subtopic: true,
             });
 
@@ -837,6 +872,7 @@ test.describe('Full Topic Tests', { tag: ['@topics', '@regression', '@topic_supe
             await topicHelper.verifyTopicChildContentVisibility({
                 application: true,
                 article: true,
+                protectedarea: true,
                 subtopic: true,
             });
 
@@ -851,8 +887,9 @@ test.describe('Full Topic Tests', { tag: ['@topics', '@regression', '@topic_supe
             await topicHelper.removeChildContentByTopicTree({
                 application: true,
                 article: true,
+                protectedarea: true,
                 subtopic: false,
-                replacementTopic: 'Finance',
+                replacementTopic: 'Food',
             });
 
             // searching as anon to ensure content is not viewable as draft
@@ -863,6 +900,7 @@ test.describe('Full Topic Tests', { tag: ['@topics', '@regression', '@topic_supe
             await topicHelper.verifyTopicChildContentVisibility({
                 application: false,
                 article: false,
+                protectedarea: false,
                 subtopic: true,
             });
 
@@ -871,6 +909,7 @@ test.describe('Full Topic Tests', { tag: ['@topics', '@regression', '@topic_supe
             await topicHelper.verifyTopicChildContentVisibility({
                 application: false,
                 article: false,
+                protectedarea: false,
                 subtopic: true,
             });
         });
@@ -886,10 +925,11 @@ test.describe('Full Topic Tests', { tag: ['@topics', '@regression', '@topic_supe
             await topicHelper.createTopicChildContentTopicTree({
                 application: false,
                 article: false,
+                protectedarea: false,
                 subtopic: false,
                 consultation: true,
                 news: true,
-                publication: true
+                publication: true,
             });
 
             // navigate back to parent topic 
@@ -899,6 +939,7 @@ test.describe('Full Topic Tests', { tag: ['@topics', '@regression', '@topic_supe
             await contentModerationHelper.topicSupervisorModerateAllChildrenContent({
                 application: false,
                 article: false,
+                protectedarea: false,
                 subtopic: false,
                 consultation: true,
                 news: true,
@@ -906,7 +947,7 @@ test.describe('Full Topic Tests', { tag: ['@topics', '@regression', '@topic_supe
                 QuickPublish: false,
                 NeedsReview: false,
                 Published: true,
-                Archive: false
+                Archive: false,
             });
 
             // searching as anon to ensure content is not viewable as draft
@@ -917,6 +958,7 @@ test.describe('Full Topic Tests', { tag: ['@topics', '@regression', '@topic_supe
             await topicHelper.verifyTopicChildContentVisibility({
                 application: false,
                 article: false,
+                protectedarea: false,
                 subtopic: false,
                 consultation: true,
                 news: true,
@@ -928,6 +970,7 @@ test.describe('Full Topic Tests', { tag: ['@topics', '@regression', '@topic_supe
             await topicHelper.verifyTopicChildContentVisibility({
                 application: false,
                 article: false,
+                protectedarea: false,
                 subtopic: false,
                 consultation: true,
                 news: true,
@@ -945,11 +988,12 @@ test.describe('Full Topic Tests', { tag: ['@topics', '@regression', '@topic_supe
             await topicHelper.removeChildContentByTopicTree({
                 application: false,
                 article: false,
+                protectedarea: false,
                 subtopic: false,
                 consultation: true,
                 news: true,
                 publication: true,
-                replacementTopic: 'Finance',
+                replacementTopic: 'Food',
             });
 
             // searching as anon to ensure content is not viewable as draft
@@ -960,6 +1004,7 @@ test.describe('Full Topic Tests', { tag: ['@topics', '@regression', '@topic_supe
             await topicHelper.verifyTopicChildContentVisibility({
                 application: false,
                 article: false,
+                protectedarea: false,
                 subtopic: false,
                 consultation: false,
                 news: false,
@@ -971,6 +1016,7 @@ test.describe('Full Topic Tests', { tag: ['@topics', '@regression', '@topic_supe
             await topicHelper.verifyTopicChildContentVisibility({
                 application: false,
                 article: false,
+                protectedarea: false,
                 subtopic: false,
                 consultation: false,
                 news: false,
@@ -978,7 +1024,7 @@ test.describe('Full Topic Tests', { tag: ['@topics', '@regression', '@topic_supe
             });
         });
 
-    test('Full-Topic-TC05 - Edit - Edit Topic by using drag and drop on edit node page to rearrange topic child content)', { tag: "@edit" },
+    test('Full-Topic-TC05 - Edit - Rearrange Application, Article, Protected Area and Subtopic child content with drag and drop on the edit node page', { tag: "@edit" },
         async ({ topicHelper, anonymousHelper, loginHelper, contentModerationHelper, navigateToCreatedContentHelper, testSetUpData, testData, topicVisibilityHelper }) =>
         {
             await topicHelper.createTopic({
@@ -989,6 +1035,7 @@ test.describe('Full Topic Tests', { tag: ['@topics', '@regression', '@topic_supe
             await topicHelper.createTopicChildContentQuicklyAdd({
                 application: true,
                 article: true,
+                protectedarea: true,
                 subtopic: true,
             });
 
@@ -1000,7 +1047,7 @@ test.describe('Full Topic Tests', { tag: ['@topics', '@regression', '@topic_supe
 
         });
 
-    test('Full-Topic-TC06 - Edit - Edit Topic by using arrange content button moderation sidebar to reorder topic child content)', { tag: "@edit" },
+    test('Full-Topic-TC06 - Edit - Reorder Application, Article, Protected Area and Subtopic child content using the moderation sidebar Arrange Content button', { tag: "@edit" },
         async ({ topicHelper, anonymousHelper, loginHelper, contentModerationHelper, navigateToCreatedContentHelper, testSetUpData, testData, topicVisibilityHelper }) =>
         {
             await topicHelper.createTopic({
@@ -1011,6 +1058,7 @@ test.describe('Full Topic Tests', { tag: ['@topics', '@regression', '@topic_supe
             await topicHelper.createTopicChildContentQuicklyAdd({
                 application: true,
                 article: true,
+                protectedarea: true,
                 subtopic: true,
             });
 
@@ -1033,6 +1081,7 @@ test.describe('Full Topic Tests', { tag: ['@topics', '@regression', '@topic_supe
             await topicHelper.createTopicChildContentTopicTree({
                 application: true,
                 article: true,
+                protectedarea: true,
                 subtopic: true,
                 consultation: true,
                 news: true,
@@ -1046,6 +1095,7 @@ test.describe('Full Topic Tests', { tag: ['@topics', '@regression', '@topic_supe
             await contentModerationHelper.topicSupervisorModerateAllChildrenContent({
                 application: true,
                 article: true,
+                protectedarea: true,
                 subtopic: true,
                 consultation: true,
                 news: true,
@@ -1053,13 +1103,14 @@ test.describe('Full Topic Tests', { tag: ['@topics', '@regression', '@topic_supe
                 QuickPublish: false,
                 NeedsReview: false,
                 Published: true,
-                Archive: false
+                Archive: false,
             });
 
             // edit child content nodes 
             await topicHelper.editTopicChildContentNodes({
                 application: true,
                 article: true,
+                protectedarea: true,
                 subtopic: true,
                 consultation: true,
                 news: true,
@@ -1071,6 +1122,7 @@ test.describe('Full Topic Tests', { tag: ['@topics', '@regression', '@topic_supe
             await topicHelper.verifyTopicChildContentVisibility({
                 application: true,
                 article: true,
+                protectedarea: true,
                 subtopic: true,
                 consultation: true,
                 news: true,
@@ -1080,7 +1132,7 @@ test.describe('Full Topic Tests', { tag: ['@topics', '@regression', '@topic_supe
 
         });
 
-    test('Full-Topic-TC08 - Delete - Ensure cannot delete Topic with Application, Article, Subtopic child content by moderation sidebar but can when child content archived)', { tag: "@delete" },
+    test('Full-Topic-TC08 - Delete - Ensure cannot delete Topic with Application, Article, Protected Area and Subtopic child content by moderation sidebar but can when child content archived)', { tag: "@delete" },
         async ({ topicHelper, anonymousHelper, loginHelper, contentModerationHelper, navigateToCreatedContentHelper, testSetUpData, testData, topicVisibilityHelper }) =>
         {
             await topicHelper.createTopic({
@@ -1091,6 +1143,7 @@ test.describe('Full Topic Tests', { tag: ['@topics', '@regression', '@topic_supe
             await topicHelper.createTopicChildContentTopicTree({
                 application: true,
                 article: true,
+                protectedarea: true,
                 subtopic: true,
             });
 
@@ -1105,11 +1158,12 @@ test.describe('Full Topic Tests', { tag: ['@topics', '@regression', '@topic_supe
                 await contentModerationHelper.topicSupervisorModerateAllChildrenContent({
                     application: true,
                     article: true,
+                    protectedarea: true,
                     subtopic: true,
                     QuickPublish: false,
                     NeedsReview: moderationState === 'Needs Review',
                     Published: moderationState === 'Published',
-                    Archive: false
+                    Archive: false,
                 });
 
                 await navigateToCreatedContentHelper.navigateToCreatedContent({ active: true, deleted: false });
@@ -1122,11 +1176,12 @@ test.describe('Full Topic Tests', { tag: ['@topics', '@regression', '@topic_supe
             await contentModerationHelper.topicSupervisorModerateAllChildrenContent({
                 application: true,
                 article: true,
+                protectedarea: true,
                 subtopic: true,
                 QuickPublish: false,
                 NeedsReview: false,
                 Published: false,
-                Archive: true
+                Archive: true,
             });
 
             // navigate back to parent topic 
@@ -1152,7 +1207,7 @@ test.describe('Full Topic Tests', { tag: ['@topics', '@regression', '@topic_supe
         { moderationState: 'Archived', saveAsOption: 'archived' },
     ] as const).entries())
     {
-        test(`Full-Topic-TC09.${index + 1} - Delete - Ensure Topic can be deleted with Consultation, News and Publication in ${moderationState}`, { tag: "@delete" },
+        test(`Full-Topic-TC09.${index + 1} - Delete - Ensure Topic can be deleted with Consultation, News and Publication in a ${moderationState} state`, { tag: "@delete" },
             async ({ topicHelper, navigateToCreatedContentHelper, anonymousHelper, topicVisibilityHelper, testData }) =>
             {
                 await topicHelper.createTopic({
@@ -1163,17 +1218,21 @@ test.describe('Full Topic Tests', { tag: ['@topics', '@regression', '@topic_supe
                 await topicHelper.createTopicChildContentTopicTree({
                     application: false,
                     article: false,
+                    protectedarea: false,
                     subtopic: false,
                     consultation: true,
                     news: true,
                     publication: true,
                 }, saveAsOption);
 
-                // navigate to the created content before verifying delete warning message about child content
-                await navigateToCreatedContentHelper.navigateToCreatedContent({ active: true, deleted: false });
-                await topicHelper.deleteTopic({ delete: false, cancel: false, deleteAltChildContentWarning: true });
+                if (saveAsOption !== 'archived')
+                {
+                    // verify the delete warning for non-archived child content
+                    await navigateToCreatedContentHelper.navigateToCreatedContent({ active: true, deleted: false });
+                    await topicHelper.deleteTopic({ delete: false, cancel: false, deleteAltChildContentWarning: true });
+                }
 
-                // navigating back to the created content before performing the actual delete
+                // delete the topic in every child content state
                 await navigateToCreatedContentHelper.navigateToCreatedContent({ active: true, deleted: false });
                 await topicHelper.deleteTopic({ delete: true, cancel: false });
                 await navigateToCreatedContentHelper.navigateToCreatedContent({ active: false, deleted: true });
@@ -1184,7 +1243,7 @@ test.describe('Full Topic Tests', { tag: ['@topics', '@regression', '@topic_supe
             });
     }
 
-    test('Full-Topic-TC10 - Archive - Ensure cannot archive Topic with Application, Article, Subtopic child content by moderation sidebar but can when child content archived', { tag: "@archive" },
+    test('Full-Topic-TC10 - Archive - Ensure cannot archive Topic with Application, Article, Protected Area and Subtopic child content by moderation sidebar but can when child content archived', { tag: "@archive" },
         async ({ topicHelper, contentModerationHelper, navigateToCreatedContentHelper, anonymousHelper, topicVisibilityHelper, testData }) =>
         {
             await topicHelper.createTopic({
@@ -1195,6 +1254,7 @@ test.describe('Full Topic Tests', { tag: ['@topics', '@regression', '@topic_supe
             await topicHelper.createTopicChildContentTopicTree({
                 application: true,
                 article: true,
+                protectedarea: true,
                 subtopic: true,
             });
             await navigateToCreatedContentHelper.navigateToCreatedContent({ active: true, deleted: false });
@@ -1205,11 +1265,12 @@ test.describe('Full Topic Tests', { tag: ['@topics', '@regression', '@topic_supe
                 await contentModerationHelper.topicSupervisorModerateAllChildrenContent({
                     application: true,
                     article: true,
+                    protectedarea: true,
                     subtopic: true,
                     QuickPublish: false,
                     NeedsReview: moderationState === 'Needs Review',
                     Published: moderationState === 'Published',
-                    Archive: false
+                    Archive: false,
                 });
 
                 await navigateToCreatedContentHelper.navigateToCreatedContent({ active: true, deleted: false });
@@ -1219,11 +1280,12 @@ test.describe('Full Topic Tests', { tag: ['@topics', '@regression', '@topic_supe
             await contentModerationHelper.topicSupervisorModerateAllChildrenContent({
                 application: true,
                 article: true,
+                protectedarea: true,
                 subtopic: true,
                 QuickPublish: false,
                 NeedsReview: false,
                 Published: false,
-                Archive: true
+                Archive: true,
             });
 
             await navigateToCreatedContentHelper.navigateToCreatedContent({ active: true, deleted: false });
@@ -1260,6 +1322,7 @@ test.describe('Full Topic Tests', { tag: ['@topics', '@regression', '@topic_supe
                 await topicHelper.createTopicChildContentTopicTree({
                     application: false,
                     article: false,
+                    protectedarea: false,
                     subtopic: false,
                     consultation: true,
                     news: true,
@@ -1283,7 +1346,7 @@ test.describe('Full Topic Tests', { tag: ['@topics', '@regression', '@topic_supe
             });
     }
 
-    test('Full-Topic-TC12 - Archive - Ensure cannot Archive Topic with child content by reverting to a previous Archived revision)', { tag: "@archive" },
+    test('Full-Topic-TC12 - Archive - Ensure cannot Archive Topic with Application, Article, Protected Area and Subtopic child content by reverting to a previous Archived revision)', { tag: "@archive" },
         async ({ topicHelper, anonymousHelper, topicVisibilityHelper, revisionHelper, contentModerationHelper, navigateToCreatedContentHelper, testSetUpData, testData }) =>
         {
 
@@ -1305,6 +1368,7 @@ test.describe('Full Topic Tests', { tag: ['@topics', '@regression', '@topic_supe
             await topicHelper.createTopicChildContentTopicTree({
                 application: true,
                 article: true,
+                protectedarea: true,
                 subtopic: true,
             });
 
@@ -1318,11 +1382,12 @@ test.describe('Full Topic Tests', { tag: ['@topics', '@regression', '@topic_supe
             await contentModerationHelper.topicSupervisorModerateAllChildrenContent({
                 application: true,
                 article: true,
+                protectedarea: true,
                 subtopic: true,
                 QuickPublish: false,
                 NeedsReview: true,
                 Published: false,
-                Archive: false
+                Archive: false,
             });
 
             // navigate back to parent topic
@@ -1335,11 +1400,12 @@ test.describe('Full Topic Tests', { tag: ['@topics', '@regression', '@topic_supe
             await contentModerationHelper.topicSupervisorModerateAllChildrenContent({
                 application: true,
                 article: true,
+                protectedarea: true,
                 subtopic: true,
                 QuickPublish: false,
                 NeedsReview: false,
                 Published: true,
-                Archive: false
+                Archive: false,
             });
 
             // navigate back to parent topic
@@ -1352,11 +1418,12 @@ test.describe('Full Topic Tests', { tag: ['@topics', '@regression', '@topic_supe
             await contentModerationHelper.topicSupervisorModerateAllChildrenContent({
                 application: true,
                 article: true,
+                protectedarea: true,
                 subtopic: true,
                 QuickPublish: false,
                 NeedsReview: false,
                 Published: false,
-                Archive: true
+                Archive: true,
             });
 
             // navigate back to parent topic
@@ -1409,6 +1476,7 @@ test.describe('Full Topic Tests', { tag: ['@topics', '@regression', '@topic_supe
                 await topicHelper.createTopicChildContentTopicTree({
                     application: false,
                     article: false,
+                    protectedarea: false,
                     subtopic: false,
                     consultation: true,
                     news: true,
@@ -1446,7 +1514,7 @@ test.describe('Full Topic Tests', { tag: ['@topics', '@regression', '@topic_supe
             await navigateToCreatedContentHelper.navigateToCreatedContent({ active: true, deleted: false });
             const initialRevisionCount = 1;
             await revisionHelper.verifyRevisionCount(initialRevisionCount);
-            const childContentTypes = ['application', 'article', 'subtopic', 'consultation', 'news', 'publication'] as const;
+            const childContentTypes = ['application', 'article', 'subtopic', 'consultation', 'news', 'publication', 'protectedarea'] as const;
 
             for (const childContentType of childContentTypes)
             {
@@ -1456,6 +1524,7 @@ test.describe('Full Topic Tests', { tag: ['@topics', '@regression', '@topic_supe
                     await topicHelper.createTopicChildContentTopicTree({
                         application: false,
                         article: false,
+                        protectedarea: false,
                         subtopic: false,
                         consultation: false,
                         news: false,
@@ -1484,6 +1553,7 @@ test.describe('Full Topic Tests', { tag: ['@topics', '@regression', '@topic_supe
             await topicHelper.createTopicChildContentTopicTree({
                 application: true,
                 article: false,
+                protectedarea: false,
                 subtopic: false,
             });
 
@@ -1493,8 +1563,9 @@ test.describe('Full Topic Tests', { tag: ['@topics', '@regression', '@topic_supe
             await topicHelper.removeChildContentByTopicTree({
                 application: true,
                 article: false,
+                protectedarea: false,
                 subtopic: false,
-                replacementTopic: 'Finance',
+                replacementTopic: 'Food',
             });
 
             // overriding test data so that Edit test saves as Needs Review
@@ -1509,7 +1580,8 @@ test.describe('Full Topic Tests', { tag: ['@topics', '@regression', '@topic_supe
             await topicHelper.createTopicChildContentTopicTree({
                 application: false,
                 article: true,
-                subtopic: false
+                protectedarea: false,
+                subtopic: false,
             }, 'draft', { useEditedTitle: true });
 
             // Navigate to revisions and compare the two revisions
@@ -1541,6 +1613,7 @@ test.describe('Full Topic Tests', { tag: ['@topics', '@regression', '@topic_supe
             await topicHelper.createTopicChildContentTopicTree({
                 application: true,
                 article: false,
+                protectedarea: false,
                 subtopic: false,
             });
 
@@ -1556,7 +1629,8 @@ test.describe('Full Topic Tests', { tag: ['@topics', '@regression', '@topic_supe
             await topicHelper.createTopicChildContentTopicTree({
                 application: false,
                 article: true,
-                subtopic: false
+                protectedarea: false,
+                subtopic: false,
             }, 'draft', { useEditedTitle: true });
 
             // Navigate to revisions and delete a revision
@@ -1579,7 +1653,8 @@ test.describe('Full Topic Tests', { tag: ['@topics', '@regression', '@topic_supe
             await topicHelper.verifyTopicChildContentVisibility({
                 application: true,
                 article: true,
-                subtopic: false
+                protectedarea: false,
+                subtopic: false,
             });
         });
 
@@ -1598,6 +1673,7 @@ test.describe('Full Topic Tests', { tag: ['@topics', '@regression', '@topic_supe
             await topicHelper.createTopicChildContentTopicTree({
                 application: true,
                 article: false,
+                protectedarea: false,
                 subtopic: false,
             });
 
@@ -1613,7 +1689,8 @@ test.describe('Full Topic Tests', { tag: ['@topics', '@regression', '@topic_supe
             await topicHelper.createTopicChildContentTopicTree({
                 application: false,
                 article: true,
-                subtopic: false
+                protectedarea: false,
+                subtopic: false,
             }, 'draft', { useEditedTitle: true });
 
             // Navigate to revisions and revert a revision
@@ -1635,7 +1712,8 @@ test.describe('Full Topic Tests', { tag: ['@topics', '@regression', '@topic_supe
             await topicHelper.verifyTopicChildContentVisibility({
                 application: true,
                 article: true,
-                subtopic: false
+                protectedarea: false,
+                subtopic: false,
             });
         });
 
@@ -1644,7 +1722,7 @@ test.describe('Full Topic Tests', { tag: ['@topics', '@regression', '@topic_supe
         { moderationState: 'Needs Review', saveAsOption: 'needsreview' },
     ] as const).entries())
     {
-        test(`Full-Topic-TC18.${index + 1} - Warning - Ensure Topic child content displays warning message when Topic is in ${moderationState}`, { tag: "@archive" },
+        test(`Full-Topic-TC18.${index + 1} - Warning - Ensure Topic child content including Protected Area displays warning message when Topic is in ${moderationState}`, { tag: "@archive" },
             async ({ topicHelper, contentModerationHelper, navigateToCreatedContentHelper, anonymousHelper, topicVisibilityHelper, testSetUpData, testData }) =>
             {
                 // Map the state key to its Save as dropdown value.
@@ -1657,7 +1735,8 @@ test.describe('Full Topic Tests', { tag: ['@topics', '@regression', '@topic_supe
                 await topicHelper.createTopicChildContentTopicTree({
                     application: true,
                     article: true,
-                    subtopic: true
+                    protectedarea: true,
+                    subtopic: true,
                 }, "published", { verifyUnpublishedTopicWarning: true });
 
 

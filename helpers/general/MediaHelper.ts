@@ -1,4 +1,4 @@
-import { Page } from '@playwright/test';
+import { expect, Page } from '@playwright/test';
 import { LoginPage } from '@poms/base-pages/LoginPage';
 import { MediaPage } from '@poms/content-pages/Media/MediaPage';
 import { AudioFileCreatePage } from '@poms/content-pages/Media/Audio/AudioFileCreatePage';
@@ -459,17 +459,19 @@ export class MediaHelper
             // test moderation state updated to deleted 
             this.testSetUpData.moderationStateForTest.moderationState = this.testSetUpData.validModerationStates.deleted;
 
-            if (this.testSetUpData.userForTest.username === this.testSetUpData.validUserList.supervisor_username || this.testSetUpData.userForTest.username === this.testSetUpData.validUserList.stats_supervisor_username)
+            const mediaLibraryForm = this.page.locator('form#views-form-media-library-default-page');
+            if (this.testSetUpData.userForTest.username === this.testSetUpData.validUserList.author_username || this.testSetUpData.userForTest.username === this.testSetUpData.validUserList.stats_author_username)
             {
-                await this.page.locator('form#views-form-media-library-default-page').getByText('No media available.', { exact: true }).waitFor({ state: 'visible' });
+                await expect(mediaLibraryForm).toBeVisible();
+                const noMedia = mediaLibraryForm.getByText('No media available.', { exact: true });
+                const editLinks = mediaLibraryForm.getByRole('link', { name: 'Edit', exact: true });
+                await expect.poll(async () => await noMedia.isVisible() || await editLinks.count() === 0, {
+                    message: 'Expected no media or no editable media to remain',
+                }).toBe(true);
             }
             else
             {
-                const mediaLibraryForm = this.page.locator('form#views-form-media-library-default-page');
-                await mediaLibraryForm.getByText('No media available.', { exact: true })
-                    .or(mediaLibraryForm.getByRole('link', { name: 'Edit', exact: true }))
-                    .first()
-                    .waitFor({ state: 'hidden' });
+                await expect(mediaLibraryForm.getByText('No media available.', { exact: true })).toBeVisible();
             }
 
         }

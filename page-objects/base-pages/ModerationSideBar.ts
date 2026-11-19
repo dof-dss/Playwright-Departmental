@@ -34,6 +34,7 @@ export class ModerationSideBar
     private readonly quicklyaddapplication: Locator;
     private readonly quicklyaddarticle: Locator;
     private readonly quicklyaddsubtopic: Locator;
+    private readonly quicklyaddprotectedarea: Locator;
 
     // router
     private readonly contentRouter: ContentNodePageRouter;
@@ -72,6 +73,7 @@ export class ModerationSideBar
         this.quicklyaddapplication = page.getByTestId('moderation-sidebar-add-new-application');
         this.quicklyaddarticle = page.getByTestId('moderation-sidebar-add-new-article');
         this.quicklyaddsubtopic = page.getByTestId('moderation-sidebar-add-new-subtopic');
+        this.quicklyaddprotectedarea = page.getByTestId('moderation-sidebar-add-new-protected_area');
 
         this.currentstate = page.locator('//div//strong');
         this.moderationSidebarTrigger = page.locator('a.use-ajax[data-dialog-renderer="off_canvas"]');
@@ -237,8 +239,8 @@ export class ModerationSideBar
         const firstRow = childRows.first();
         const targetHandle = firstRow.locator('.tabledrag-handle');
 
-        // Ensure that there are exactly 3 child rows before attempting to drag and drop
-        await expect(childRows).toHaveCount(3);
+        // Ensure that there are exactly 4 child rows before attempting to drag and drop
+        await expect(childRows).toHaveCount(4);
         await expect(sourceHandle).toBeVisible();
         await expect(targetHandle).toBeVisible();
 
@@ -301,6 +303,13 @@ export class ModerationSideBar
         await expect(this.quicklyaddsubtopic).toBeEnabled();
         await this.testSteps.LogInfo('Clicking "Subtopic" link in Quickly Add section');
         await this.quicklyaddsubtopic.click();
+    }
+
+    async clickAddProtectedArea()
+    {
+        await expect(this.quicklyaddprotectedarea).toBeEnabled();
+        await this.testSteps.LogInfo('Clicking "Protected area" link in Quickly Add section');
+        await this.quicklyaddprotectedarea.click();
     }
 
     // ------------ Buttons -----------

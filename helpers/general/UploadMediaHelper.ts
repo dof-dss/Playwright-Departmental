@@ -8,6 +8,7 @@ import { DeleteRevisionsPage } from '@poms/base-pages/DeleteRevisionsPage';
 import { RevertRevisionsPage } from '@poms/base-pages/RevertRevisionsPage';
 import { UploadMedia } from '@poms/base-pages/UploadMedia';
 import { GalleryImageValues } from '@poms/base-pages/UploadMedia';
+import { TestSteps } from '@poms/base-pages/TestSteps';
 
 export interface UploadState
 {
@@ -39,6 +40,7 @@ export class UploadMediaHelper
     private readonly deleteRevisionsPage: DeleteRevisionsPage;
     private readonly revertRevisionsPage: RevertRevisionsPage;
     private readonly uploadMedia: UploadMedia;
+    private readonly testSteps: TestSteps;
 
     constructor(
         private page: Page,
@@ -55,6 +57,7 @@ export class UploadMediaHelper
         this.deleteRevisionsPage = new DeleteRevisionsPage(page);
         this.revertRevisionsPage = new RevertRevisionsPage(page);
         this.uploadMedia = new UploadMedia(page, this.testSetUpData, this.testdata);
+        this.testSteps = new TestSteps();
     }
 
     // upload Attachment
@@ -231,12 +234,14 @@ export class UploadMediaHelper
         {
             await this.uploadMedia.clickAddMediaRemoteVideoButton();
             await this.uploadMedia.addRemoteVideoLinkProcess(this.testdata.Media.remoteVideoURL);
+            await this.testSteps.LogInfo('Clicking Add to confirm the remote video URL');
             await this.page.getByRole('button', { name: 'Add', exact: true }).click();
         }
         else
         {
             await this.uploadMedia.clickEditPageAddMediaRemoteVideoButton();
             await this.uploadMedia.addRemoteVideoLinkProcess(this.testdata.Media.remoteVideoURLEdited);
+            await this.testSteps.LogInfo('Clicking Add to confirm the edited remote video URL');
             await this.page.getByRole('button', { name: 'Add', exact: true }).click();
         }
         await this.uploadMedia.clickMediaSave();
@@ -258,12 +263,14 @@ export class UploadMediaHelper
             if (this.testdata.Gallery.favourite)
             {
                 await this.uploadMedia.clickMediaModelFavouriteButton();
+                await this.testSteps.LogInfo(`Verifying attachment "${attachmentName}" is visible in favourites`);
                 await expect(this.mediaLibraryItem(attachmentName)).toBeVisible();
             }
             else 
             {
                 await this.uploadMedia.clickMediaModelFavouriteButton();
                 await this.searchMediaLibrary(attachmentName);
+                await this.testSteps.LogInfo(`Verifying attachment "${attachmentName}" is not in favourites`);
                 await expect(this.mediaLibraryItem(attachmentName)).toBeHidden();
 
                 // back to grid view: a non-favourite attachment must still be insertable
@@ -276,6 +283,7 @@ export class UploadMediaHelper
         {
             for (const unavailableAttachmentName of unavailableAttachmentNames)
             {
+                await this.testSteps.LogInfo(`Verifying unavailable attachment "${unavailableAttachmentName}" is hidden`);
                 await expect(this.mediaLibraryItem(unavailableAttachmentName)).toBeHidden();
             }
 
@@ -301,6 +309,7 @@ export class UploadMediaHelper
         }
         else
         {
+            await this.testSteps.LogInfo(`Verifying secure attachment "${secureAttachmentName}" is hidden`);
             await expect(this.mediaLibraryItem(secureAttachmentName)).toBeHidden();
             await this.uploadMedia.uploadSecureAttachmentProcess(this.testdata.Media.secureAttachmentFileName);
             await this.uploadMedia.enterMediaName(this.testdata.Media.secureAttachmentName);
@@ -343,12 +352,14 @@ export class UploadMediaHelper
             if (this.testdata.Gallery.favourite)
             {
                 await this.uploadMedia.clickMediaModelFavouriteButton();
+                await this.testSteps.LogInfo(`Verifying image "${imageName}" is visible in favourites`);
                 await expect(this.mediaLibraryItem(imageName)).toBeVisible();
             }
             else 
             {
                 await this.uploadMedia.clickMediaModelFavouriteButton();
                 await this.searchMediaLibrary(imageName);
+                await this.testSteps.LogInfo(`Verifying image "${imageName}" is not in favourites`);
                 await expect(this.mediaLibraryItem(imageName)).toBeHidden();
 
                 // back to grid view: a non-favourite image must still be insertable
@@ -361,6 +372,7 @@ export class UploadMediaHelper
         {
             for (const unavailableImageName of unavailableImageNames)
             {
+                await this.testSteps.LogInfo(`Verifying unavailable image "${unavailableImageName}" is hidden`);
                 await expect(this.mediaLibraryItem(unavailableImageName)).toBeHidden();
             }
 
@@ -391,12 +403,14 @@ export class UploadMediaHelper
             if (this.testdata.Gallery.favourite)
             {
                 await this.uploadMedia.clickMediaModelFavouriteButton();
+                await this.testSteps.LogInfo(`Verifying remote video "${remoteVideoName}" is visible in favourites`);
                 await expect(this.mediaLibraryItem(remoteVideoName)).toBeVisible();
             }
             else 
             {
                 await this.uploadMedia.clickMediaModelFavouriteButton();
                 await this.searchMediaLibrary(remoteVideoName);
+                await this.testSteps.LogInfo(`Verifying remote video "${remoteVideoName}" is not in favourites`);
                 await expect(this.mediaLibraryItem(remoteVideoName)).toBeHidden();
 
                 // back to grid view: a non-favourite remote video must still be insertable
@@ -409,10 +423,12 @@ export class UploadMediaHelper
         {
             for (const unavailableRemoteVideoName of unavailableRemoteVideoNames)
             {
+                await this.testSteps.LogInfo(`Verifying unavailable remote video "${unavailableRemoteVideoName}" is hidden`);
                 await expect(this.mediaLibraryItem(unavailableRemoteVideoName)).toBeHidden();
             }
 
             await this.uploadMedia.addRemoteVideoLinkProcess(this.testdata.Media.remoteVideoURL);
+            await this.testSteps.LogInfo('Clicking Add to confirm the replacement remote video URL');
             await this.page.getByRole('button', { name: 'Add', exact: true }).click();
             await this.uploadMedia.clickMediaSave();
             await this.uploadMedia.clickInsertSelectedButton();
@@ -426,6 +442,7 @@ export class UploadMediaHelper
     async selectExistingRemoteDocumentFromLibrary(documentName: string, unavailableDocumentNames: string[] = [documentName])
     {
         await this.uploadMedia.clickAddMediaAttachmentButton();
+        await this.testSteps.LogInfo('Selecting Remote document in the media dialog');
         await this.page.getByRole('button', { name: 'Remote document' }).click();
 
         await this.page.waitForTimeout(2000);
@@ -437,12 +454,14 @@ export class UploadMediaHelper
             if (this.testdata.Gallery.favourite)
             {
                 await this.uploadMedia.clickMediaModelFavouriteButton();
+                await this.testSteps.LogInfo(`Verifying remote document "${documentName}" is visible in favourites`);
                 await expect(this.mediaLibraryItem(documentName)).toBeVisible();
             }
             else 
             {
                 await this.uploadMedia.clickMediaModelFavouriteButton();
                 await this.searchMediaLibrary(documentName);
+                await this.testSteps.LogInfo(`Verifying remote document "${documentName}" is not in favourites`);
                 await expect(this.mediaLibraryItem(documentName)).toBeHidden();
 
                 // back to grid view: a non-favourite remote document must still be insertable
@@ -455,14 +474,18 @@ export class UploadMediaHelper
         {
             for (const unavailableDocumentName of unavailableDocumentNames)
             {
+                await this.testSteps.LogInfo(`Verifying unavailable remote document "${unavailableDocumentName}" is hidden`);
                 await expect(this.mediaLibraryItem(unavailableDocumentName)).toBeHidden();
             }
 
             await this.uploadMedia.addRemoteDocumentProcess(this.testdata.MediaLibrary.remoteDocument);
+            await this.testSteps.LogInfo('Clicking Add to confirm the replacement remote document URL');
             await this.page.getByRole('button', { name: 'Add', exact: true }).click();
+            await this.testSteps.LogInfo('Saving the replacement remote document');
             await this.page.locator("//button[normalize-space(.)='Save']").click();
             await this.uploadMedia.clickInsertSelectedButton();
         }
+        await this.testSteps.LogInfo('Verifying a remote document is attached');
         await expect(this.page.locator(`//*[contains(@id, "edit-field-attachment-selection-0-remove-button")]`)).toBeVisible();
     }
 

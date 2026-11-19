@@ -147,7 +147,7 @@ export class TopicEditPage
         const firstRow = childRows.first();
         const targetHandle = firstRow.locator('.tabledrag-handle');
 
-        await expect(childRows).toHaveCount(3);
+        await expect(childRows).toHaveCount(4);
         await expect(sourceHandle).toBeVisible();
         await expect(targetHandle).toBeVisible();
 

@@ -67,6 +67,7 @@ export class TopicNodePage
     async verifyTopicChildContentVisibility(options: {
         application: boolean;
         article: boolean;
+        protectedarea: boolean;
         subtopic: boolean;
         consultation?: boolean;
         news?: boolean;
@@ -78,6 +79,7 @@ export class TopicNodePage
         const childItems = [
             { title: options.edited ? this.testData.Application.titleEdited : this.testData.Application.title, shouldBeVisible: options.application },
             { title: options.edited ? this.testData.Article.titleEdited : this.testData.Article.title, shouldBeVisible: options.article },
+            { title: options.edited ? this.testData.ProtectedArea.titleEdited : this.testData.ProtectedArea.title, shouldBeVisible: options.protectedarea },
             { title: options.edited ? this.testData.Subtopic.titleEdited : this.testData.Subtopic.title, shouldBeVisible: options.subtopic },
             {
                 title: options.edited ? this.testData.Consultation.titleEdited : this.testData.Consultation.title,
@@ -132,10 +134,15 @@ export class TopicNodePage
 
     async verifyRearrangedTopic()
     {
-        await this.testSteps.LogInfo(`Verifying Subtopic "${this.testData.Subtopic.title}" is first in Topic Content`);
+        await this.testSteps.LogInfo('Verifying Topic child content order after rearranging');
         const contentsHeading = this.page.getByRole('heading', { name: 'contents', exact: true });
         const topicArticle = this.page.locator('main article').filter({ has: contentsHeading });
-        const firstChild = topicArticle.locator('article a').first();
-        await expect(firstChild).toHaveText(this.testData.Subtopic.title);
+        const childLinks = topicArticle.locator('article a');
+        await expect(childLinks).toHaveText([
+            this.testData.Subtopic.title,
+            this.testData.Application.title,
+            this.testData.Article.title,
+            this.testData.ProtectedArea.title,
+        ]);
     }
 }

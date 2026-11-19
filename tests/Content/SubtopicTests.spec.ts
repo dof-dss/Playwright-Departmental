@@ -10,7 +10,7 @@ test.describe('Empty Subtopic Tests', { tag: ['@subtopics', '@regression', '@top
         await testSteps.LogInfo('Test starting');
         await testSteps.LogInfo(testInfo.title);
 
-        testSetUpData.urlForTest.url = testSetUpData.validTestURLList.finance_url;
+        testSetUpData.urlForTest.url = testSetUpData.validTestURLList.daera_url;
         testSetUpData.userForTest.username = testSetUpData.validUserList.topicsupervisor_username;
         testSetUpData.userForTest.password = testSetUpData.validUserList.topicsupervisor_password;
         testSetUpData.contentTypeforTest.contentType = testSetUpData.validContentTypeList.subtopic;
@@ -337,7 +337,7 @@ test.describe('Full Subtopic Tests', { tag: ['@subtopics', '@regression', '@topi
         await testSteps.LogInfo('Test starting');
         await testSteps.LogInfo(testInfo.title);
 
-        testSetUpData.urlForTest.url = testSetUpData.validTestURLList.finance_url;
+        testSetUpData.urlForTest.url = testSetUpData.validTestURLList.daera_url;
         testSetUpData.userForTest.username = testSetUpData.validUserList.topicsupervisor_username;
         testSetUpData.userForTest.password = testSetUpData.validUserList.topicsupervisor_password;
         testSetUpData.contentTypeforTest.contentType = testSetUpData.validContentTypeList.subtopic;

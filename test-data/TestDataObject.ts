@@ -516,8 +516,8 @@ export const TestData = {
   },
 
   ProtectedArea: {
-    title: 'Automated Test - New sample Publication title' + ' - ' + getTimestamp(),
-    titleEdited: 'Automated Test - Edited sample Publication title' + ' - ' + getTimestamp(),
+    title: 'Automated Test - New sample Protected Area title' + ' - ' + getTimestamp(),
+    titleEdited: 'Automated Test - Edited sample Protected Area title' + ' - ' + getTimestamp(),
     revisionlog: 'This is an automated revision log message',
     revisionlogEdited: 'This is an edited automated revision log message',
     type: 'Nature Reserves',
