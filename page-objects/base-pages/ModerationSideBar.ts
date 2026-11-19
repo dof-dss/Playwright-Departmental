@@ -73,7 +73,7 @@ export class ModerationSideBar
         this.quicklyaddapplication = page.getByTestId('moderation-sidebar-add-new-application');
         this.quicklyaddarticle = page.getByTestId('moderation-sidebar-add-new-article');
         this.quicklyaddsubtopic = page.getByTestId('moderation-sidebar-add-new-subtopic');
-        this.quicklyaddprotectedarea = page.getByTestId('moderation-sidebar-add-new-protected-area');
+        this.quicklyaddprotectedarea = page.getByTestId('moderation-sidebar-add-new-protected_area');
 
         this.currentstate = page.locator('//div//strong');
         this.moderationSidebarTrigger = page.locator('a.use-ajax[data-dialog-renderer="off_canvas"]');

@@ -889,7 +889,7 @@ test.describe('Full Topic Tests', { tag: ['@topics', '@regression', '@topic_supe
                 article: true,
                 protectedarea: true,
                 subtopic: false,
-                replacementTopic: 'Finance',
+                replacementTopic: 'Food',
             });
 
             // searching as anon to ensure content is not viewable as draft
@@ -993,7 +993,7 @@ test.describe('Full Topic Tests', { tag: ['@topics', '@regression', '@topic_supe
                 consultation: true,
                 news: true,
                 publication: true,
-                replacementTopic: 'Finance',
+                replacementTopic: 'Food',
             });
 
             // searching as anon to ensure content is not viewable as draft
@@ -1207,7 +1207,7 @@ test.describe('Full Topic Tests', { tag: ['@topics', '@regression', '@topic_supe
         { moderationState: 'Archived', saveAsOption: 'archived' },
     ] as const).entries())
     {
-        test(`Full-Topic-TC09.${index + 1} - Delete - Ensure Topic can be deleted with Consultation, News and Publication in ${moderationState}`, { tag: "@delete" },
+        test(`Full-Topic-TC09.${index + 1} - Delete - Ensure Topic can be deleted with Consultation, News and Publication in a ${moderationState} state`, { tag: "@delete" },
             async ({ topicHelper, navigateToCreatedContentHelper, anonymousHelper, topicVisibilityHelper, testData }) =>
             {
                 await topicHelper.createTopic({
@@ -1225,11 +1225,14 @@ test.describe('Full Topic Tests', { tag: ['@topics', '@regression', '@topic_supe
                     publication: true,
                 }, saveAsOption);
 
-                // navigate to the created content before verifying delete warning message about child content
-                await navigateToCreatedContentHelper.navigateToCreatedContent({ active: true, deleted: false });
-                await topicHelper.deleteTopic({ delete: false, cancel: false, deleteAltChildContentWarning: true });
+                if (saveAsOption !== 'archived')
+                {
+                    // verify the delete warning for non-archived child content
+                    await navigateToCreatedContentHelper.navigateToCreatedContent({ active: true, deleted: false });
+                    await topicHelper.deleteTopic({ delete: false, cancel: false, deleteAltChildContentWarning: true });
+                }
 
-                // navigating back to the created content before performing the actual delete
+                // delete the topic in every child content state
                 await navigateToCreatedContentHelper.navigateToCreatedContent({ active: true, deleted: false });
                 await topicHelper.deleteTopic({ delete: true, cancel: false });
                 await navigateToCreatedContentHelper.navigateToCreatedContent({ active: false, deleted: true });
@@ -1562,7 +1565,7 @@ test.describe('Full Topic Tests', { tag: ['@topics', '@regression', '@topic_supe
                 article: false,
                 protectedarea: false,
                 subtopic: false,
-                replacementTopic: 'Finance',
+                replacementTopic: 'Food',
             });
 
             // overriding test data so that Edit test saves as Needs Review

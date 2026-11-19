@@ -136,7 +136,7 @@ export class ProtectedAreaHelper
       council: this.testData.ProtectedArea.councilEdited,
       document: this.testData.ProtectedArea.documentEdited,
       body: this.testData.ProtectedArea.bodyEdited,
-    });
+    }, !options.preserveSiteTopics);
 
     this.testSetUpData.contentTitleforTest.contentTitle = this.testData.ProtectedArea.titleEdited;
 

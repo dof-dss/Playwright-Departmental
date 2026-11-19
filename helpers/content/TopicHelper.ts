@@ -580,7 +580,7 @@ export class TopicHelper
                     council: this.testData.ProtectedArea.council,
                     document: this.testData.ProtectedArea.document,
                     body: this.testData.ProtectedArea.body,
-                });
+                }, true);
                 await this.createPage.chooseSaveAsType();
                 await this.createPage.clickSaveButton();
                 const protectedAreaNodePage = new ProtectedAreaNodePage(this.page, this.testSetUpData, this.testData);
