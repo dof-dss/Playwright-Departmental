@@ -447,7 +447,7 @@ export class TopicHelper
             {
                 this.testSetUpData.contentTypeforTest.contentType = this.testSetUpData.validContentTypeList.consultation;
                 this.testSetUpData.contentTitleforTest.contentTitle = this.testData.Consultation.title;
-                this.testData.Consultation.respondeOnline = 'EPN 02-2020 - Latest Information on the McCloud Judgement';
+                this.testData.Consultation.respondeOnline = 'External whistleblowing procedures on how to make a disclosure';
                 await new ConsultationHelper(this.page, this.testSetUpData, this.testData).createConsultation({
                     preview: false,
                     mandatoryFieldCheck: false,
