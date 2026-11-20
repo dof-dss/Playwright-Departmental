@@ -12,25 +12,29 @@ Duplicate usersecrets.env.sample to usersecrets.env and complete the 'valid user
 
 ## Running tests
 
-To run the entire test suite use:
+#### To run the entire test suite use:
 (Note For Mac users do not use ' ' in command)
 
 `npx playwright test --grep '@regression'` - Windows
+
 `npx playwright test --grep @regression` - Mac
 
 `npx playwright test --grep '@regression' --project chromium` - Windows
+
 `npx playwright test --grep @regression --project chromium` - Mac 
 
 `npx playwright test --workers 4 --grep '@regression' --project chromium` - Windows
-`npx playwright test --workers 4 --grep @regression --project chromium` - Mac 
+
+`npx playwright test --workers 4 --grep @regression --project chromium` - Mac  
 
 
-To run individual tests or a directory of tests use:
+
+#### To run individual tests or a directory of tests use:
 (Note For Mac users do not use ' ' in command)
 
 `npx playwright test --grep 'ART-Super-TC02' tests/Content/ArticleTests.spec.ts --project chromium` - Windows
-`npx playwright test --grep ART-Super-TC02 tests/Content/ArticleTests.spec.ts --project chromium` - Mac
 
+`npx playwright test --grep ART-Super-TC02 tests/Content/ArticleTests.spec.ts --project chromium` - Mac
 
 `npx playwright test tests/Content/ApplicationTests.spec.ts`
 
