@@ -20,6 +20,7 @@ export interface SaveOptions
 {
     preview: boolean;
     mandatoryFieldCheck: boolean;
+    subtopicParent?: string;
     existingDocumentName?: string;
     existingSecureFileName?: string;
 };
@@ -112,6 +113,7 @@ export class PublicationHelper
             revisionLogMessage: this.testData.Publication.revisionlog,
             globalTopicChoice: this.testData.GlobalTopics.employment,
             topics: this.topicsHelper.getTopics(),
+            subtopicParent: options.subtopicParent,
             pubType: this.testData.Publication.publicationType,
             publicationSummary: this.testData.Publication.summary,
             publicationBodyField: this.testData.Publication.body,

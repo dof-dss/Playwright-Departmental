@@ -17,6 +17,7 @@ export interface SaveOptions
 {
     preview: boolean;
     mandatoryFieldCheck: boolean;
+    subtopicParent?: string;
     existingRemoteVideoName?: string;
 };
 
@@ -108,6 +109,7 @@ export class NewsHelper
                 this.testData.SiteTopics.topic3,
                 this.testData.SiteTopics.topic4,
             ],
+            subtopicParent: options.subtopicParent,
             newsIntoParagraph: this.testData.News.introductoryParagraph,
             newsteaser: this.testData.News.teaser,
             newsBodyField: this.testData.News.body,

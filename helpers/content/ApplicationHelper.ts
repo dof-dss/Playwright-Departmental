@@ -17,6 +17,7 @@ export interface SaveOptions
 {
     preview: boolean;
     mandatoryFieldCheck: boolean;
+    subtopicParent?: string;
 };
 
 export interface EditSaveOptions
@@ -101,6 +102,7 @@ export class ApplicationHelper
             revisionLogMessage: this.testData.Application.revisionlog,
             globalTopicChoice: this.testData.GlobalTopics.employment,
             topics: this.topicsHelper.getTopics(),
+            subtopicParent: options.subtopicParent,
             applicationSummary: this.testData.Application.summary,
             beforeyoustart: this.testData.Application.beforeyoustart,
             applicationLinkURL: this.testData.Application.LinkURL,

@@ -17,6 +17,7 @@ export interface SaveOptions
 {
     preview: boolean;
     mandatoryFieldCheck: boolean;
+    subtopicParent?: string;
     existingRemoteDocumentName?: string;
 };
 
@@ -102,6 +103,7 @@ export class ConsultationHelper
             revisionLogMessage: this.testData.Consultation.revisionlog,
             globalTopicChoice: this.testData.GlobalTopics.employment,
             topics: this.topicsHelper.getTopics(),
+            subtopicParent: options.subtopicParent,
             consultationSummary: this.testData.Consultation.summary,
             consultationStartDate: this.testData.Consultation.startDate,
             consultationStartTime: this.testData.Consultation.startTime,

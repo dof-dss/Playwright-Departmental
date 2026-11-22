@@ -17,6 +17,7 @@ export interface SaveOptions
 {
   preview: boolean;
   mandatoryFieldCheck: boolean;
+  subtopicParent?: string;
 }
 
 export interface EditSaveOptions
@@ -90,6 +91,7 @@ export class ProtectedAreaHelper
       protectedAreaTitle: this.testData.ProtectedArea.title,
       revisionLogMessage: this.testData.ProtectedArea.revisionlog,
       topics: this.topicsHelper.getTopics(),
+      subtopicParent: options.subtopicParent,
       protectedAreaType: this.testData.ProtectedArea.type,
       featureType: this.testData.ProtectedArea.feature,
       county: this.testData.ProtectedArea.county,

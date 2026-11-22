@@ -18,6 +18,7 @@ export interface SaveOptions
 {
     preview: boolean;
     mandatoryFieldCheck: boolean;
+    subtopicParent?: string;
     existingAudioName?: string;
 };
 
@@ -105,6 +106,7 @@ export class ArticleHelper
             revisionLogMessage: this.testData.Article.revisionlog,
             globalTopicChoice: this.testData.GlobalTopics.employment,
             topics: this.topicsHelper.getTopics(),
+            subtopicParent: options.subtopicParent,
             articleSummary: this.testData.Article.summary,
             articleBodyField: this.testData.Article.body,
         });
