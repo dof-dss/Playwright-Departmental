@@ -55,20 +55,45 @@ export class Topics
     }
 
     // select global topic
-    async selectSiteTopics(topic1: string | null, topic2: string | null, topic3: string | null, topic4: string | null, edittest: boolean = false)
+    async selectSiteTopics(topic1: string | null, topic2: string | null, topic3: string | null, topic4: string | null, edittest: boolean = false, parentTopic?: string)
     {
         await this.testSteps.LogInfo('Clicking the Site topics button');
         await expect(this.clickSiteTopicsButton).toBeEnabled();
         await this.clickSiteTopicsButton.click();
 
-        // perform if normal topic is being selected
-        //await this.page.waitForTimeout(5000);
-        await this.testSteps.LogInfo(`Verifying the Site topic "${topic1}" is visible`);
-        await this.page.locator(`//*[text()="${topic1}"]//*[@class="jstree-icon jstree-checkbox"]`).waitFor({ state: 'visible', timeout: 5000 });
+        if (parentTopic !== undefined)
+        {
+            if (!topic1)
+            {
+                throw new Error('A subtopic title is required when selecting a subtopic under a parent topic');
+            }
+            const dialog = this.page.getByRole('dialog', { name: 'Select Topics' });
+            const parentItem = dialog.getByText(parentTopic, { exact: true })
+                .locator('xpath=ancestor-or-self::a[contains(concat(" ", normalize-space(@class), " "), " jstree-anchor ")]/parent::li');
+            await this.testSteps.LogInfo(`Expanding parent Site topic "${parentTopic}"`);
+            await expect(parentItem).toHaveClass(/jstree-(closed|open)/);
+            if ((await parentItem.getAttribute('class'))?.includes('jstree-closed'))
+            {
+                await parentItem.locator(':scope > i.jstree-ocl').click();
+            }
 
-        await this.testSteps.LogInfo(`Clicking the Site topic "${topic1}" to assign it`);
-        await expect(this.page.locator(`//*[text()="${topic1}"]//*[@class="jstree-icon jstree-checkbox"]`)).toBeEnabled();
-        await this.page.locator(`//*[text()="${topic1}"]//*[@class="jstree-icon jstree-checkbox"]`).click();
+            const subtopicCheckbox = parentItem.locator(':scope > ul > li').getByText(topic1, { exact: true })
+                .locator('xpath=ancestor-or-self::a[contains(concat(" ", normalize-space(@class), " "), " jstree-anchor ")]')
+                .locator('i.jstree-checkbox');
+            await this.testSteps.LogInfo(`Clicking the Site subtopic "${topic1}" to assign it`);
+            await expect(subtopicCheckbox).toBeVisible();
+            await expect(subtopicCheckbox).toBeEnabled();
+            await subtopicCheckbox.click();
+        }
+        else
+        {
+            await this.testSteps.LogInfo(`Verifying the Site topic "${topic1}" is visible`);
+            const topicCheckbox = this.page.locator(`//*[text()="${topic1}"]//*[@class="jstree-icon jstree-checkbox"]`);
+            await topicCheckbox.waitFor({ state: 'visible', timeout: 5000 });
+            await this.testSteps.LogInfo(`Clicking the Site topic "${topic1}" to assign it`);
+            await expect(topicCheckbox).toBeEnabled();
+            await topicCheckbox.click();
+        }
 
         if (edittest === true)
         {
