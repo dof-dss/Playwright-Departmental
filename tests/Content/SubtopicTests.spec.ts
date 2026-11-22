@@ -882,6 +882,116 @@ test.describe('Full Subtopic Tests', { tag: ['@subtopics', '@regression', '@topi
                 subtopic: true,
             });
         });
+
+    test('Full-Subtopic-TC04 - Edit - Edit Subtopic by removing Consultation, News and Publication using the topics tree', { tag: '@edit' },
+        async ({ subtopicHelper, anonymousHelper, loginHelper, contentModerationHelper, navigateToCreatedContentHelper, testData, topicVisibilityHelper }) =>
+        {
+            await subtopicHelper.createSubtopic({
+                preview: false,
+                mandatoryFieldCheck: false,
+                customTopicNeeded: true,
+            });
+
+            await subtopicHelper.createSubtopicChildContentTopicTree({
+                application: false,
+                article: false,
+                protectedarea: false,
+                subtopic: false,
+                consultation: true,
+                news: true,
+                publication: true,
+            });
+
+            // navigate back to parent subtopic
+            await navigateToCreatedContentHelper.navigateToCreatedContent({ active: true, deleted: false });
+
+            // moderate all children content to published
+            await contentModerationHelper.topicSupervisorModerateAllSubtopicChildrenContent({
+                application: false,
+                article: false,
+                protectedarea: false,
+                subtopic: false,
+                consultation: true,
+                news: true,
+                publication: true,
+                QuickPublish: false,
+                NeedsReview: false,
+                Published: true,
+                Archive: false,
+            });
+
+            // verify all published children are visible to anonymous users
+            await anonymousHelper.searchAsAnon({ edited: false });
+
+            // verify published subtopic and children via the homepage
+            await topicVisibilityHelper.verifySubtopicViaHomepage({ title: testData.Subtopic.title, shouldBeVisible: true, edited: false });
+            await subtopicHelper.verifySubtopicChildContentVisibility({
+                application: false,
+                article: false,
+                protectedarea: false,
+                subtopic: false,
+                consultation: true,
+                news: true,
+                publication: true,
+            });
+
+            // verify published subtopic and children via the topics page
+            await topicVisibilityHelper.verifySubtopicViaTopicsPage({ title: testData.Subtopic.title, shouldBeVisible: true, edited: false });
+            await subtopicHelper.verifySubtopicChildContentVisibility({
+                application: false,
+                article: false,
+                protectedarea: false,
+                subtopic: false,
+                consultation: true,
+                news: true,
+                publication: true,
+            });
+
+            // log back in and navigate to content
+            await loginHelper.loginWithValidUser();
+            await navigateToCreatedContentHelper.navigateToCreatedContent({
+                active: true,
+                deleted: false
+            });
+
+            // remove child content using the topics tree
+            await subtopicHelper.removeChildContentByTopicTree({
+                application: false,
+                article: false,
+                protectedarea: false,
+                subtopic: false,
+                consultation: true,
+                news: true,
+                publication: true,
+                replacementTopic: 'Food',
+            });
+
+            await anonymousHelper.searchAsAnon({ edited: false });
+
+            // verify removed children are absent via the homepage
+            await topicVisibilityHelper.verifySubtopicViaHomepage({ title: testData.Subtopic.title, shouldBeVisible: true, edited: false });
+            await subtopicHelper.verifySubtopicChildContentVisibility({
+                application: false,
+                article: false,
+                protectedarea: false,
+                subtopic: false,
+                consultation: false,
+                news: false,
+                publication: false,
+            });
+
+            // verify the same child visibility via the topics page
+            await topicVisibilityHelper.verifySubtopicViaTopicsPage({ title: testData.Subtopic.title, shouldBeVisible: true, edited: false });
+            await subtopicHelper.verifySubtopicChildContentVisibility({
+                application: false,
+                article: false,
+                protectedarea: false,
+                subtopic: false,
+                consultation: false,
+                news: false,
+                publication: false,
+            });
+        });
 });
 
 
