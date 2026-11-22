@@ -14,6 +14,8 @@ import { CreatePages } from '@poms/base-pages/CreatePages';
 import { DeletePage } from '@poms/base-pages/DeletePage';
 import { TestSteps } from '@poms/base-pages/TestSteps';
 import { TopicHelper } from '@helpers/content/TopicHelper';
+import { Topics } from '@poms/base-pages/Topics';
+import { NavigateToCreatedContentHelper } from '@helpers/general/NavigateToCreatedContentHelper';
 import { ApplicationHelper } from '@helpers/content/ApplicationHelper';
 import { ArticleHelper } from '@helpers/content/ArticleHelper';
 import { ConsultationHelper } from '@helpers/content/ConsultationHelper';
@@ -56,6 +58,11 @@ export interface CreateSubtopicChildContentOptions
     publication?: boolean;
 };
 
+export interface RemoveSubtopicChildContentOptions extends CreateSubtopicChildContentOptions
+{
+    replacementTopic: string;
+}
+
 export class SubtopicHelper
 {
     // pages
@@ -72,6 +79,8 @@ export class SubtopicHelper
     private readonly createPage: CreatePages;
     private readonly deletePage: DeletePage;
     private readonly testSteps: TestSteps;
+    private readonly siteTopics: Topics;
+    private readonly navigateToCreatedContentHelper: NavigateToCreatedContentHelper;
 
     // constructor
     constructor(
@@ -94,6 +103,8 @@ export class SubtopicHelper
         this.createPage = new CreatePages(page, testSetUpData, testData);
         this.deletePage = new DeletePage(page);
         this.testSteps = new TestSteps();
+        this.siteTopics = new Topics(page, testSetUpData, testData);
+        this.navigateToCreatedContentHelper = new NavigateToCreatedContentHelper(page, testSetUpData, testData);
     }
 
     // navigation method
@@ -321,6 +332,88 @@ export class SubtopicHelper
     async verifySubtopicChildContentVisibility(options: CreateSubtopicChildContentOptions & { edited?: boolean; })
     {
         await this.subtopicNodePage.verifySubtopicChildContentVisibility(options);
+    }
+
+    async removeChildContentByTopicTree(options: RemoveSubtopicChildContentOptions): Promise<void>
+    {
+        const previousSaveAsOption = this.testSetUpData.saveAsOptionForTest.saveAsOption;
+        const selectedChildren = [
+            {
+                selected: options.application,
+                contentType: this.testSetUpData.validContentTypeList.application,
+                title: this.testData.Application.title,
+                revisionLog: this.testData.Application.revisionlog,
+            },
+            {
+                selected: options.article,
+                contentType: this.testSetUpData.validContentTypeList.article,
+                title: this.testData.Article.title,
+                revisionLog: this.testData.Article.revisionlog,
+            },
+            {
+                selected: options.protectedarea,
+                contentType: this.testSetUpData.validContentTypeList.protectedarea,
+                title: this.testData.ProtectedArea.title,
+                revisionLog: this.testData.ProtectedArea.revisionlog,
+            },
+            {
+                selected: options.subtopic,
+                contentType: this.testSetUpData.validContentTypeList.subtopic,
+                title: this.testData.SubtopicChild.title,
+                revisionLog: this.testData.SubtopicChild.revisionlog,
+            },
+            {
+                selected: options.consultation,
+                contentType: this.testSetUpData.validContentTypeList.consultation,
+                title: this.testData.Consultation.title,
+                revisionLog: this.testData.Consultation.revisionlog,
+            },
+            {
+                selected: options.news,
+                contentType: this.testSetUpData.validContentTypeList.news,
+                title: this.testData.News.title,
+                revisionLog: this.testData.News.revisionlog,
+            },
+            {
+                selected: options.publication,
+                contentType: this.testSetUpData.validContentTypeList.publication,
+                title: this.testData.Publication.title,
+                revisionLog: this.testData.Publication.revisionlog,
+            },
+        ].filter(child => child.selected);
+
+        this.testSetUpData.saveAsOptionForTest.saveAsOption = this.testSetUpData.validSaveAsOptionList.draft;
+
+        try
+        {
+            for (const child of selectedChildren)
+            {
+                this.testSetUpData.contentTypeforTest.contentType = child.contentType;
+                this.testSetUpData.contentTitleforTest.contentTitle = child.title;
+                await this.navigateToCreatedContentHelper.navigateToCreatedContent({ active: true, deleted: false });
+                await this.moderationSideBar.openModerationSideBar();
+                await this.moderationSideBar.clickEditContentButton();
+                await this.siteTopics.replaceSiteTopic(
+                    this.testData.Subtopic.title,
+                    options.replacementTopic,
+                    this.testData.Topic.title,
+                );
+                await this.createPage.enterRevisionLogMessage(child.revisionLog);
+                await this.createPage.chooseSaveAsType();
+                await this.createPage.clickSaveButton();
+
+                await this.moderationSideBar.openModerationSideBar();
+                await this.moderationSideBar.clickQuickPublishButton();
+            }
+        }
+        finally
+        {
+            this.testSetUpData.contentTypeforTest.contentType = this.testSetUpData.validContentTypeList.subtopic;
+            this.testSetUpData.contentTitleforTest.contentTitle = this.testData.Subtopic.title;
+            this.testSetUpData.saveAsOptionForTest.saveAsOption = previousSaveAsOption;
+        }
+
+        await this.navigateToCreatedContentHelper.navigateToCreatedContent({ active: true, deleted: false });
     }
 
     async createSubtopicChildContentQuicklyAdd(options: CreateSubtopicChildContentOptions): Promise<void>

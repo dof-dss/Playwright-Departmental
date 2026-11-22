@@ -793,6 +793,95 @@ test.describe('Full Subtopic Tests', { tag: ['@subtopics', '@regression', '@topi
                 subtopic: false,
             });
         });
+
+    test('Full-Subtopic-TC03 - Edit - Edit Subtopic by removing some child content using the topics tree', { tag: '@edit' },
+        async ({ subtopicHelper, anonymousHelper, loginHelper, contentModerationHelper, navigateToCreatedContentHelper, testData, topicVisibilityHelper }) =>
+        {
+            await subtopicHelper.createSubtopic({
+                preview: false,
+                mandatoryFieldCheck: false,
+                customTopicNeeded: true,
+            });
+
+            await subtopicHelper.createSubtopicChildContentTopicTree({
+                application: true,
+                article: true,
+                protectedarea: true,
+                subtopic: true,
+            });
+
+            // navigate back to parent subtopic
+            await navigateToCreatedContentHelper.navigateToCreatedContent({ active: true, deleted: false });
+
+            // moderate all children content to published
+            await contentModerationHelper.topicSupervisorModerateAllSubtopicChildrenContent({
+                application: true,
+                article: true,
+                protectedarea: true,
+                subtopic: true,
+                QuickPublish: false,
+                NeedsReview: false,
+                Published: true,
+                Archive: false,
+            });
+
+            // verify all published children are visible to anonymous users
+            await anonymousHelper.searchAsAnon({ edited: false });
+
+            // verify published subtopic and children via the homepage
+            await topicVisibilityHelper.verifySubtopicViaHomepage({ title: testData.Subtopic.title, shouldBeVisible: true, edited: false });
+            await subtopicHelper.verifySubtopicChildContentVisibility({
+                application: true,
+                article: true,
+                protectedarea: true,
+                subtopic: true,
+            });
+
+            // verify published subtopic and children via the topics page
+            await topicVisibilityHelper.verifySubtopicViaTopicsPage({ title: testData.Subtopic.title, shouldBeVisible: true, edited: false });
+            await subtopicHelper.verifySubtopicChildContentVisibility({
+                application: true,
+                article: true,
+                protectedarea: true,
+                subtopic: true,
+            });
+
+            // log back in and navigate to content
+            await loginHelper.loginWithValidUser();
+            await navigateToCreatedContentHelper.navigateToCreatedContent({
+                active: true,
+                deleted: false
+            });
+
+            // remove child content using the topics tree
+            await subtopicHelper.removeChildContentByTopicTree({
+                application: true,
+                article: true,
+                protectedarea: true,
+                subtopic: false,
+                replacementTopic: 'Food',
+            });
+
+            await anonymousHelper.searchAsAnon({ edited: false });
+
+            // verify removed children are absent and the child subtopic remains via the homepage
+            await topicVisibilityHelper.verifySubtopicViaHomepage({ title: testData.Subtopic.title, shouldBeVisible: true, edited: false });
+            await subtopicHelper.verifySubtopicChildContentVisibility({
+                application: false,
+                article: false,
+                protectedarea: false,
+                subtopic: true,
+            });
+
+            // verify the same child visibility via the topics page
+            await topicVisibilityHelper.verifySubtopicViaTopicsPage({ title: testData.Subtopic.title, shouldBeVisible: true, edited: false });
+            await subtopicHelper.verifySubtopicChildContentVisibility({
+                application: false,
+                article: false,
+                protectedarea: false,
+                subtopic: true,
+            });
+        });
 });
 
 
