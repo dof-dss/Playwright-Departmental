@@ -594,6 +594,16 @@ export class ContentModerationHelper
 
     async topicSupervisorModerateAllChildrenContent(options: TopicChildModerationStates)
     {
+        await this.moderateChildrenContent(options, 'topic');
+    }
+
+    async topicSupervisorModerateAllSubtopicChildrenContent(options: TopicChildModerationStates)
+    {
+        await this.moderateChildrenContent(options, 'subtopic');
+    }
+
+    private async moderateChildrenContent(options: TopicChildModerationStates, parent: 'topic' | 'subtopic')
+    {
         const { application, article, protectedarea, subtopic, consultation, news, publication, ...wantedState } = options;
         const selectedChildren = [
             {
@@ -614,7 +624,7 @@ export class ContentModerationHelper
             {
                 selected: subtopic,
                 contentType: this.testSetUpData.validContentTypeList.subtopic,
-                title: this.testdata.Subtopic.title,
+                title: parent === 'subtopic' ? this.testdata.SubtopicChild.title : this.testdata.Subtopic.title,
             },
             {
                 selected: consultation,
@@ -645,8 +655,8 @@ export class ContentModerationHelper
         }
         finally
         {
-            this.testSetUpData.contentTypeforTest.contentType = this.testSetUpData.validContentTypeList.topic;
-            this.testSetUpData.contentTitleforTest.contentTitle = this.testdata.Topic.title;
+            this.testSetUpData.contentTypeforTest.contentType = this.testSetUpData.validContentTypeList[parent];
+            this.testSetUpData.contentTitleforTest.contentTitle = parent === 'topic' ? this.testdata.Topic.title : this.testdata.Subtopic.title;
         }
     }
 
