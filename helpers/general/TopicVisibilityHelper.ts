@@ -71,6 +71,7 @@ export class TopicVisibilityHelper
         const subtopicLink = this.page.locator(`//h2/a[normalize-space()="${title}"]`);
         if (shouldBeVisible)
         {
+            await this.testSteps.LogInfo(`Asserting that the subtopic "${title}" is visible under the parent topic "${parentTopicTitle}"`);
             await expect(subtopicLink).toBeVisible();
             await this.page.click(`//h2/a[normalize-space()="${title}"]`);
             if (edited)
@@ -110,6 +111,7 @@ export class TopicVisibilityHelper
         const subtopicLink = this.page.locator(`//h2/a[normalize-space()="${title}"]`);
         if (shouldBeVisible)
         {
+            await this.testSteps.LogInfo(`Asserting that the subtopic "${title}" is visible under the parent topic "${parentTopicTitle}"`);
             await expect(subtopicLink).toBeVisible();
             await this.page.click(`//h2/a[normalize-space()="${title}"]`);
             if (edited)
