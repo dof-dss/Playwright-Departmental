@@ -10,6 +10,7 @@ export interface ProtectedAreaSaveData
   protectedAreaTitle: string;
   revisionLogMessage: string;
   topics: (string | null)[];
+  subtopicParent?: string;
   protectedAreaType: string;
   featureType: string;
   county: string;
@@ -127,6 +128,8 @@ export class ProtectedAreaCreatePage
         data.topics[1] ?? null,
         data.topics[2] ?? null,
         data.topics[3] ?? null,
+        false,
+        data.subtopicParent,
       );
     }
     else

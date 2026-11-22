@@ -15,6 +15,7 @@ export interface ConsultationSaveData
   revisionLogMessage: string;
   globalTopicChoice: string;
   topics: (string | null)[];
+  subtopicParent?: string;
   consultationSummary: string;
   consultationStartDate: string;
   consultationStartTime: string;
@@ -212,6 +213,8 @@ export class ConsultationCreatePage
       data.topics[1] ?? null,
       data.topics[2] ?? null,
       data.topics[3] ?? null,
+      false,
+      data.subtopicParent,
     );
     await this.topics.selectGlobalTopics(data.globalTopicChoice);
     await this.enterConsultationSummary(data.consultationSummary);

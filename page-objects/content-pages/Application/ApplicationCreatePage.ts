@@ -15,6 +15,7 @@ export interface ApplicationSaveData
   revisionLogMessage: string;
   globalTopicChoice: string;
   topics: (string | null)[];
+  subtopicParent?: string;
   applicationSummary: string;
   beforeyoustart: string;
   applicationLinkURL: string;
@@ -158,6 +159,8 @@ export class ApplicationCreatePage
         data.topics[1] ?? null,
         data.topics[2] ?? null,
         data.topics[3] ?? null,
+        false,
+        data.subtopicParent,
       );
     }
     else
