@@ -589,6 +589,17 @@ export const TestData = {
     longDescriptionEdited: 'This is edited Subtopic additional information',
   },
 
+  SubtopicChild: {
+    title: 'Automated Test - New sample Child Subtopic title' + ' - ' + getTimestamp(),
+    titleEdited: 'Automated Test - Edited sample Child Subtopic title' + ' - ' + getTimestamp(),
+    revisionlog: 'This is an automated revision log message',
+    revisionlogEdited: 'This is an edited automated revision log message',
+    summary: 'This is a Child Subtopic summary',
+    summaryEdited: 'This is an edited Child Subtopic summary',
+    longDescription: 'This is Child Subtopic additional information',
+    longDescriptionEdited: 'This is edited Child Subtopic additional information',
+  },
+
   Topic: {
     title: 'Automated Test - New sample Topic title' + ' - ' + getTimestamp(),
     titleEdited: 'Automated Test - Edited sample Topic title' + ' - ' + getTimestamp(),
