@@ -51,12 +51,14 @@ export class DeletePage
   async clickDelete()
   {
     await this.testSteps.LogInfo('Clicking on "Delete" Button');
+    await expect(this.deleteButton).toBeVisible();
     await this.deleteButton.click();
   }
   // Click cancel on Delete Page
   async clickCancel()
   {
     await this.testSteps.LogInfo('Clicking on "Cancel" Button');
+    await expect(this.cancelButton).toBeVisible();
     await this.cancelButton.click();
   }
 
@@ -69,6 +71,7 @@ export class DeletePage
   async clickDeleteTopicWarning()
   {
     await this.testSteps.LogInfo('Clicking on "Delete" Button in Topic Warning');
+    await expect(this.viewContentReferencingTopicButton).toBeVisible();
     await this.viewContentReferencingTopicButton.click();
   }
 
