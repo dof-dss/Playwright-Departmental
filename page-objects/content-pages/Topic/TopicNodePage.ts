@@ -138,11 +138,13 @@ export class TopicNodePage
         const contentsHeading = this.page.getByRole('heading', { name: 'contents', exact: true });
         const topicArticle = this.page.locator('main article').filter({ has: contentsHeading });
         const childLinks = topicArticle.locator('article a');
-        await expect(childLinks).toHaveText([
+        const expectedOrder = [
             this.testData.Subtopic.title,
             this.testData.Application.title,
             this.testData.Article.title,
             this.testData.ProtectedArea.title,
-        ]);
+        ];
+        await expect(childLinks).toHaveText(expectedOrder);
+        await this.testSteps.LogInfo(`Verified child content order: ${expectedOrder.map((title, index) => `${index + 1}. ${title}`).join(' | ')}`);
     }
 }

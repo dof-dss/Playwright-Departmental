@@ -135,6 +135,7 @@ export class SubtopicNodePage
         const contentsHeading = this.page.getByRole('main').getByRole('heading', { name: 'More in this topic', exact: true });
         const childItems = contentsHeading.locator('..').getByRole('list').getByRole('link');
         await expect(childItems).toHaveText(expectedOrder);
+        await this.testSteps.LogInfo(`Verified child content order: ${expectedOrder.map((title, index) => `${index + 1}. ${title}`).join(' | ')}`);
     }
 
     // verify warning message when associated topic is unpublished
