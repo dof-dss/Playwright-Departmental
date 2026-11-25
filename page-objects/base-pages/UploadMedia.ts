@@ -1,7 +1,19 @@
 import { Page, Locator, expect } from '@playwright/test';
 import { TestSteps } from '@poms/base-pages/TestSteps';
 import { TestData, TestSetUpData } from '@tdata/TestDataObject';
+import { randomUUID } from 'node:crypto';
+import { readFile } from 'node:fs/promises';
 import path from 'path';
+
+// Playwright needs a MIME type for in-memory uploads; add new file extensions here when needed.
+const uploadMimeTypes: Record<string, string> = {
+    '.pdf': 'application/pdf',
+    '.jpg': 'image/jpeg',
+    '.jpeg': 'image/jpeg',
+    '.png': 'image/png',
+    '.wav': 'audio/wav',
+    '.docx': 'application/vnd.openxmlformats-officedocument.wordprocessingml.document'
+};
 
 export interface GalleryImageValues
 {
@@ -309,51 +321,63 @@ export class UploadMedia
 
     // ---------------------- UPLOADS ---------------------------
 
+    // Give each upload a unique name to avoid Drupal file locks during parallel tests.
+    // Read the original sample into memory so its contents and extension remain unchanged.
+    private async uploadFiles(field: Locator, fileNames: string[])
+    {
+        const files = await Promise.all(fileNames.map(async fileName =>
+        {
+            const parsed = path.parse(fileName);
+            const mimeType = uploadMimeTypes[parsed.ext.toLowerCase()];
+            if (!mimeType)
+            {
+                throw new Error(`Unsupported upload file extension "${parsed.ext}" for "${fileName}"`);
+            }
+            return {
+                name: `${parsed.name}-${randomUUID()}${parsed.ext}`,
+                mimeType,
+                buffer: await readFile(path.join(process.cwd(), 'FileUploadSamples', fileName))
+            };
+        }));
+        await field.setInputFiles(files);
+    }
+
     // Upload attachment
     async uploadAttachmnetProcess(attachmentFileName: string)
     {
-        const filePath = path.join(process.cwd(), 'FileUploadSamples', attachmentFileName);
         await this.testSteps.LogInfo(`Uploading attachment "${attachmentFileName}" from files`);
         // resolves to whichever of the two upload fields is actually present
-        await this.uploadAttachmentField.or(this.mediaUploadAttachmentField).setInputFiles(filePath);
+        await this.uploadFiles(this.uploadAttachmentField.or(this.mediaUploadAttachmentField), [attachmentFileName]);
 
     }
 
     // Upload secure attachment
     async uploadSecureAttachmentProcess(secureAttachmentFileName: string)
     {
-        const filePath = path.join(process.cwd(), 'FileUploadSamples', secureAttachmentFileName);
         await this.testSteps.LogInfo(`Uploading secure attachment "${secureAttachmentFileName}" from files`);
-        await this.uploadAttachmentField.or(this.mediaSecureAttachment).setInputFiles(filePath);
+        await this.uploadFiles(this.uploadAttachmentField.or(this.mediaSecureAttachment), [secureAttachmentFileName]);
 
     }
 
     // Upload image
     async uploadImageProcess(imageFileName: string)
     {
-        const filePath = path.join(process.cwd(), 'FileUploadSamples', imageFileName);
         await this.testSteps.LogInfo(`Uploading image "${imageFileName}" from files`);
         // resolves to whichever of the two upload fields is actually present
         await expect(this.uploadAttachmentField.or(this.mediaUploadImageField)).toBeVisible();
-        await this.uploadAttachmentField.or(this.mediaUploadImageField).setInputFiles(filePath);
+        await this.uploadFiles(this.uploadAttachmentField.or(this.mediaUploadImageField), [imageFileName]);
     }
 
     // Upload mulitple gallery images
     async uploadMultipleGalleryImagesProcess(galleryFileName: string, gallery2FileName: string, gallery3FileName: string, gallery4FileName: string, gallery5FileName: string,)
     {
-        const gallery1FilePath = path.join(process.cwd(), 'FileUploadSamples', galleryFileName);
-        const gallery2FilePath = path.join(process.cwd(), 'FileUploadSamples', gallery2FileName);
-        const gallery3FilePath = path.join(process.cwd(), 'FileUploadSamples', gallery3FileName);
-        const gallery4FilePath = path.join(process.cwd(), 'FileUploadSamples', gallery4FileName);
-        const gallery5FilePath = path.join(process.cwd(), 'FileUploadSamples', gallery5FileName);
-
         await this.testSteps.LogInfo(`Uploading gallery images "${galleryFileName}" "${gallery2FileName}" "${gallery3FileName}" "${gallery4FileName}" "${gallery5FileName}" from files`);
-        await this.uploadAttachmentField.setInputFiles([
-            gallery1FilePath,
-            gallery2FilePath,
-            gallery3FilePath,
-            gallery4FilePath,
-            gallery5FilePath
+        await this.uploadFiles(this.uploadAttachmentField, [
+            galleryFileName,
+            gallery2FileName,
+            gallery3FileName,
+            gallery4FileName,
+            gallery5FileName
         ]);
         await this.testSteps.LogInfo(`Verifying remove media button is visible confirm file upload process has succeeded`);
         await expect(this.removeMediaButton.first()).toBeVisible();
@@ -362,12 +386,11 @@ export class UploadMedia
     // Upload image
     async uploadAudioFileProcess(audioFileName: string)
     {
-        const filePath = path.join(process.cwd(), 'FileUploadSamples', audioFileName);
         await this.testSteps.LogInfo(`Uploading audio file "${audioFileName}" from files`);
 
         // resolves to whichever of the two upload fields is actually present
         // This is due to differences between the media library and the add media model process
-        await this.uploadAudioField.or(this.mediaUploadAudioField).setInputFiles(filePath);
+        await this.uploadFiles(this.uploadAudioField.or(this.mediaUploadAudioField), [audioFileName]);
     }
 
     // Upload remote video
@@ -389,9 +412,8 @@ export class UploadMedia
     // Upload image
     async ImportWordFile(WordFile: string)
     {
-        const filePath = path.join(process.cwd(), 'FileUploadSamples', WordFile);
         await this.testSteps.LogInfo(`Uploading Word document "${WordFile}" from files`);
-        await this.importWordFileInputField.setInputFiles(filePath);
+        await this.uploadFiles(this.importWordFileInputField, [WordFile]);
     }
 
     // ---------------------- FIELD NAMES ---------------------------
