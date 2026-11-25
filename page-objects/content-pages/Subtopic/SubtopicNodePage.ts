@@ -129,14 +129,11 @@ export class SubtopicNodePage
         }
     }
 
-    // verify child content (subtopic content items) renders in the expected order
-    // TODO: only usable once "full" subtopics (with Subtopic content items assigned) are supported by SubtopicHelper/SubtopicCreatePage
     async verifySubtopicChildContentOrder(expectedOrder: string[])
     {
         await this.testSteps.LogInfo(`Verifying child content is displayed in order: ${expectedOrder.join(', ')}`);
-
-        // TODO: replace with the real child-content list locator once full subtopics are supported
-        const childItems = this.page.locator('//TODO-child-content-list//a');
+        const contentsHeading = this.page.getByRole('main').getByRole('heading', { name: 'More in this topic', exact: true });
+        const childItems = contentsHeading.locator('..').getByRole('list').getByRole('link');
         await expect(childItems).toHaveText(expectedOrder);
     }
 

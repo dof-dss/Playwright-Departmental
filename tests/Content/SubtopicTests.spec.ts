@@ -992,6 +992,52 @@ test.describe('Full Subtopic Tests', { tag: ['@subtopics', '@regression', '@topi
                 publication: false,
             });
         });
+
+    test('Full-Subtopic-TC05 - Edit - Rearrange Application, Article, Protected Area and Subtopic child content with drag and drop on the edit node page', { tag: '@edit' },
+        async ({ subtopicHelper, navigateToCreatedContentHelper }) =>
+        {
+            await subtopicHelper.createSubtopic({
+                preview: false,
+                mandatoryFieldCheck: false,
+                customTopicNeeded: true,
+            });
+
+            await subtopicHelper.createSubtopicChildContentQuicklyAdd({
+                application: true,
+                article: true,
+                protectedarea: true,
+                subtopic: true,
+            });
+
+            // navigate back to parent subtopic
+            await navigateToCreatedContentHelper.navigateToCreatedContent({ active: true, deleted: false });
+
+            // use drag and drop on the edit node page to edit the subtopic
+            await subtopicHelper.editSubtopicUsingDragAndDrop();
+        });
+
+    test('Full-Subtopic-TC06 - Edit - Reorder Application, Article, Protected Area and Subtopic child content using the moderation sidebar Arrange Content button', { tag: '@edit' },
+        async ({ subtopicHelper, navigateToCreatedContentHelper }) =>
+        {
+            await subtopicHelper.createSubtopic({
+                preview: false,
+                mandatoryFieldCheck: false,
+                customTopicNeeded: true,
+            });
+
+            await subtopicHelper.createSubtopicChildContentQuicklyAdd({
+                application: true,
+                article: true,
+                protectedarea: true,
+                subtopic: true,
+            });
+
+            // navigate back to parent subtopic
+            await navigateToCreatedContentHelper.navigateToCreatedContent({ active: true, deleted: false });
+
+            // reorder Subtopic Content using the Arrange Content modal
+            await subtopicHelper.arrangeSubtopicContentUsingDragAndDrop();
+        });
 });
 
 

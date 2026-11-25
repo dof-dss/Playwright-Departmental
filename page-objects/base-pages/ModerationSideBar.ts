@@ -223,7 +223,7 @@ export class ModerationSideBar
         await this.arrangecontentbutton.click();
     }
 
-    async arrangeTopicContentUsingDragAndDrop()
+    async arrangeTopicContentUsingDragAndDrop(subtopicTitle: string = this.testData.Subtopic.title)
     {
         // Open the "Arrange Content" dialog before performing drag and drop operations
         await this.clickArrangeContentButton();
@@ -234,7 +234,7 @@ export class ModerationSideBar
 
         // Get all the child rows within the "Arrange Content" dialog
         const childRows = arrangeDialog.locator('tr.draggable');
-        const subtopicRow = childRows.filter({ hasText: this.testData.Subtopic.title }).first();
+        const subtopicRow = childRows.filter({ hasText: subtopicTitle }).first();
         const sourceHandle = subtopicRow.locator('.tabledrag-handle');
         const firstRow = childRows.first();
         const targetHandle = firstRow.locator('.tabledrag-handle');
@@ -249,7 +249,7 @@ export class ModerationSideBar
         try
         {
             await sourceHandle.dragTo(targetHandle);
-            await expect(firstRow).toContainText(this.testData.Subtopic.title, { timeout: 2000 });
+            await expect(firstRow).toContainText(subtopicTitle, { timeout: 2000 });
             dragSucceeded = true;
         }
         catch
@@ -275,7 +275,7 @@ export class ModerationSideBar
         }
 
         // Verify that the subtopic row is now in the first position after the drag and drop operation
-        await expect(firstRow).toContainText(this.testData.Subtopic.title);
+        await expect(firstRow).toContainText(subtopicTitle);
 
         // Click the "Save" button to confirm the new arrangement of content
         const saveButton = arrangeDialog.getByRole('button', { name: 'Save', exact: true });

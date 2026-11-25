@@ -556,6 +556,36 @@ export class SubtopicHelper
         }
     }
 
+    async editSubtopicUsingDragAndDrop()
+    {
+        await this.subtopicNodePage.subtopicNodeURLCheck();
+        await this.moderationSideBar.openModerationSideBar();
+        await this.moderationSideBar.clickEditContentButton();
+        await this.subtopicEditPage.editSubtopicUsingDragAndDrop();
+        await this.createPage.clickSaveButton();
+        await this.subtopicNodePage.subtopicNodeURLCheck();
+        await this.verifyRearrangedSubtopic();
+    }
+
+    async arrangeSubtopicContentUsingDragAndDrop()
+    {
+        await this.subtopicNodePage.subtopicNodeURLCheck();
+        await this.moderationSideBar.openModerationSideBar();
+        await this.moderationSideBar.arrangeTopicContentUsingDragAndDrop(this.testData.SubtopicChild.title);
+        await this.subtopicNodePage.subtopicNodeURLCheck();
+        await this.verifyRearrangedSubtopic();
+    }
+
+    private async verifyRearrangedSubtopic()
+    {
+        await this.subtopicNodePage.verifySubtopicChildContentOrder([
+            this.testData.SubtopicChild.title,
+            this.testData.Application.title,
+            this.testData.Article.title,
+            this.testData.ProtectedArea.title,
+        ]);
+    }
+
     // edit Subtopic method
     async editSubtopic(options: EditSaveOptions)
     {
