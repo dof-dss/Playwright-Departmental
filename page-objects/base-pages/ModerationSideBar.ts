@@ -186,7 +186,7 @@ export class ModerationSideBar
 
     async verifyDeleteIsBlocked()
     {
-        await this.testSteps.LogInfo('Verifying Delete is disabled because the Topic has active child pages');
+        await this.testSteps.LogInfo('Verifying Delete is disabled because the content has active child pages');
         const blockedDelete = this.page.locator('.ui-dialog-off-canvas div.moderation-sidebar-link')
             .filter({ hasText: /^Delete$/ });
         await expect(blockedDelete).toBeVisible();
