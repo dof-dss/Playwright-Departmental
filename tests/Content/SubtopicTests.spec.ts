@@ -1038,6 +1038,136 @@ test.describe('Full Subtopic Tests', { tag: ['@subtopics', '@regression', '@topi
             // reorder Subtopic Content using the Arrange Content modal
             await subtopicHelper.arrangeSubtopicContentUsingDragAndDrop();
         });
+
+    test('Full-Subtopic-TC07 - Edit - Edit child content nodes and verify child content edits displayed correctly', { tag: '@edit' },
+        async ({ subtopicHelper, contentModerationHelper, navigateToCreatedContentHelper }) =>
+        {
+            await subtopicHelper.createSubtopic({
+                preview: false,
+                mandatoryFieldCheck: false,
+                customTopicNeeded: true,
+            });
+
+            await subtopicHelper.createSubtopicChildContentTopicTree({
+                application: true,
+                article: true,
+                protectedarea: true,
+                subtopic: true,
+                consultation: true,
+                news: true,
+                publication: true,
+            });
+
+            // navigate back to parent subtopic
+            await navigateToCreatedContentHelper.navigateToCreatedContent({ active: true, deleted: false });
+
+            // moderate all children content to published
+            await contentModerationHelper.topicSupervisorModerateAllSubtopicChildrenContent({
+                application: true,
+                article: true,
+                protectedarea: true,
+                subtopic: true,
+                consultation: true,
+                news: true,
+                publication: true,
+                QuickPublish: false,
+                NeedsReview: false,
+                Published: true,
+                Archive: false,
+            });
+
+            // edit child content nodes
+            await subtopicHelper.editSubtopicChildContentNodes({
+                application: true,
+                article: true,
+                protectedarea: true,
+                subtopic: true,
+                consultation: true,
+                news: true,
+                publication: true,
+            });
+
+            // verify child content edits displayed correctly
+            await navigateToCreatedContentHelper.navigateToCreatedContent({ active: true, deleted: false });
+            await subtopicHelper.verifySubtopicChildContentVisibility({
+                application: true,
+                article: true,
+                protectedarea: true,
+                subtopic: true,
+                consultation: true,
+                news: true,
+                publication: true,
+                edited: true,
+            });
+        });
+
+    test('Full-Subtopic-TC08 - Delete - Ensure cannot delete Subtopic with Application, Article, Protected Area and Subtopic child content by moderation sidebar but can when child content archived', { tag: '@delete' },
+        async ({ subtopicHelper, anonymousHelper, contentModerationHelper, navigateToCreatedContentHelper, testData, topicVisibilityHelper }) =>
+        {
+            await subtopicHelper.createSubtopic({
+                preview: false,
+                mandatoryFieldCheck: false,
+                customTopicNeeded: true,
+            });
+
+            await subtopicHelper.createSubtopicChildContentTopicTree({
+                application: true,
+                article: true,
+                protectedarea: true,
+                subtopic: true,
+            });
+
+            // navigate back to parent subtopic
+            await navigateToCreatedContentHelper.navigateToCreatedContent({ active: true, deleted: false });
+
+            // verify deletion is blocked while child content is in draft
+            await subtopicHelper.verifySubtopicDeletionIsBlocked();
+
+            for (const moderationState of ['Needs Review', 'Published'])
+            {
+                await contentModerationHelper.topicSupervisorModerateAllSubtopicChildrenContent({
+                    application: true,
+                    article: true,
+                    protectedarea: true,
+                    subtopic: true,
+                    QuickPublish: false,
+                    NeedsReview: moderationState === 'Needs Review',
+                    Published: moderationState === 'Published',
+                    Archive: false,
+                });
+
+                await navigateToCreatedContentHelper.navigateToCreatedContent({ active: true, deleted: false });
+                await subtopicHelper.verifySubtopicDeletionIsBlocked();
+            }
+
+            /////// ARCHIVED ///////
+
+            // moderate all children content to archived
+            await contentModerationHelper.topicSupervisorModerateAllSubtopicChildrenContent({
+                application: true,
+                article: true,
+                protectedarea: true,
+                subtopic: true,
+                QuickPublish: false,
+                NeedsReview: false,
+                Published: false,
+                Archive: true,
+            });
+
+            // navigate back to parent subtopic
+            await navigateToCreatedContentHelper.navigateToCreatedContent({ active: true, deleted: false });
+
+            // delete the parent subtopic while child content is archived
+            await subtopicHelper.deleteSubtopic({ delete: true, cancel: false });
+
+            // verify delete
+            await navigateToCreatedContentHelper.navigateToCreatedContent({ active: false, deleted: true });
+
+            // ensure the deleted subtopic is not viewable to anonymous users
+            await anonymousHelper.searchAsAnon({ edited: false });
+            await topicVisibilityHelper.verifySubtopicViaHomepage({ title: testData.Subtopic.title, shouldBeVisible: false, edited: false });
+            await topicVisibilityHelper.verifySubtopicViaTopicsPage({ title: testData.Subtopic.title, shouldBeVisible: false, edited: false });
+        });
 });
 
 

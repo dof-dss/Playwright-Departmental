@@ -45,6 +45,7 @@ export interface EditSaveOptions
     preview: boolean;
     topics?: (string | null)[];
     preserveSiteTopics?: boolean;
+    subtopicData?: typeof TestData.Subtopic;
 };
 
 export interface CreateSubtopicChildContentOptions
@@ -334,6 +335,112 @@ export class SubtopicHelper
         await this.subtopicNodePage.verifySubtopicChildContentVisibility(options);
     }
 
+    async editSubtopicChildContentNodes(options: CreateSubtopicChildContentOptions): Promise<void>
+    {
+        const previousSaveAsOption = this.testSetUpData.saveAsOptionForTest.saveAsOption;
+        const previousContentType = this.testSetUpData.contentTypeforTest.contentType;
+        const previousContentTitle = this.testSetUpData.contentTitleforTest.contentTitle;
+        const previousGlobalTopic = this.testSetUpData.globalTopicForTest.globalTopic;
+        const previousSiteTopic = this.testData.SiteTopics.topic1;
+        const previousEditedConsultationRespondOnline = this.testData.Consultation.respondeOnlineEdited;
+
+        this.testData.SiteTopics.topic1 = this.testData.Subtopic.title;
+        this.testSetUpData.saveAsOptionForTest.saveAsOption = this.testSetUpData.validSaveAsOptionList.published;
+        const selectedChildren = [
+            {
+                selected: options.application,
+                kind: 'application',
+                contentType: this.testSetUpData.validContentTypeList.application,
+                title: this.testData.Application.title,
+            },
+            {
+                selected: options.article,
+                kind: 'article',
+                contentType: this.testSetUpData.validContentTypeList.article,
+                title: this.testData.Article.title,
+            },
+            {
+                selected: options.protectedarea,
+                kind: 'protectedarea',
+                contentType: this.testSetUpData.validContentTypeList.protectedarea,
+                title: this.testData.ProtectedArea.title,
+            },
+            {
+                selected: options.subtopic,
+                kind: 'subtopic',
+                contentType: this.testSetUpData.validContentTypeList.subtopic,
+                title: this.testData.SubtopicChild.title,
+            },
+            {
+                selected: options.consultation,
+                kind: 'consultation',
+                contentType: this.testSetUpData.validContentTypeList.consultation,
+                title: this.testData.Consultation.title,
+            },
+            {
+                selected: options.news,
+                kind: 'news',
+                contentType: this.testSetUpData.validContentTypeList.news,
+                title: this.testData.News.title,
+            },
+            {
+                selected: options.publication,
+                kind: 'publication',
+                contentType: this.testSetUpData.validContentTypeList.publication,
+                title: this.testData.Publication.title,
+            },
+        ].filter(child => child.selected);
+
+        try
+        {
+            for (const child of selectedChildren)
+            {
+                this.testSetUpData.contentTypeforTest.contentType = child.contentType;
+                this.testSetUpData.contentTitleforTest.contentTitle = child.title;
+                await this.navigateToCreatedContentHelper.navigateToCreatedContent({ active: true, deleted: false });
+
+                if (child.kind === 'application')
+                {
+                    await new ApplicationHelper(this.page, this.testSetUpData, this.testData).editApplication({ preview: false, preserveSiteTopics: true, preserveGlobalTopics: true });
+                }
+                else if (child.kind === 'article')
+                {
+                    await new ArticleHelper(this.page, this.testSetUpData, this.testData).editArticle({ preview: false, preserveSiteTopics: true, preserveGlobalTopics: true });
+                }
+                else if (child.kind === 'protectedarea')
+                {
+                    await new ProtectedAreaHelper(this.page, this.testSetUpData, this.testData).editProtectedArea({ preview: false, preserveSiteTopics: true });
+                }
+                else if (child.kind === 'subtopic')
+                {
+                    await this.editSubtopic({ preview: false, preserveSiteTopics: true, subtopicData: this.testData.SubtopicChild });
+                }
+                else if (child.kind === 'consultation')
+                {
+                    this.testData.Consultation.respondeOnlineEdited = 'Civil Service Pay';
+                    await new ConsultationHelper(this.page, this.testSetUpData, this.testData).editConsultation({ preview: false, preserveSiteTopics: true, preserveGlobalTopics: true });
+                }
+                else if (child.kind === 'news')
+                {
+                    await new NewsHelper(this.page, this.testSetUpData, this.testData).editNews({ preview: false, preserveSiteTopics: true, preserveGlobalTopics: true });
+                }
+                else if (child.kind === 'publication')
+                {
+                    await new PublicationHelper(this.page, this.testSetUpData, this.testData).editPublication({ preview: false, preserveSiteTopics: true, preserveGlobalTopics: true });
+                }
+            }
+        }
+        finally
+        {
+            this.testSetUpData.contentTypeforTest.contentType = previousContentType;
+            this.testSetUpData.contentTitleforTest.contentTitle = previousContentTitle;
+            this.testSetUpData.saveAsOptionForTest.saveAsOption = previousSaveAsOption;
+            this.testSetUpData.globalTopicForTest.globalTopic = previousGlobalTopic;
+            this.testData.SiteTopics.topic1 = previousSiteTopic;
+            this.testData.Consultation.respondeOnlineEdited = previousEditedConsultationRespondOnline;
+        }
+    }
+
     async removeChildContentByTopicTree(options: RemoveSubtopicChildContentOptions): Promise<void>
     {
         const previousSaveAsOption = this.testSetUpData.saveAsOptionForTest.saveAsOption;
@@ -589,6 +696,7 @@ export class SubtopicHelper
     // edit Subtopic method
     async editSubtopic(options: EditSaveOptions)
     {
+        const subtopicData = options.subtopicData ?? this.testData.Subtopic;
         // should be on node page already
         await this.subtopicNodePage.subtopicNodeURLCheck();
 
@@ -605,15 +713,15 @@ export class SubtopicHelper
 
         // complete subtopic form using edit isolated test data
         await this.subtopicEditPage.editSubtopicForm({
-            subtopicTitle: this.testData.Subtopic.titleEdited,
-            revisionLogMessage: this.testData.Subtopic.revisionlogEdited,
+            subtopicTitle: subtopicData.titleEdited,
+            revisionLogMessage: subtopicData.revisionlogEdited,
             topics: options.topics ?? this.topicsHelper.getTopics(),
-            subtopicSummary: this.testData.Subtopic.summaryEdited,
-            subtopicLongDescription: this.testData.Subtopic.longDescriptionEdited,
+            subtopicSummary: subtopicData.summaryEdited,
+            subtopicLongDescription: subtopicData.longDescriptionEdited,
         }, !options.preserveSiteTopics);
 
         // setting test set up data to new title
-        this.testSetUpData.contentTitleforTest.contentTitle = this.testData.Subtopic.titleEdited;
+        this.testSetUpData.contentTitleforTest.contentTitle = subtopicData.titleEdited;
 
         // Selecting the save as type
         await this.createPage.chooseSaveAsType();
@@ -623,7 +731,7 @@ export class SubtopicHelper
         {
             await this.createPage.clickPreviewButton();
             await this.previewPage.performURLCheck();
-            await this.subtopicNodePage.verifyEditedSubtopic();
+            await this.subtopicNodePage.verifyEditedSubtopic(subtopicData);
 
             await this.previewPage.clickBackToContentEdittingButton();
             await this.subtopicEditPage.returnFromPreviewSubtopicPageURLCheck();
@@ -632,7 +740,7 @@ export class SubtopicHelper
         // Save
         await this.createPage.clickSaveButton();
         await this.subtopicNodePage.subtopicNodeURLCheck();
-        await this.subtopicNodePage.verifyEditedSubtopic();
+        await this.subtopicNodePage.verifyEditedSubtopic(subtopicData);
     }
 
     async verifyOnParentTopic(options: { parentTopicUrl: string; title: string; shouldBeVisible: boolean; })
@@ -650,6 +758,13 @@ export class SubtopicHelper
         {
             await expect(subtopicLink).toBeHidden();
         }
+    }
+
+    async verifySubtopicDeletionIsBlocked()
+    {
+        await this.subtopicNodePage.subtopicNodeURLCheck();
+        await this.moderationSideBar.openModerationSideBar();
+        await this.moderationSideBar.verifyDeleteIsBlocked();
     }
 
     async deleteSubtopic(options: { delete: boolean; cancel: boolean; })
