@@ -11,7 +11,7 @@ export class DeletePage
   private readonly deleteButton: Locator;
   private readonly cancelButton: Locator;
   private readonly childContentWarningMessage: Locator;
-  private readonly viewContentReferencingTopicButton: Locator;
+  private readonly viewContentReferencingContentButton: Locator;
 
   // constructor
   constructor(
@@ -25,9 +25,9 @@ export class DeletePage
     this.deleteButton = page.getByRole('button', { name: 'Delete' });
     this.cancelButton = page.getByRole('link', { name: 'Cancel' });
     this.childContentWarningMessage = page.locator('p.messages--warning[data-drupal-selector="edit-description"]').filter({
-      hasText: '3 content items use this topic in their Site topics field. Deleting this topic will remove it from those content items.'
+      hasText: /3 content items use this (?:sub[- ]?)?topic in their Site topics field\. Deleting this (?:sub[- ]?)?topic will remove it from those content items\./i
     });
-    this.viewContentReferencingTopicButton = page.getByRole('link', { name: 'View content referencing this topic.' });
+    this.viewContentReferencingContentButton = page.getByRole('link', { name: /View content referencing this (?:sub[- ]?)?topic\./i });
   }
 
   // ------------------------ asserts ------------------------
@@ -63,17 +63,17 @@ export class DeletePage
     await this.cancelButton.click();
   }
 
-  async verifyDeleteTopicWarning()
+  async verifyDeleteContentWarning()
   {
-    await this.testSteps.LogInfo('Verifying "Child Content warning" message on Delete Topic page');
+    await this.testSteps.LogInfo('Verifying "Child Content warning" message on Delete page');
     await expect(this.childContentWarningMessage).toBeVisible();
   }
 
-  async clickDeleteTopicWarning()
+  async clickDeleteContentWarning()
   {
-    await this.testSteps.LogInfo('Clicking on "Delete" Button in Topic Warning');
-    await expect(this.viewContentReferencingTopicButton).toBeVisible();
-    await this.viewContentReferencingTopicButton.click();
+    await this.testSteps.LogInfo('Opening content referencing the deleted content');
+    await expect(this.viewContentReferencingContentButton).toBeVisible();
+    await this.viewContentReferencingContentButton.click();
   }
 
 }

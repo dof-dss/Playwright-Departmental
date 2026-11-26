@@ -64,6 +64,13 @@ export interface RemoveSubtopicChildContentOptions extends CreateSubtopicChildCo
     replacementTopic: string;
 }
 
+export interface DeleteSubtopicOptions
+{
+    delete: boolean;
+    cancel: boolean;
+    deleteAltChildContentWarning?: boolean;
+}
+
 export class SubtopicHelper
 {
     // pages
@@ -767,7 +774,21 @@ export class SubtopicHelper
         await this.moderationSideBar.verifyDeleteIsBlocked();
     }
 
-    async deleteSubtopic(options: { delete: boolean; cancel: boolean; })
+    async verifySubtopicArchivingIsBlocked()
+    {
+        await this.subtopicNodePage.subtopicNodeURLCheck();
+        await this.moderationSideBar.openModerationSideBar();
+        await this.moderationSideBar.verifyArchiveIsBlocked();
+    }
+
+    async verifySubtopicIsArchived()
+    {
+        await this.subtopicNodePage.subtopicNodeURLCheck();
+        await this.moderationSideBar.openModerationSideBar();
+        await this.moderationSideBar.verifyCurrentState('Archived');
+    }
+
+    async deleteSubtopic(options: DeleteSubtopicOptions)
     {
         await this.subtopicNodePage.subtopicNodeURLCheck();
         await this.moderationSideBar.openModerationSideBar();
@@ -785,6 +806,35 @@ export class SubtopicHelper
         {
             await this.deletePage.clickCancel();
             await this.subtopicNodePage.subtopicNodeURLCheck();
+        }
+
+        if (options.deleteAltChildContentWarning)
+        {
+            await this.deletePage.verifyDeleteContentWarning();
+            await this.deletePage.clickDeleteContentWarning();
+
+            await this.testSteps.LogInfo(`Verifying visibility of Consultation link for ${this.testData.Consultation.title}`);
+            await expect(this.page.getByRole('link', { name: this.testData.Consultation.title })).toBeVisible();
+            await this.testSteps.LogInfo(`Opening Consultation page for ${this.testData.Consultation.title}`);
+            await this.page.getByRole('link', { name: this.testData.Consultation.title }).click();
+            await this.testSteps.LogInfo(`Verifying ${this.testData.Consultation.title} page`);
+            await expect(this.page.locator(`//h1[text()[normalize-space(.)="${this.testData.Consultation.title}"]]`)).toBeVisible();
+            await this.page.goBack();
+
+            await this.testSteps.LogInfo(`Verifying visibility of News link for ${this.testData.News.title}`);
+            await expect(this.page.getByRole('link', { name: this.testData.News.title })).toBeVisible();
+            await this.testSteps.LogInfo(`Opening News page for ${this.testData.News.title}`);
+            await this.page.getByRole('link', { name: this.testData.News.title }).click();
+            await this.testSteps.LogInfo(`Verifying ${this.testData.News.title} page`);
+            await expect(this.page.getByRole('heading', { name: this.testData.News.title })).toBeVisible();
+            await this.page.goBack();
+
+            await this.testSteps.LogInfo(`Verifying visibility of Publication link for ${this.testData.Publication.title}`);
+            await expect(this.page.getByRole('link', { name: this.testData.Publication.title })).toBeVisible();
+            await this.testSteps.LogInfo(`Opening Publication page for ${this.testData.Publication.title}`);
+            await this.page.getByRole('link', { name: this.testData.Publication.title }).click();
+            await this.testSteps.LogInfo(`Verifying ${this.testData.Publication.title} page`);
+            await expect(this.page.getByRole('heading', { name: this.testData.Publication.title })).toBeVisible();
         }
     }
 }

@@ -312,8 +312,8 @@ export class TopicHelper
 
         if (options.deleteAltChildContentWarning === true)
         {
-            await this.deletePage.verifyDeleteTopicWarning();
-            await this.deletePage.clickDeleteTopicWarning();
+            await this.deletePage.verifyDeleteContentWarning();
+            await this.deletePage.clickDeleteContentWarning();
 
             // consultation child content entity usage verification
             await this.testSteps.LogInfo('Verifying visibility of Consultation link for ' + this.testData.Consultation.title);
