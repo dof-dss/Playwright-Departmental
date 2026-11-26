@@ -52,7 +52,8 @@ export class DeletePage
   {
     await this.testSteps.LogInfo('Clicking on "Delete" Button');
     await expect(this.deleteButton).toBeVisible();
-    await this.deleteButton.click();
+    // timeout added to ensure the delete button is clicked even if it takes longer to appear (mainly due to topics and subtopic delete action when child content is present)
+    await this.deleteButton.click({ timeout: 15000 });
   }
   // Click cancel on Delete Page
   async clickCancel()
