@@ -64,6 +64,7 @@ export class PublicationEditPage
   private readonly publicationSummaryField: Locator;
   private readonly publicationExternalLinkField: Locator;
   private readonly publicationLinkTextField: Locator;
+  private readonly removePublicationFileButton: Locator;
 
   // constructor
   constructor(
@@ -96,6 +97,7 @@ export class PublicationEditPage
     this.publicationSummaryField = page.locator('#edit-field-summary-0-value');
     this.publicationExternalLinkField = page.locator('#edit-field-external-publication-0-uri');
     this.publicationLinkTextField = page.locator('#edit-field-external-publication-0-title');
+    this.removePublicationFileButton = page.locator('//input[contains(@id,"edit-field-publication-files-selection-0-remove-button")]');
   }
 
   // ------------------------ asserts ------------------------
@@ -196,14 +198,22 @@ export class PublicationEditPage
     await this.publicationLinkTextField.fill(publicationLinkText);
   }
 
+  async removeExistingPublicationFile()
+  {
+    await this.testSteps.LogInfo('Removing the existing publication file');
+    await expect(this.removePublicationFileButton).toBeEnabled();
+    await this.removePublicationFileButton.click();
+    await expect(this.removePublicationFileButton).toBeHidden();
+  }
+
   // ------------------------ actions related to edit publication  ------------------------
 
   // fill in publication form elements - title summary topics etc
-  async editPublicationForm(data: PublicationEditSaveData)
+  async editPublicationForm(data: PublicationEditSaveData, updateSiteTopics: boolean = true, updateGlobalTopics: boolean = true)
   {
     await this.editPublicationPageURLCheck();
     await this.editPublicationTitle(data.publicationTitle);
-    if (this.testSetUpData.userForTest.username !== this.testSetUpData.validUserList.stats_author_username 
+    if (this.testSetUpData.userForTest.username !== this.testSetUpData.validUserList.stats_author_username
       && this.testSetUpData.userForTest.username !== this.testSetUpData.validUserList.stats_supervisor_username)
     {
       await this.testSteps.LogInfo('Verifying Attachment Type field is hidden for non stats users');
@@ -213,19 +223,23 @@ export class PublicationEditPage
     await this.editPubLastUpdatedDate(data.publicationLastUpdatedDate);
     await this.editPubLastUpdatedTime(data.publicationLastUpdatedTime);
     await this.createPages.enterRevisionLogMessage(data.revisionLogMessage);
-    await this.topics.selectSiteTopics(
-      data.topics[0] ?? null,
-      data.topics[1] ?? null,
-      data.topics[2] ?? null,
-      data.topics[3] ?? null,
-      true,
-    );
-    await this.page.locator(`//span[text()="${this.testSetUpData.globalTopicForTest.globalTopic}"]/following-sibling::button`).click();
-    await this.topics.selectGlobalTopics(data.globalTopicChoice);
+    if (updateSiteTopics)
+    {
+      await this.topics.selectSiteTopics(
+        data.topics[0] ?? null,
+        data.topics[1] ?? null,
+        data.topics[2] ?? null,
+        data.topics[3] ?? null,
+        true,
+      );
+    }
+    if (updateGlobalTopics)
+    {
+      await this.topics.replaceGlobalTopic(data.globalTopicChoice);
+    }
     await this.editPubType(data.pubType);
     await this.editPublicationSummary(data.publicationSummary);
-    await expect(this.page.locator('//input[contains(@id,"edit-field-publication-files-selection-0-remove-button")]')).toBeEnabled();
-    await this.page.locator('//input[contains(@id,"edit-field-publication-files-selection-0-remove-button")]').click();
+    await this.removeExistingPublicationFile();
     await this.ckeditor.enterCKEditorBody(data.publicationBodyField);
     await this.uploadMediaHelper.uploadAttachmentWorkflow({
       original: false,
@@ -238,7 +252,8 @@ export class PublicationEditPage
   {
     await this.editPublicationPageURLCheck();
     await this.editPublicationTitle(data.publicationTitle);
-    if (this.testSetUpData.userForTest.username !== this.testSetUpData.validUserList.stats_author_username || this.testSetUpData.userForTest.username !== this.testSetUpData.validUserList.stats_supervisor_username)
+    if (this.testSetUpData.userForTest.username !== this.testSetUpData.validUserList.stats_author_username
+      && this.testSetUpData.userForTest.username !== this.testSetUpData.validUserList.stats_supervisor_username)
     {
       await this.testSteps.LogInfo('Verifying Attachment Type field is hidden for non stats users');
       await this.attachmentTypeHidden();
@@ -253,8 +268,7 @@ export class PublicationEditPage
       data.topics[3] ?? null,
       true,
     );
-    await this.page.locator(`//span[text()="${this.testSetUpData.globalTopicForTest.globalTopic}"]/following-sibling::button`).click();
-    await this.topics.selectGlobalTopics(data.globalTopicChoice);
+    await this.topics.replaceGlobalTopic(data.globalTopicChoice);
     await this.editPubType(data.pubType);
     await this.editPublicationSummary(data.publicationSummary);
     await this.ckeditor.enterCKEditorBody(data.publicationBodyField);

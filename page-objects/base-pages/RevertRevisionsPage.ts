@@ -53,4 +53,11 @@ export class RevertRevisionsPage
     await this.cancelButton.click();
   }
 
+  // Verify Revert button is disabled
+  async verifyRevertButtonIsDisabled()
+  {
+    await this.testSteps.LogInfo('Verifying Revert button is disabled');
+    await expect(this.revertButton).toBeDisabled();
+  }
+
 }

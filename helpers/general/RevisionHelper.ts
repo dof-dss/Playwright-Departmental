@@ -20,6 +20,7 @@ import { HeritageSiteComparePage } from '@poms/content-pages/HeritageSite/Herita
 import { ProtectedAreaComparePage } from '@poms/content-pages/ProtectedArea/ProtectedAreaComparePage';
 import { TopicComparePage } from '@poms/content-pages/Topic/TopicComparePage';
 import { SubtopicComparePage } from '@poms/content-pages/Subtopic/SubtopicComparePage';
+import { TestSteps } from '@poms/base-pages/TestSteps';
 
 export interface DeleteRevisionsOptions
 {
@@ -31,10 +32,12 @@ export interface RevertRevisionsOptions
 {
     revert: boolean;
     cancel: boolean;
+    topicArchivedRevert?: boolean;
 };
 
 export class RevisionHelper
 {
+    private readonly testSteps: TestSteps;
 
     // pages
     readonly moderationSideBar: ModerationSideBar;
@@ -65,6 +68,8 @@ export class RevisionHelper
         private testdata: typeof TestData
     )
     {
+        this.testSteps = new TestSteps();
+
         // imported pages
         this.moderationSideBar = new ModerationSideBar(page, this.testSetUpData, this.testdata);
         this.verificationHelper = new VerificationHelper(page, this.testSetUpData, this.testdata);
@@ -88,6 +93,21 @@ export class RevisionHelper
         this.subtopicComparePage = new SubtopicComparePage(page, this.testSetUpData, this.testdata);
     }
 
+
+    async getRevisionCount(): Promise<number>
+    {
+        await this.moderationSideBar.openModerationSideBar();
+        await this.moderationSideBar.clickShowRevisionsButton();
+        await this.revisionPage.revisionPageURLCheck();
+        return this.revisionPage.getRevisionCount();
+    }
+
+    async verifyRevisionCount(expectedCount: number): Promise<void>
+    {
+        const currentRevisionCount = await this.getRevisionCount();
+        await this.testSteps.LogInfo(`Verifying revision count: expected ${expectedCount}, actual ${currentRevisionCount}`);
+        expect(currentRevisionCount).toBe(expectedCount);
+    }
 
     // select Compare Revision from Revisons 
     async compareRevisions()
@@ -229,7 +249,7 @@ export class RevisionHelper
         await this.revisionPage.revisionPageURLCheck();
         // clicking Revert Button - DO NOT DELETE
         await this.revisionPage.clickRevertRevisionsButton();
-        // Reverting Revision URL Checl
+        // Reverting Revision URL Check
         await this.revertRevisionsPage.revertRevisionsPageURLCheck();
 
         if (option.revert === true)
@@ -354,7 +374,14 @@ export class RevisionHelper
                 edited: true,
             });
         }
+
+        if (option.topicArchivedRevert === true)
+        {
+            await this.revertRevisionsPage.clickRevert();
+            await this.revertRevisionsPage.revertRevisionCofirmationCheck();
+            await this.revisionPage.revisionPageURLCheck();
+            this.testSetUpData.moderationStateForTest.moderationState = this.testSetUpData.validModerationStates.archived;
+        }
+
     }
-
-
 }

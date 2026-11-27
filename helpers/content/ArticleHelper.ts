@@ -18,12 +18,15 @@ export interface SaveOptions
 {
     preview: boolean;
     mandatoryFieldCheck: boolean;
+    subtopicParent?: string;
     existingAudioName?: string;
 };
 
 export interface EditSaveOptions
 {
     preview: boolean;
+    preserveSiteTopics?: boolean;
+    preserveGlobalTopics?: boolean;
 };
 
 export interface DeleteOptions
@@ -103,6 +106,7 @@ export class ArticleHelper
             revisionLogMessage: this.testData.Article.revisionlog,
             globalTopicChoice: this.testData.GlobalTopics.employment,
             topics: this.topicsHelper.getTopics(),
+            subtopicParent: options.subtopicParent,
             articleSummary: this.testData.Article.summary,
             articleBodyField: this.testData.Article.body,
         });
@@ -145,7 +149,10 @@ export class ArticleHelper
         await this.moderationSideBar.clickEditContentButton();
 
         // set topics for test using selec topics for site before filling article form
-        await this.topicsHelper.selectTopicForSite({ edit: true, triggeralert: false });
+        if (!options.preserveSiteTopics)
+        {
+            await this.topicsHelper.selectTopicForSite({ edit: true, triggeralert: false });
+        }
 
         // complete article form using edit isolated test data 
         await this.articleEditPage.editArticleForm({
@@ -155,7 +162,7 @@ export class ArticleHelper
             topics: this.topicsHelper.getTopics(),
             articleSummary: this.testData.Article.summaryEdited,
             articleBodyField: this.testData.Article.bodyEdited,
-        });
+        }, !options.preserveSiteTopics, !options.preserveGlobalTopics);
 
         // setting test set up data to new title
         this.testSetUpData.contentTitleforTest.contentTitle = this.testData.Article.titleEdited;
@@ -170,7 +177,8 @@ export class ArticleHelper
             await this.createPage.clickPreviewButton();
             await this.previewPage.performURLCheck();
             await this.articleNodePage.verifyEditedArticle({
-                topics: this.topicsHelper.getTopics()
+                topics: this.topicsHelper.getTopics(),
+                preserveSiteTopics: options.preserveSiteTopics,
             });
             await this.previewPage.clickBackToContentEdittingButton();
             await this.articleEditPage.returnFromPreviewArticlePageURLCheck();
@@ -180,7 +188,8 @@ export class ArticleHelper
         await this.createPage.clickSaveButton();
         await this.articleNodePage.articleNodeURLCheck();
         await this.articleNodePage.verifyEditedArticle({
-            topics: this.topicsHelper.getTopics()
+            topics: this.topicsHelper.getTopics(),
+            preserveSiteTopics: options.preserveSiteTopics,
         });
     }
 

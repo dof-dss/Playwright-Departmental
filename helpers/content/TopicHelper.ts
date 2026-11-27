@@ -1,4 +1,4 @@
-import { Page } from '@playwright/test';
+import { Page, expect } from '@playwright/test';
 import { BasePage } from '@poms/base-pages/BasePage';
 import { TopicCreatePage } from '@poms/content-pages/Topic/TopicCreatePage';
 import { TopicEditPage } from '@poms/content-pages/Topic/TopicEditPage';
@@ -17,14 +17,20 @@ import { SubtopicHelper } from '@helpers/content/SubtopicHelper';
 import { ConsultationHelper } from '@helpers/content/ConsultationHelper';
 import { NewsHelper } from '@helpers/content/NewsHelper';
 import { PublicationHelper } from '@helpers/content/PublicationHelper';
+import { ProtectedAreaHelper } from '@helpers/content/ProtectedAreaHelper';
 import { ApplicationCreatePage } from '@poms/content-pages/Application/ApplicationCreatePage';
 import { ApplicationNodePage } from '@poms/content-pages/Application/ApplicationNodePage';
 import { ArticleCreatePage } from '@poms/content-pages/Article/ArticleCreatePage';
 import { ArticleNodePage } from '@poms/content-pages/Article/ArticleNodePage';
+import { ProtectedAreaCreatePage } from '@poms/content-pages/ProtectedArea/ProtectedAreaCreatePage';
+import { ProtectedAreaNodePage } from '@poms/content-pages/ProtectedArea/ProtectedAreaNodePage';
 import { SubtopicCreatePage } from '@poms/content-pages/Subtopic/SubtopicCreatePage';
 import { SubtopicNodePage } from '@poms/content-pages/Subtopic/SubtopicNodePage';
 import { Topics } from '@poms/base-pages/Topics';
 import { NavigateToCreatedContentHelper } from '@helpers/general/NavigateToCreatedContentHelper';
+import { RevisionPage } from '@poms/base-pages/RevisionPage';
+import { RevertRevisionsPage } from '@poms/base-pages/RevertRevisionsPage';
+import { TestSteps } from '@poms/base-pages/TestSteps';
 
 export interface SaveOptions
 {
@@ -42,16 +48,26 @@ export interface DeleteOptions
 {
     delete: boolean;
     cancel: boolean;
+    deleteAltChildContentWarning?: boolean;
 };
 
 export interface CreateTopicChildContentOptions
 {
     application: boolean;
     article: boolean;
+    protectedarea: boolean;
     subtopic: boolean;
     consultation?: boolean;
     news?: boolean;
     publication?: boolean;
+}
+
+export interface QuickAddTopicChildContentOptions
+{
+    application: boolean;
+    article: boolean;
+    protectedarea: boolean;
+    subtopic: boolean;
 }
 
 export interface RemoveTopicChildContentOptions extends CreateTopicChildContentOptions
@@ -75,6 +91,10 @@ export class TopicHelper
     private readonly deletePage: DeletePage;
     private readonly siteTopics: Topics;
     private readonly navigateToCreatedContentHelper: NavigateToCreatedContentHelper;
+    private readonly subtopicNodePage: SubtopicNodePage;
+    private readonly revisionPage: RevisionPage;
+    private readonly revertRevisionsPage: RevertRevisionsPage;
+    private readonly testSteps: TestSteps;
 
     // constructor
     constructor(
@@ -97,6 +117,10 @@ export class TopicHelper
         this.deletePage = new DeletePage(page);
         this.siteTopics = new Topics(page, testSetUpData, testData);
         this.navigateToCreatedContentHelper = new NavigateToCreatedContentHelper(page, testSetUpData, testData);
+        this.subtopicNodePage = new SubtopicNodePage(page, testSetUpData, testData);
+        this.revisionPage = new RevisionPage(page);
+        this.revertRevisionsPage = new RevertRevisionsPage(page);
+        this.testSteps = new TestSteps();
     }
 
     // navigation method
@@ -190,6 +214,77 @@ export class TopicHelper
         await this.topicNodePage.verifyEditedTopic();
     }
 
+    async editTopicUsingDragAndDrop()
+    {
+        // should be on node page already
+        await this.topicNodePage.topicNodeURLCheck();
+
+        // open moderation sidebar
+        await this.moderationSideBar.openModerationSideBar();
+        // click edit content
+        await this.moderationSideBar.clickEditContentButton();
+
+        // perform drag and drop edit actions
+        await this.topicEditPage.editTopicUsingDragAndDrop();
+
+        // Save and verify
+        await this.createPage.clickSaveButton();
+        await this.topicNodePage.topicNodeURLCheck();
+        await this.topicNodePage.verifyRearrangedTopic();
+    }
+
+    async arrangeTopicContentUsingDragAndDrop()
+    {
+        await this.topicNodePage.topicNodeURLCheck();
+        await this.moderationSideBar.openModerationSideBar();
+        await this.moderationSideBar.arrangeTopicContentUsingDragAndDrop();
+        await this.topicNodePage.topicNodeURLCheck();
+        await this.topicNodePage.verifyRearrangedTopic();
+    }
+
+    async verifyTopicDeletionIsBlocked()
+    {
+        await this.topicNodePage.topicNodeURLCheck();
+        await this.moderationSideBar.openModerationSideBar();
+        await this.moderationSideBar.verifyDeleteIsBlocked();
+    }
+
+    async verifyTopicArchivingIsBlocked()
+    {
+        await this.topicNodePage.topicNodeURLCheck();
+        await this.moderationSideBar.openModerationSideBar();
+        await this.moderationSideBar.verifyArchiveIsBlocked();
+    }
+
+    async verifyTopicIsArchived()
+    {
+        await this.topicNodePage.topicNodeURLCheck();
+        await this.moderationSideBar.openModerationSideBar();
+        await this.moderationSideBar.verifyCurrentState('Archived');
+    }
+
+    async verifyCannotRevertToPreviousArchivedRevision()
+    {
+        await this.topicNodePage.topicNodeURLCheck();
+        await this.moderationSideBar.openModerationSideBar();
+        await this.moderationSideBar.clickShowRevisionsButton();
+        await this.revisionPage.revisionPageURLCheck();
+        await this.revisionPage.clickRevertRevisionsButton();
+        await this.revertRevisionsPage.verifyRevertButtonIsDisabled();
+    }
+
+    async revertToPreviousArchivedRevision()
+    {
+        await this.topicNodePage.topicNodeURLCheck();
+        await this.moderationSideBar.openModerationSideBar();
+        await this.moderationSideBar.clickShowRevisionsButton();
+        await this.revisionPage.revisionPageURLCheck();
+        await this.revisionPage.clickRevertRevisionsButton();
+        await this.revertRevisionsPage.revertRevisionsPageURLCheck();
+        await this.revertRevisionsPage.clickRevert();
+        await this.revertRevisionsPage.revertRevisionCofirmationCheck();
+    }
+
     // delete Topic method
     async deleteTopic(options: DeleteOptions)
     {
@@ -214,17 +309,73 @@ export class TopicHelper
             await this.deletePage.clickCancel();
             await this.topicNodePage.topicNodeURLCheck();
         }
+
+        if (options.deleteAltChildContentWarning === true)
+        {
+            await this.deletePage.verifyDeleteContentWarning();
+            await this.deletePage.clickDeleteContentWarning();
+
+            // consultation child content entity usage verification
+            await this.testSteps.LogInfo('Verifying visibility of Consultation link for ' + this.testData.Consultation.title);
+            await expect(this.page.getByRole('link', { name: this.testData.Consultation.title })).toBeVisible();
+
+            await this.testSteps.LogInfo('Clicking on Consultation link for ' + this.testData.Consultation.title);
+            await this.page.getByRole('link', { name: this.testData.Consultation.title }).click();
+
+            await this.testSteps.LogInfo('Verifying ' + this.testData.Consultation.title + ' page');
+            await expect(this.page.locator(`//h1[text()[normalize-space(.)="${this.testData.Consultation.title}"]]`)).toBeVisible();
+
+            // navigate back to entity usage page
+            await this.page.goBack();
+
+            // news child content entity usage verification
+            await this.testSteps.LogInfo('Verifying visibility of News link for ' + this.testData.News.title);
+            await expect(this.page.getByRole('link', { name: this.testData.News.title })).toBeVisible();
+
+            await this.testSteps.LogInfo('Clicking on News link for ' + this.testData.News.title);
+            await this.page.getByRole('link', { name: this.testData.News.title }).click();
+
+            await this.testSteps.LogInfo('Verifying ' + this.testData.News.title + ' page');
+            await expect(this.page.getByRole('heading', { name: this.testData.News.title })).toBeVisible();
+
+            // navigate back to entity usage page
+            await this.page.goBack();
+
+            // publication child content entity usage verification
+            await this.testSteps.LogInfo('Verifying visibility of Publication link for ' + this.testData.Publication.title);
+            await expect(this.page.getByRole('link', { name: this.testData.Publication.title })).toBeVisible();
+
+            await this.testSteps.LogInfo('Clicking on Publication link for ' + this.testData.Publication.title);
+            await this.page.getByRole('link', { name: this.testData.Publication.title }).click();
+
+            await this.testSteps.LogInfo('Verifying ' + this.testData.Publication.title + ' page');
+            await expect(this.page.getByRole('heading', { name: this.testData.Publication.title })).toBeVisible();
+        }
     }
 
-    async verifyTopicChildContentVisibility(options: CreateTopicChildContentOptions)
+    async verifyTopicChildContentVisibility(options: CreateTopicChildContentOptions & { edited?: boolean; })
     {
         await this.topicNodePage.verifyTopicChildContentVisibility(options);
     }
 
-    async createTopicChildContentTopicTree(options: CreateTopicChildContentOptions): Promise<void>
+    async createTopicChildContentTopicTree(
+        options: CreateTopicChildContentOptions,
+        saveAsOption: keyof typeof TestSetUpData.validSaveAsOptionList = 'draft',
+        childContentOptions?: { useEditedTitle?: boolean; verifyUnpublishedTopicWarning?: boolean; }
+    ): Promise<void>
     {
+        const previousSaveAsOption = this.testSetUpData.saveAsOptionForTest.saveAsOption;
+        const previousConsultationRespondOnline = this.testData.Consultation.respondeOnline;
+        const previousTopicTitle = this.testData.Topic.title;
+
+        // If useEditedTitle is true, use the edited title to find the parent topic
+        if (childContentOptions?.useEditedTitle)
+        {
+            this.testData.Topic.title = this.testData.Topic.titleEdited;
+        }
+
         this.testData.SiteTopics.topic1 = this.testData.Topic.title;
-        this.testSetUpData.saveAsOptionForTest.saveAsOption = this.testSetUpData.validSaveAsOptionList.draft;
+        this.testSetUpData.saveAsOptionForTest.saveAsOption = this.testSetUpData.validSaveAsOptionList[saveAsOption];
 
         try
         {
@@ -232,12 +383,17 @@ export class TopicHelper
             {
                 this.testSetUpData.contentTypeforTest.contentType = this.testSetUpData.validContentTypeList.application;
                 this.testSetUpData.contentTitleforTest.contentTitle = this.testData.Application.title;
-                this.testData.Application.LinkURL = 'EPN 02-2020 - Latest Information on the McCloud Judgement';
-                this.testData.Application.LinkText = 'EPN 02-2020 - Latest Information on the McCloud Judgement';
+                this.testData.Application.LinkURL = 'External whistleblowing procedures on how to make a disclosure';
+                this.testData.Application.LinkText = 'External whistleblowing procedures on how to make a disclosure';
                 await new ApplicationHelper(this.page, this.testSetUpData, this.testData).createApplication({
                     preview: false,
                     mandatoryFieldCheck: false,
                 });
+                if (childContentOptions?.verifyUnpublishedTopicWarning)
+                {
+                    const applicationNodePage = new ApplicationNodePage(this.page, this.testSetUpData, this.testData);
+                    await applicationNodePage.verifyUnpublishedTopicWarning();
+                }
             }
 
             if (options.article)
@@ -248,6 +404,26 @@ export class TopicHelper
                     preview: false,
                     mandatoryFieldCheck: false,
                 });
+                if (childContentOptions?.verifyUnpublishedTopicWarning)
+                {
+                    const articleNodePage = new ArticleNodePage(this.page, this.testSetUpData, this.testData);
+                    await articleNodePage.verifyUnpublishedTopicWarning();
+                }
+            }
+
+            if (options.protectedarea)
+            {
+                this.testSetUpData.contentTypeforTest.contentType = this.testSetUpData.validContentTypeList.protectedarea;
+                this.testSetUpData.contentTitleforTest.contentTitle = this.testData.ProtectedArea.title;
+                await new ProtectedAreaHelper(this.page, this.testSetUpData, this.testData).createProtectedArea({
+                    preview: false,
+                    mandatoryFieldCheck: false,
+                });
+                if (childContentOptions?.verifyUnpublishedTopicWarning)
+                {
+                    const protectedAreaNodePage = new ProtectedAreaNodePage(this.page, this.testSetUpData, this.testData);
+                    await protectedAreaNodePage.verifyUnpublishedTopicWarning();
+                }
             }
 
             if (options.subtopic)
@@ -260,12 +436,18 @@ export class TopicHelper
                     customTopicNeeded: false,
                     topics: [this.testData.Topic.title],
                 });
+                if (childContentOptions?.verifyUnpublishedTopicWarning)
+                {
+                    const subtopicNodePage = new SubtopicNodePage(this.page, this.testSetUpData, this.testData);
+                    await subtopicNodePage.verifyUnpublishedTopicWarning();
+                }
             }
 
             if (options.consultation)
             {
                 this.testSetUpData.contentTypeforTest.contentType = this.testSetUpData.validContentTypeList.consultation;
                 this.testSetUpData.contentTitleforTest.contentTitle = this.testData.Consultation.title;
+                this.testData.Consultation.respondeOnline = 'External whistleblowing procedures on how to make a disclosure';
                 await new ConsultationHelper(this.page, this.testSetUpData, this.testData).createConsultation({
                     preview: false,
                     mandatoryFieldCheck: false,
@@ -291,15 +473,20 @@ export class TopicHelper
                     mandatoryFieldCheck: false,
                 });
             }
+
         }
         finally
         {
             this.testSetUpData.contentTypeforTest.contentType = this.testSetUpData.validContentTypeList.topic;
             this.testSetUpData.contentTitleforTest.contentTitle = this.testData.Topic.title;
+            this.testData.Consultation.respondeOnline = previousConsultationRespondOnline;
+            this.testSetUpData.saveAsOptionForTest.saveAsOption = previousSaveAsOption;
+            // Restore the previous topic title (for TC17 which needs original title after method completes)
+            this.testData.Topic.title = previousTopicTitle;
         }
     }
 
-    async createTopicChildContentQuicklyAdd(options: CreateTopicChildContentOptions): Promise<void>
+    async createTopicChildContentQuicklyAdd(options: QuickAddTopicChildContentOptions): Promise<void>
     {
         await this.topicNodePage.topicNodeURLCheck();
         this.testData.SiteTopics.topic1 = this.testData.Topic.title;
@@ -327,8 +514,8 @@ export class TopicHelper
 
                 this.testSetUpData.contentTypeforTest.contentType = this.testSetUpData.validContentTypeList.application;
                 this.testSetUpData.contentTitleforTest.contentTitle = this.testData.Application.title;
-                this.testData.Application.LinkURL = 'EPN 02-2020 - Latest Information on the McCloud Judgement';
-                this.testData.Application.LinkText = 'EPN 02-2020 - Latest Information on the McCloud Judgement';
+                this.testData.Application.LinkURL = 'External whistleblowing procedures on how to make a disclosure';
+                this.testData.Application.LinkText = 'External whistleblowing procedures on how to make a disclosure';
                 const applicationCreatePage = new ApplicationCreatePage(this.page, this.testSetUpData, this.testData);
                 await applicationCreatePage.fillApplicationForm({
                     applicationTitle: this.testData.Application.title,
@@ -375,6 +562,33 @@ export class TopicHelper
                 await returnToParentTopic();
             }
 
+            if (options.protectedarea)
+            {
+                await this.moderationSideBar.openModerationSideBar();
+                await this.moderationSideBar.clickAddProtectedArea();
+
+                this.testSetUpData.contentTypeforTest.contentType = this.testSetUpData.validContentTypeList.protectedarea;
+                this.testSetUpData.contentTitleforTest.contentTitle = this.testData.ProtectedArea.title;
+                const protectedAreaCreatePage = new ProtectedAreaCreatePage(this.page, this.testSetUpData, this.testData);
+                await protectedAreaCreatePage.fillProtectedAreaForm({
+                    protectedAreaTitle: this.testData.ProtectedArea.title,
+                    revisionLogMessage: this.testData.ProtectedArea.revisionlog,
+                    topics,
+                    protectedAreaType: this.testData.ProtectedArea.type,
+                    featureType: this.testData.ProtectedArea.feature,
+                    county: this.testData.ProtectedArea.county,
+                    council: this.testData.ProtectedArea.council,
+                    document: this.testData.ProtectedArea.document,
+                    body: this.testData.ProtectedArea.body,
+                }, true);
+                await this.createPage.chooseSaveAsType();
+                await this.createPage.clickSaveButton();
+                const protectedAreaNodePage = new ProtectedAreaNodePage(this.page, this.testSetUpData, this.testData);
+                await protectedAreaNodePage.protectedAreaNodeURLCheck();
+                await protectedAreaNodePage.verifyProtectedArea({ preview: false });
+                await returnToParentTopic();
+            }
+
             if (options.subtopic)
             {
                 await this.moderationSideBar.openModerationSideBar();
@@ -397,11 +611,120 @@ export class TopicHelper
                 await subtopicNodePage.verifySubtopic();
                 await returnToParentTopic();
             }
+
         }
         finally
         {
             this.testSetUpData.contentTypeforTest.contentType = this.testSetUpData.validContentTypeList.topic;
             this.testSetUpData.contentTitleforTest.contentTitle = this.testData.Topic.title;
+        }
+    }
+
+    async editTopicChildContentNodes(options: CreateTopicChildContentOptions): Promise<void>
+    {
+        const previousSaveAsOption = this.testSetUpData.saveAsOptionForTest.saveAsOption;
+        const previousContentType = this.testSetUpData.contentTypeforTest.contentType;
+        const previousContentTitle = this.testSetUpData.contentTitleforTest.contentTitle;
+        const previousGlobalTopic = this.testSetUpData.globalTopicForTest.globalTopic;
+        const previousSiteTopic1 = this.testData.SiteTopics.topic1;
+        const previousEditedConsultationRespondOnline = this.testData.Consultation.respondeOnlineEdited;
+
+        this.testData.SiteTopics.topic1 = this.testData.Topic.title;
+        this.testSetUpData.saveAsOptionForTest.saveAsOption = this.testSetUpData.validSaveAsOptionList.published;
+        const selectedChildren = [
+            {
+                selected: options.application,
+                kind: 'application',
+                contentType: this.testSetUpData.validContentTypeList.application,
+                title: this.testData.Application.title,
+            },
+            {
+                selected: options.article,
+                kind: 'article',
+                contentType: this.testSetUpData.validContentTypeList.article,
+                title: this.testData.Article.title,
+            },
+            {
+                selected: options.protectedarea,
+                kind: 'protectedarea',
+                contentType: this.testSetUpData.validContentTypeList.protectedarea,
+                title: this.testData.ProtectedArea.title,
+            },
+            {
+                selected: options.subtopic,
+                kind: 'subtopic',
+                contentType: this.testSetUpData.validContentTypeList.subtopic,
+                title: this.testData.Subtopic.title,
+            },
+            {
+                selected: options.consultation,
+                kind: 'consultation',
+                contentType: this.testSetUpData.validContentTypeList.consultation,
+                title: this.testData.Consultation.title,
+            },
+            {
+                selected: options.news,
+                kind: 'news',
+                contentType: this.testSetUpData.validContentTypeList.news,
+                title: this.testData.News.title,
+            },
+            {
+                selected: options.publication,
+                kind: 'publication',
+                contentType: this.testSetUpData.validContentTypeList.publication,
+                title: this.testData.Publication.title,
+            },
+        ].filter(child => child.selected);
+
+        try
+        {
+            for (const child of selectedChildren)
+            {
+                this.testSetUpData.contentTypeforTest.contentType = child.contentType;
+                this.testSetUpData.contentTitleforTest.contentTitle = child.title;
+                await this.navigateToCreatedContentHelper.navigateToCreatedContent({ active: true, deleted: false });
+
+                if (child.kind === 'application')
+                {
+                    this.testData.Application.LinkURL = 'Civil Service Pay';
+                    this.testData.Application.LinkText = 'Civil Service Pay';
+                    await new ApplicationHelper(this.page, this.testSetUpData, this.testData).editApplication({ preview: false, preserveSiteTopics: true, preserveGlobalTopics: true });
+                }
+                else if (child.kind === 'article')
+                {
+                    await new ArticleHelper(this.page, this.testSetUpData, this.testData).editArticle({ preview: false, preserveSiteTopics: true, preserveGlobalTopics: true });
+                }
+                else if (child.kind === 'subtopic')
+                {
+                    await new SubtopicHelper(this.page, this.testSetUpData, this.testData).editSubtopic({ preview: false, preserveSiteTopics: true });
+                }
+                else if (child.kind === 'protectedarea')
+                {
+                    await new ProtectedAreaHelper(this.page, this.testSetUpData, this.testData).editProtectedArea({ preview: false, preserveSiteTopics: true });
+                }
+                else if (child.kind === 'consultation')
+                {
+                    this.testData.Consultation.respondeOnlineEdited = 'Civil Service Pay';
+                    await new ConsultationHelper(this.page, this.testSetUpData, this.testData).editConsultation({ preview: false, preserveSiteTopics: true, preserveGlobalTopics: true });
+                }
+                else if (child.kind === 'news')
+                {
+                    await new NewsHelper(this.page, this.testSetUpData, this.testData).editNews({ preview: false, preserveSiteTopics: true, preserveGlobalTopics: true });
+                }
+                else if (child.kind === 'publication')
+                {
+                    await new PublicationHelper(this.page, this.testSetUpData, this.testData).editPublication({ preview: false, preserveSiteTopics: true, preserveGlobalTopics: true });
+                }
+            }
+        }
+        finally
+        {
+            this.testSetUpData.contentTypeforTest.contentType = previousContentType;
+            this.testSetUpData.contentTitleforTest.contentTitle = previousContentTitle;
+            this.testSetUpData.saveAsOptionForTest.saveAsOption = previousSaveAsOption;
+            this.testSetUpData.globalTopicForTest.globalTopic = previousGlobalTopic;
+            this.testData.SiteTopics.topic1 = previousSiteTopic1;
+            this.testData.Consultation.respondeOnlineEdited = previousEditedConsultationRespondOnline;
         }
     }
 
@@ -420,6 +743,12 @@ export class TopicHelper
                 contentType: this.testSetUpData.validContentTypeList.article,
                 title: this.testData.Article.title,
                 revisionLog: this.testData.Article.revisionlog,
+            },
+            {
+                selected: options.protectedarea,
+                contentType: this.testSetUpData.validContentTypeList.protectedarea,
+                title: this.testData.ProtectedArea.title,
+                revisionLog: this.testData.ProtectedArea.revisionlog,
             },
             {
                 selected: options.subtopic,

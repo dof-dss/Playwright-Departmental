@@ -96,7 +96,7 @@ export class SubtopicEditPage
     // ------------------------ actions related to edit subtopic ------------------------
 
     // fill in subtopic form elements - title summary topics long description etc
-    async editSubtopicForm(data: SubtopicEditSaveData)
+    async editSubtopicForm(data: SubtopicEditSaveData, updateSiteTopics: boolean = true)
     {
         await this.editSubtopicPageURLCheck();
         await this.editSubtopicTitle(data.subtopicTitle);
@@ -106,18 +106,54 @@ export class SubtopicEditPage
             bannerImageThin: data.bannerImageThin,
         });
         await this.createPages.enterRevisionLogMessage(data.revisionLogMessage);
-        await this.topics.selectSiteTopics(
-            data.topics[0] ?? null,
-            data.topics[1] ?? null,
-            data.topics[2] ?? null,
-            data.topics[3] ?? null,
-            true,
-        );
+        if (updateSiteTopics)
+        {
+            await this.topics.selectSiteTopics(
+                data.topics[0] ?? null,
+                data.topics[1] ?? null,
+                data.topics[2] ?? null,
+                data.topics[3] ?? null,
+                true,
+            );
+        }
         await this.editSubtopicSummary(data.subtopicSummary);
 
         if (data.subtopicLongDescription)
         {
             await this.ckeditor.enterCKEditorBody(data.subtopicLongDescription);
         }
+    }
+
+    async editSubtopicUsingDragAndDrop()
+    {
+        await this.testSteps.LogInfo('Performing drag and drop edit actions on the subtopic');
+        const childRows = this.page.locator('.field--name-field-topic-content tr.draggable');
+        const subtopicRow = childRows.filter({ hasText: this.testData.SubtopicChild.title }).first();
+        const sourceHandle = subtopicRow.locator('.tabledrag-handle');
+        const firstRow = childRows.first();
+        const targetHandle = firstRow.locator('.tabledrag-handle');
+
+        await expect(childRows).toHaveCount(4);
+        await expect(sourceHandle).toBeVisible();
+        await expect(targetHandle).toBeVisible();
+        await sourceHandle.dragTo(targetHandle);
+
+        if (!(await firstRow.textContent())?.includes(this.testData.SubtopicChild.title))
+        {
+            const sourceBox = await sourceHandle.boundingBox();
+            const targetBox = await targetHandle.boundingBox();
+
+            if (!sourceBox || !targetBox)
+            {
+                throw new Error('Unable to calculate drag coordinates for Subtopic Content reorder');
+            }
+
+            await this.page.mouse.move(sourceBox.x + sourceBox.width / 2, sourceBox.y + sourceBox.height / 2);
+            await this.page.mouse.down();
+            await this.page.mouse.move(targetBox.x + targetBox.width / 2, targetBox.y + 4, { steps: 20 });
+            await this.page.mouse.up();
+        }
+
+        await expect(firstRow).toContainText(this.testData.SubtopicChild.title);
     }
 }

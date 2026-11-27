@@ -8,6 +8,7 @@ export interface VerifyOptions
 {
     preview: boolean;
     topics: (string | null)[];
+    preserveSiteTopics?: boolean;
 };
 
 export class ApplicationNodePage
@@ -120,35 +121,44 @@ export class ApplicationNodePage
 
 
     //verify edited application method
-    async verifyEditedApplication({ preview, topics }: VerifyOptions)
+    async verifyEditedApplication({ preview, topics, preserveSiteTopics }: VerifyOptions)
     {
         // verify title
         await this.testSteps.LogInfo(`Verifying title "${this.testSetUpData.contentTitleforTest.contentTitle}" is visible`);
         await expect(this.page.getByRole('heading', { level: 1, exact: true })).toHaveText(this.testData.Application.titleEdited);
 
-        // Verify topics (edited - only topic2 should be visible)
-        const editedTopics = topics;
-
-        // Only topic2 is visible; others should be hidden
-        await this.testSteps.LogInfo(`Verifying Edited Site topic "${editedTopics[1]}" is visible`);
-        if (editedTopics[1])
+        if (preserveSiteTopics)
         {
-            await expect(this.page.locator(this.topicLinkXPath(editedTopics[1]))).toBeVisible();
+            for (const topic of topics.slice(0, 3))
+            {
+                if (topic)
+                {
+                    await this.testSteps.LogInfo(`Verifying preserved Site topic "${topic}" is visible`);
+                    await expect(this.page.locator(this.topicLinkXPath(topic))).toBeVisible();
+                }
+            }
         }
-        if (editedTopics[0])
+        else
         {
-            await this.testSteps.LogInfo(`Verifying Edited Site topic "${editedTopics[0]}" is NOT visible`);
-            await expect(this.page.locator(this.topicLinkXPath(editedTopics[0]))).toBeHidden();
+            // A standard edit moves the child from topic 1 to topic 2.
+            await this.testSteps.LogInfo(`Verifying Edited Site topic "${topics[1]}" is visible`);
+            if (topics[1])
+            {
+                await expect(this.page.locator(this.topicLinkXPath(topics[1]))).toBeVisible();
+            }
+            for (const topic of [topics[0], topics[2]])
+            {
+                if (topic)
+                {
+                    await this.testSteps.LogInfo(`Verifying Edited Site topic "${topic}" is NOT visible`);
+                    await expect(this.page.locator(this.topicLinkXPath(topic))).toBeHidden();
+                }
+            }
         }
-        if (editedTopics[2])
+        if (topics[3])
         {
-            await this.testSteps.LogInfo(`Verifying Edited Site topic "${editedTopics[2]}" is NOT visible`);
-            await expect(this.page.locator(this.topicLinkXPath(editedTopics[2]))).toBeHidden();
-        }
-        if (editedTopics[3])
-        {
-            await this.testSteps.LogInfo(`Verifying Edited Site topic "${editedTopics[3]}" is NOT visible`);
-            await expect(this.page.locator(this.topicLinkXPath(editedTopics[3]))).toBeHidden();
+            await this.testSteps.LogInfo(`Verifying Site topic "${topics[3]}" is NOT visible`);
+            await expect(this.page.locator(this.topicLinkXPath(topics[3]))).toBeHidden();
         }
 
         // verify summary
@@ -194,5 +204,17 @@ export class ApplicationNodePage
         // verify addtional info
         await this.testSteps.LogInfo(`Verifying Additional Information "${this.testData.Application.additionalinfoEdited}" is visible`);
         await expect(this.page.getByText(this.testData.Application.additionalinfoEdited)).toBeVisible();
+    }
+
+    // verify warning message when associated topic is unpublished
+    async verifyUnpublishedTopicWarning(topicTitle = this.testData.Topic.title)
+    {
+        await this.testSteps.LogInfo(`Verifying unpublished topic warning message is visible for topic "${topicTitle}"`);
+        const warningMessage = this.page.locator(
+            '//h2[@class="visually-hidden"][text()="Warning message"]/following-sibling::div[@class="messages__item"]'
+        );
+        await expect(warningMessage).toContainText(
+            `This content is associated with an unpublished topic (${topicTitle}), so visitors have no way to reach it through that topic on the site.`
+        );
     }
 }

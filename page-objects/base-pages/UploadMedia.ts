@@ -1,7 +1,19 @@
 import { Page, Locator, expect } from '@playwright/test';
 import { TestSteps } from '@poms/base-pages/TestSteps';
 import { TestData, TestSetUpData } from '@tdata/TestDataObject';
+import { randomUUID } from 'node:crypto';
+import { readFile } from 'node:fs/promises';
 import path from 'path';
+
+// Playwright needs a MIME type for in-memory uploads; add new file extensions here when needed.
+const uploadMimeTypes: Record<string, string> = {
+    '.pdf': 'application/pdf',
+    '.jpg': 'image/jpeg',
+    '.jpeg': 'image/jpeg',
+    '.png': 'image/png',
+    '.wav': 'audio/wav',
+    '.docx': 'application/vnd.openxmlformats-officedocument.wordprocessingml.document'
+};
 
 export interface GalleryImageValues
 {
@@ -61,6 +73,7 @@ export class UploadMedia
     private readonly mediaNameField: Locator;
 
     private readonly addMediaSave: Locator;
+    private readonly removeMediaButton: Locator;
     private readonly mediaSearchNameField: Locator;
     private readonly applyFiltersButton: Locator;
     private readonly insertSelectedButton: Locator;
@@ -134,6 +147,7 @@ export class UploadMedia
         this.mediaNameField = page.locator('//input[contains(@id,"edit-media-0-fields-name-0-value")]');
 
         this.addMediaSave = page.locator('//button[text()="Save"]');
+        this.removeMediaButton = page.locator('//*[contains(@id, "edit-remove-button")]');
         this.mediaSearchNameField = page.locator('//input[contains(@id,"edit-name")]');
         this.applyFiltersButton = page.locator('//input[contains(@id,"edit-submit-media-library")]');
         this.insertSelectedButton = page.locator('//button[text()="Insert selected"]');
@@ -198,7 +212,7 @@ export class UploadMedia
     // click Add secure media button for attachments on edit page 
     async clickEditPageAddSecureMediaAttachmentButton()
     {
-        await this.testSteps.LogInfo('Clicking Add secure media attachment Button');
+        await this.testSteps.LogInfo('Clicking Add secure media attachment Button while editing');
         await this.editPageAddSecureMediaAttachmentPublicationButton.click();
     }
 
@@ -307,63 +321,76 @@ export class UploadMedia
 
     // ---------------------- UPLOADS ---------------------------
 
+    // Give each upload a unique name to avoid Drupal file locks during parallel tests.
+    // Read the original sample into memory so its contents and extension remain unchanged.
+    private async uploadFiles(field: Locator, fileNames: string[])
+    {
+        const files = await Promise.all(fileNames.map(async fileName =>
+        {
+            const parsed = path.parse(fileName);
+            const mimeType = uploadMimeTypes[parsed.ext.toLowerCase()];
+            if (!mimeType)
+            {
+                throw new Error(`Unsupported upload file extension "${parsed.ext}" for "${fileName}"`);
+            }
+            return {
+                name: `${parsed.name}-${randomUUID()}${parsed.ext}`,
+                mimeType,
+                buffer: await readFile(path.join(process.cwd(), 'FileUploadSamples', fileName))
+            };
+        }));
+        await field.setInputFiles(files);
+    }
+
     // Upload attachment
     async uploadAttachmnetProcess(attachmentFileName: string)
     {
-        const filePath = path.join(process.cwd(), 'FileUploadSamples', attachmentFileName);
         await this.testSteps.LogInfo(`Uploading attachment "${attachmentFileName}" from files`);
         // resolves to whichever of the two upload fields is actually present
-        await this.uploadAttachmentField.or(this.mediaUploadAttachmentField).setInputFiles(filePath);
+        await this.uploadFiles(this.uploadAttachmentField.or(this.mediaUploadAttachmentField), [attachmentFileName]);
 
     }
 
     // Upload secure attachment
     async uploadSecureAttachmentProcess(secureAttachmentFileName: string)
     {
-        const filePath = path.join(process.cwd(), 'FileUploadSamples', secureAttachmentFileName);
         await this.testSteps.LogInfo(`Uploading secure attachment "${secureAttachmentFileName}" from files`);
-        await this.uploadAttachmentField.or(this.mediaSecureAttachment).setInputFiles(filePath);
+        await this.uploadFiles(this.uploadAttachmentField.or(this.mediaSecureAttachment), [secureAttachmentFileName]);
 
     }
 
     // Upload image
     async uploadImageProcess(imageFileName: string)
     {
-        const filePath = path.join(process.cwd(), 'FileUploadSamples', imageFileName);
         await this.testSteps.LogInfo(`Uploading image "${imageFileName}" from files`);
         // resolves to whichever of the two upload fields is actually present
-        await this.uploadAttachmentField.or(this.mediaUploadImageField).setInputFiles(filePath);
-
+        await expect(this.uploadAttachmentField.or(this.mediaUploadImageField)).toBeVisible();
+        await this.uploadFiles(this.uploadAttachmentField.or(this.mediaUploadImageField), [imageFileName]);
     }
 
     // Upload mulitple gallery images
     async uploadMultipleGalleryImagesProcess(galleryFileName: string, gallery2FileName: string, gallery3FileName: string, gallery4FileName: string, gallery5FileName: string,)
     {
-        const gallery1FilePath = path.join(process.cwd(), 'FileUploadSamples', galleryFileName);
-        const gallery2FilePath = path.join(process.cwd(), 'FileUploadSamples', gallery2FileName);
-        const gallery3FilePath = path.join(process.cwd(), 'FileUploadSamples', gallery3FileName);
-        const gallery4FilePath = path.join(process.cwd(), 'FileUploadSamples', gallery4FileName);
-        const gallery5FilePath = path.join(process.cwd(), 'FileUploadSamples', gallery5FileName);
-
         await this.testSteps.LogInfo(`Uploading gallery images "${galleryFileName}" "${gallery2FileName}" "${gallery3FileName}" "${gallery4FileName}" "${gallery5FileName}" from files`);
-        await this.uploadAttachmentField.setInputFiles([
-            gallery1FilePath,
-            gallery2FilePath,
-            gallery3FilePath,
-            gallery4FilePath,
-            gallery5FilePath
+        await this.uploadFiles(this.uploadAttachmentField, [
+            galleryFileName,
+            gallery2FileName,
+            gallery3FileName,
+            gallery4FileName,
+            gallery5FileName
         ]);
+        await this.testSteps.LogInfo(`Verifying remove media button is visible confirm file upload process has succeeded`);
+        await expect(this.removeMediaButton.first()).toBeVisible();
     }
 
     // Upload image
     async uploadAudioFileProcess(audioFileName: string)
     {
-        const filePath = path.join(process.cwd(), 'FileUploadSamples', audioFileName);
         await this.testSteps.LogInfo(`Uploading audio file "${audioFileName}" from files`);
 
         // resolves to whichever of the two upload fields is actually present
         // This is due to differences between the media library and the add media model process
-        await this.uploadAudioField.or(this.mediaUploadAudioField).setInputFiles(filePath);
+        await this.uploadFiles(this.uploadAudioField.or(this.mediaUploadAudioField), [audioFileName]);
     }
 
     // Upload remote video
@@ -385,9 +412,8 @@ export class UploadMedia
     // Upload image
     async ImportWordFile(WordFile: string)
     {
-        const filePath = path.join(process.cwd(), 'FileUploadSamples', WordFile);
-        await this.testSteps.LogInfo(`Uploading image "${WordFile}" from files`);
-        await this.importWordFileInputField.setInputFiles(filePath);
+        await this.testSteps.LogInfo(`Uploading Word document "${WordFile}" from files`);
+        await this.uploadFiles(this.importWordFileInputField, [WordFile]);
     }
 
     // ---------------------- FIELD NAMES ---------------------------
@@ -397,18 +423,22 @@ export class UploadMedia
     {
         // alt text
         await this.testSteps.LogInfo(`Entering media Alt text "${addMediaAltText}"`);
+        await expect(this.mediAltTextField).toBeVisible();
         await this.mediAltTextField.fill(addMediaAltText);
 
         // title
         await this.testSteps.LogInfo(`Entering media Title "${addMediaTitle}"`);
+        await expect(this.mediaTitleField).toBeVisible();
         await this.mediaTitleField.fill(addMediaTitle);
 
         // caption
         await this.testSteps.LogInfo(`Entering media Caption "${addMediaCaption}"`);
+        await expect(this.mediaCaptionField).toBeVisible();
         await this.mediaCaptionField.fill(addMediaCaption);
 
         // name
         await this.testSteps.LogInfo(`Entering media name "${addMediaName}"`);
+        await expect(this.mediaNameField).toBeVisible();
         await this.mediaNameField.fill(addMediaName);
     }
 
@@ -416,14 +446,17 @@ export class UploadMedia
     {
         // alt text
         await this.testSteps.LogInfo(`Entering media Alt text "${addMediaAltText}"`);
+        await expect(this.mediAltTextFieldLibrary).toBeVisible();
         await this.mediAltTextFieldLibrary.fill(addMediaAltText);
 
         // title
         await this.testSteps.LogInfo(`Entering media Title "${addMediaTitle}"`);
+        await expect(this.mediaTitleFieldLibrary).toBeVisible();
         await this.mediaTitleFieldLibrary.fill(addMediaTitle);
 
         // caption
         await this.testSteps.LogInfo(`Entering media Caption "${addMediaCaption}"`);
+        await expect(this.mediaCaptionFieldLibrary).toBeVisible();
         await this.mediaCaptionFieldLibrary.fill(addMediaCaption);
     }
 
@@ -435,9 +468,21 @@ export class UploadMedia
         for (let i = 0; i < details.length; i++)
         {
             const values = details[i];
+
+            await this.testSteps.LogInfo(`Entering media Alt text "${values.alt}"`);
+            await expect(this.page.locator(`//input[contains(@id, "edit-media-${i}-fields-field-media-image-0-alt")]`)).toBeVisible();
             await this.page.fill(`//input[contains(@id, "edit-media-${i}-fields-field-media-image-0-alt")]`, values.alt);
+
+            await this.testSteps.LogInfo(`Entering media Title "${values.title}"`);
+            await expect(this.page.locator(`//input[contains(@id, "edit-media-${i}-fields-field-media-image-0-title")]`)).toBeVisible();
             await this.page.fill(`//input[contains(@id, "edit-media-${i}-fields-field-media-image-0-title")]`, values.title);
+
+            await this.testSteps.LogInfo(`Entering media Caption "${values.caption}"`);
+            await expect(this.page.locator(`//input[contains(@id, "edit-media-${i}-fields-field-caption-0-value")]`)).toBeVisible();
             await this.page.fill(`//input[contains(@id, "edit-media-${i}-fields-field-caption-0-value")]`, values.caption);
+
+            await this.testSteps.LogInfo(`Entering media Name "${values.name}"`);
+            await expect(this.page.locator(`//input[contains(@id, "edit-media-${i}-fields-name-0-value")]`)).toBeVisible();
             await this.page.fill(`//input[contains(@id, "edit-media-${i}-fields-name-0-value")]`, values.name);
         }
     }
@@ -448,6 +493,7 @@ export class UploadMedia
     {
 
         await this.testSteps.LogInfo('Verifying media name field option is enabled');
+        await expect(this.mediaNameField).toBeVisible();
         await expect(this.mediaNameField).toBeEnabled();
 
         await this.testSteps.LogInfo(`Entering media name "${addMediaName}"`);
@@ -461,6 +507,7 @@ export class UploadMedia
     async clickMediaSave()
     {
         await this.testSteps.LogInfo('Clicking Save');
+        await expect(this.addMediaSave).toBeVisible();
         await this.addMediaSave.click();
     }
 
@@ -469,7 +516,7 @@ export class UploadMedia
     // Enter Media Seach name
     async enterMediaSearchTitleField(mediaSearchName: string)
     {
-        await this.testSteps.LogInfo(`Entering media name "${mediaSearchName}" in search field`);
+        await this.testSteps.LogInfo(`Entering media title "${mediaSearchName}" in search field`);
         await this.mediaSearchNameField.pressSequentially(mediaSearchName);
     }
 
@@ -499,7 +546,7 @@ export class UploadMedia
     //verify Attachment is uploaded 
     async verifyAttachmentUploaded()
     {
-        await this.testSteps.LogInfo('Verifying Attachement is uploaded');
+        await this.testSteps.LogInfo('Verifying attachment is uploaded');
 
         // looking for 'x' button to remove to ensure it has been properly uploaded
         if (this.testSetUpData.contentTypeforTest.contentType === this.testSetUpData.validContentTypeList.publication)
@@ -517,7 +564,7 @@ export class UploadMedia
     //verify Secure Attachment is uploaded 
     async verifySecureAttachmentUploaded()
     {
-        await this.testSteps.LogInfo('Verifying Secure Attachement is uploaded');
+        await this.testSteps.LogInfo('Verifying secure attachment is uploaded');
         await expect(this.page.locator('//input[contains(@id,"edit-field-publication-secure-files-selection-0-remove-button")]')).toBeVisible();
         await expect(this.page.locator('//input[contains(@id,"edit-field-publication-secure-files-selection-0-remove-button")]')).toBeEnabled();
     }

@@ -178,49 +178,49 @@ export const TestData = {
 
     // image 1 values 
     imageFileName: 'TestingImage.jpg',
-    imageAltText: '',
-    imageTitle: '',
-    imageCaption: '',
-    imageName: 'Automated image Testing New',
+    imageAltText: 'Automated image alt text',
+    imageTitle: 'Automated image Title',
+    imageCaption: 'Automated image Caption',
+    imageName: 'Automated Test - Automated image Testing New',
 
     // image 2 name has no other values as this tests that the other fields are not mandatory
     imageFileNameEdited: 'TestingImageEdited.png',
-    imageNameEdited: 'Automated attachement Testing Edited',
+    imageNameEdited: 'Automated Test - Automated attachement Testing Edited',
 
     // gallery image values
     galleryImage1FileName: 'TestGallery.jpg',
     galleryImageAltText: 'Gallery Image 1 alt text',
     galleryImageTitle: 'Gallery Image 1 Title',
     galleryImageCaption: 'This is Gallery Image 1 Caption',
-    galleryImageName: 'Automated gallery image 1 Testing New',
+    galleryImageName: 'Automated Test - Automated gallery image 1 Testing New',
 
     // gallery image 2 values
     galleryImage2FileName: 'TestGallery2.jpg',
     galleryImage2AltText: 'Gallery Image 2 alt text',
     galleryImage2Title: 'Gallery Image 2 Title',
     galleryImage2Caption: 'This is Gallery Image 2 Caption',
-    galleryImage2Name: 'Automated gallery image 2  Testing New',
+    galleryImage2Name: 'Automated Test - Automated gallery image 2  Testing New',
 
     // gallery image 3 values
     galleryImage3FileName: 'TestGallery3.jpg',
     galleryImage3AltText: 'Gallery Image 3 alt text',
     galleryImage3Title: 'Gallery Image 3 Title',
     galleryImage3Caption: 'This is Gallery Image 3 Caption',
-    galleryImage3Name: 'Automated gallery image 3  Testing New',
+    galleryImage3Name: 'Automated Test - Automated gallery image 3  Testing New',
 
     // gallery image 4 values
     galleryImage4FileName: 'TestGallery4.jpg',
     galleryImage4AltText: 'Gallery Image 4 alt text',
     galleryImage4Title: 'Gallery Image 4 Title',
     galleryImage4Caption: 'This is Gallery Image 4 Caption',
-    galleryImage4Name: 'Automated gallery image 4 Testing New',
+    galleryImage4Name: 'Automated Test - Automated gallery image 4 Testing New',
 
     // gallery image 5 values
     galleryImage5FileName: 'TestGallery5.jpg',
     galleryImage5AltText: 'Gallery Image 5 alt text',
     galleryImage5Title: 'Gallery Image 5 Title',
     galleryImage5Caption: 'This is Gallery Image 5 Caption',
-    galleryImage5Name: 'Automated gallery image 5 Testing New',
+    galleryImage5Name: 'Automated Test -Automated gallery image 5 Testing New',
 
     // Gallery image edited name has no other values as this tests that the other fields are not mandatory
     galleryImage1FileNameEdited: 'TestingImageEdited.png',
@@ -228,8 +228,8 @@ export const TestData = {
 
     BannerImageFileName: 'BannerImage.jpg',
     BannerImageFileNameEdited: 'BannerImageEdit.png',
-    bannerName: 'Automated Banner Testing New',
-    bannerNameEdited: 'Automated Banner Testing Edited',
+    bannerName: 'Automated Test - Automated Banner Testing New',
+    bannerNameEdited: 'Automated Test - Automated Banner Testing Edited',
     bannerImageAltText: 'Banner Image alt text',
     bannerImageTitle: 'Banner Image Title',
     bannerImageCaption: 'This is Banner Image Caption',
@@ -239,16 +239,16 @@ export const TestData = {
 
     BannerOverlayImageFileName: 'BannerOverlayImage.jpg',
     BannerOverlayImageFileNameEdited: 'BannerOverlayImageEdited.jpg',
-    bannerOverlayName: 'Automated Banner Overlay Testing New',
-    bannerOverlayNameEdited: 'Automated Banner Overlay Testing Edited',
+    bannerOverlayName: 'Automated Test - Automated Banner Overlay Testing New',
+    bannerOverlayNameEdited: 'Automated Test - Automated Banner Overlay Testing Edited',
     bannerOverlayImageAltText: 'Banner Overlay Image alt text',
     bannerOverlayImageTitle: 'Banner Overlay Image Title',
     bannerOverlayImageCaption: 'This is Banner Overlay Image Caption',
 
     BannerImageThinFileName: 'BannerThinImage.jpg',
     BannerImageThinFileNameEdited: 'BannerThinImageEdited.jpg',
-    bannerThinName: 'Automated Banner Thin Testing New',
-    bannerThinNameEdited: 'Automated Banner Thin Testing Edited',
+    bannerThinName: 'Automated Test - Automated Banner Thin Testing New',
+    bannerThinNameEdited: 'Automated Test - Automated Banner Thin Testing Edited',
     bannerThinImageAltText: 'Banner Thin Image alt text',
     bannerThinImageTitle: 'Banner Thin Image Title',
     bannerThinImageCaption: 'This is Banner Thin Image Caption',
@@ -256,14 +256,14 @@ export const TestData = {
     remoteVideoURL: 'https://www.youtube.com/watch?v=mMTPeoUg8eU',
     remoteVideoURLEdited: 'https://www.youtube.com/watch?v=H6k77SXU6cU',
 
-    attachmentName: 'Automated attachment Testing New',
-    attachmentNameEdited: 'Automated attachement Testing Edited',
+    attachmentName: 'Automated Test - Automated attachment Testing New',
+    attachmentNameEdited: 'Automated Test - Automated attachement Testing Edited',
 
-    secureAttachmentName: 'Automated secure attachment Testing New',
-    secureAttachmentNameEdited: 'Automated secure attachement Testing Edited',
+    secureAttachmentName: 'Automated Test - Automated secure attachment Testing New',
+    secureAttachmentNameEdited: 'Automated Test - Automated secure attachement Testing Edited',
 
     audioFile: 'AutomationAudio.wav',
-    audioFileName: 'Automation Audio File Wav',
+    audioFileName: 'Automated Test - Automation Audio File Wav',
 
     wordFile: 'ImportFromWord.docx',
   },
@@ -404,7 +404,11 @@ export const TestData = {
     linkTextEdited: 'Edited NICS Events External',
     verifyStartDateAndTime: verifyStartDateFormated + ' ' + '12:00 am',
     verifyStartDateEditedAndTime: '31 December 2025 10:00 am',
-    verifyEndDateAndTime: verifyEndDateFormated + ' ' + '11:59 pm',
+    verifyEndDateAndTime: verifyEndDate.toLocaleDateString('en-GB', {
+      day: '2-digit',
+      month: 'long',
+      year: 'numeric'
+    }) + ' ' + '11:59 pm',
     verifyEndDateEditedAndTime: '31 December 2025 5:00 pm',
   },
 
@@ -516,8 +520,8 @@ export const TestData = {
   },
 
   ProtectedArea: {
-    title: 'Automated Test - New sample Publication title' + ' - ' + getTimestamp(),
-    titleEdited: 'Automated Test - Edited sample Publication title' + ' - ' + getTimestamp(),
+    title: 'Automated Test - New sample Protected Area title' + ' - ' + getTimestamp(),
+    titleEdited: 'Automated Test - Edited sample Protected Area title' + ' - ' + getTimestamp(),
     revisionlog: 'This is an automated revision log message',
     revisionlogEdited: 'This is an edited automated revision log message',
     type: 'Nature Reserves',
@@ -589,6 +593,17 @@ export const TestData = {
     longDescriptionEdited: 'This is edited Subtopic additional information',
   },
 
+  SubtopicChild: {
+    title: 'Automated Test - New sample Child Subtopic title' + ' - ' + getTimestamp(),
+    titleEdited: 'Automated Test - Edited sample Child Subtopic title' + ' - ' + getTimestamp(),
+    revisionlog: 'This is an automated revision log message',
+    revisionlogEdited: 'This is an edited automated revision log message',
+    summary: 'This is a Child Subtopic summary',
+    summaryEdited: 'This is an edited Child Subtopic summary',
+    longDescription: 'This is Child Subtopic additional information',
+    longDescriptionEdited: 'This is edited Child Subtopic additional information',
+  },
+
   Topic: {
     title: 'Automated Test - New sample Topic title' + ' - ' + getTimestamp(),
     titleEdited: 'Automated Test - Edited sample Topic title' + ' - ' + getTimestamp(),
@@ -628,31 +643,31 @@ export const TestData = {
   MediaLibrary: {
     // getters cache their value until resetMediaLibraryNames() is called, so the same
     // random suffix is reused for create -> edit -> delete within a test, but differs test-to-test
-    get audioName() { return cachedName('audioName', 'Audio File Automated'); },
-    get audioNameEdited() { return cachedName('audioNameEdited', 'Audio File Automated Edited'); },
+    get audioName() { return cachedName('audioName', 'Automated Test - Audio File Automated'); },
+    get audioNameEdited() { return cachedName('audioNameEdited', 'Automated Test - Audio File Automated Edited'); },
 
-    get documentName() { return cachedName('documentName', 'Document File Automated'); },
-    get documentNameEdited() { return cachedName('documentNameEdited', 'Document File Automated Edited'); },
+    get documentName() { return cachedName('documentName', 'Automated Test - Document File Automated'); },
+    get documentNameEdited() { return cachedName('documentNameEdited', 'Automated Test - Document File Automated Edited'); },
 
-    get imageName() { return cachedName('imageName', 'Image File Automated'); },
-    get imageNameEdited() { return cachedName('imageNameEdited', 'Image File Automated Edited'); },
+    get imageName() { return cachedName('imageName', 'Automated Test - Image File Automated'); },
+    get imageNameEdited() { return cachedName('imageNameEdited', 'Automated Test - Image File Automated Edited'); },
 
 
     // imageName: 'Image File Automated' + ' - ' + getTimestamp(),
     // imageNameEdited: 'Image File Automated Edited' + ' - ' + getTimestamp(),
 
-    get remoteDocumentName() { return cachedName('remoteDocumentName', 'Remote Document Automated'); },
-    get remoteDocumentNameEdited() { return cachedName('remoteDocumentNameEdited', 'Remote Document Automated Edited'); },
+    get remoteDocumentName() { return cachedName('remoteDocumentName', 'Automated Test - Remote Document Automated'); },
+    get remoteDocumentNameEdited() { return cachedName('remoteDocumentNameEdited', 'Automated Test - Remote Document Automated Edited'); },
     remoteDocument: 'https://www.nidirect.gov.uk/sites/default/files/2026-07/about-savings-and-investment-form-pc1h.pdf',
     remoteDocumentEdited: 'https://www.nidirect.gov.uk/sites/default/files/2026-06/form-of-authority-19-12-17.pdf',
 
-    get remoteVideoName() { return cachedName('remoteVideoName', 'Remote Video Automated'); },
-    get remoteVideoNameEdited() { return cachedName('remoteVideoNameEdited', 'Remote Video Automated Edited'); },
+    get remoteVideoName() { return cachedName('remoteVideoName', 'Automated Test - Remote Video Automated'); },
+    get remoteVideoNameEdited() { return cachedName('remoteVideoNameEdited', 'Automated Test - Remote Video Automated Edited'); },
     remoteVideoURL: 'https://www.youtube.com/watch?v=thZ21emNdns',
     remoteVideoURLEdited: 'https://www.youtube.com/watch?v=H6k77SXU6cU',
 
-    get secureFileName() { return cachedName('secureFileName', 'Secure Publication Automated'); },
-    get secureFileNameEdited() { return cachedName('secureFileNameEdited', 'Secure Publication Automated Edited'); },
+    get secureFileName() { return cachedName('secureFileName', 'Automated Test - Secure Publication Automated'); },
+    get secureFileNameEdited() { return cachedName('secureFileNameEdited', 'Automated Test - Secure Publication Automated Edited'); },
 
     revision: 'This is an automated Media Library log message',
     revisionEdited: 'This is an automated Media Library log message',

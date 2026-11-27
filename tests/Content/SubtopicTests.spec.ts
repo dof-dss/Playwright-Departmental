@@ -10,7 +10,7 @@ test.describe('Empty Subtopic Tests', { tag: ['@subtopics', '@regression', '@top
         await testSteps.LogInfo('Test starting');
         await testSteps.LogInfo(testInfo.title);
 
-        testSetUpData.urlForTest.url = testSetUpData.validTestURLList.finance_url;
+        testSetUpData.urlForTest.url = testSetUpData.validTestURLList.daera_url;
         testSetUpData.userForTest.username = testSetUpData.validUserList.topicsupervisor_username;
         testSetUpData.userForTest.password = testSetUpData.validUserList.topicsupervisor_password;
         testSetUpData.contentTypeforTest.contentType = testSetUpData.validContentTypeList.subtopic;
@@ -128,6 +128,9 @@ test.describe('Empty Subtopic Tests', { tag: ['@subtopics', '@regression', '@top
             await anonymousHelper.searchAsAnon({ edited: true });
             await topicVisibilityHelper.verifySubtopicViaHomepage({ title: testData.Subtopic.titleEdited, shouldBeVisible: true, edited: true });
             await topicVisibilityHelper.verifySubtopicViaTopicsPage({ title: testData.Subtopic.titleEdited, shouldBeVisible: true, edited: true });
+            // ensuring the edited topic is no longer visible to anon users on the orgininal parent topic after it has been edited
+            await topicVisibilityHelper.verifySubtopicViaHomepage({ title: testData.Subtopic.titleEdited, shouldBeVisible: false, edited: false });
+            await topicVisibilityHelper.verifySubtopicViaTopicsPage({ title: testData.Subtopic.titleEdited, shouldBeVisible: false, edited: false });
         });
 
     test('Empty-Subtopic-TC03 - Delete - Ensure Topic Supervisor can delete empty Subtopic', { tag: "@delete" },
@@ -324,30 +327,1368 @@ test.describe('Empty Subtopic Tests', { tag: ['@subtopics', '@regression', '@top
             await topicsTreeHelper.verifyTopicNotVisibleInSiteTopicsTree(testData.Topic.title);
         });
 
-    test('Empty-Subtopic-TC09 - Emsure that Hide Listing functionality prevents Subtopic being listed on parent topic pages and home page', {},
-        async ({ subtopicHelper, contentModerationHelper, anonymousHelper, topicVisibilityHelper, testData }) =>
+    test('Empty-Subtopic-TC09 - Topics - Ensure a Subtopic cannot have more than one parent Topic', { tag: '@topics_alert' },
+        async ({ subtopicHelper }) =>
+        {
+            await subtopicHelper.verifySubtopicCannotHaveMultipleParentTopics();
+        });
+});
+
+test.describe('Full Subtopic Tests', { tag: ['@subtopics', '@regression', '@topicsupervisor'] }, () =>
+{
+    test.beforeEach(async ({ loginHelper, testSetUpData, testData }, testInfo) =>
+    {
+        const testSteps = new TestSteps();
+        await testSteps.LogInfo('Test starting');
+        await testSteps.LogInfo(testInfo.title);
+
+        testSetUpData.urlForTest.url = testSetUpData.validTestURLList.daera_url;
+        testSetUpData.userForTest.username = testSetUpData.validUserList.topicsupervisor_username;
+        testSetUpData.userForTest.password = testSetUpData.validUserList.topicsupervisor_password;
+        testSetUpData.contentTypeforTest.contentType = testSetUpData.validContentTypeList.subtopic;
+        testSetUpData.contentTitleforTest.contentTitle = testData.Subtopic.title;
+        testSetUpData.saveAsOptionForTest.saveAsOption = testSetUpData.validSaveAsOptionList.published;
+        testSetUpData.moderationStateForTest.moderationState = testSetUpData.validModerationStates.published;
+        await loginHelper.loginWithValidUser();
+    });
+
+
+    test('Full-Subtopic-TC01 - Create - Create full Subtopic using topics tree and moderate child content through all states', { tag: '@create' },
+        async ({ subtopicHelper, topicHelper, anonymousHelper, loginHelper, contentModerationHelper, navigateToCreatedContentHelper, testSetUpData, testData, topicVisibilityHelper }) =>
+        {
+            await subtopicHelper.createSubtopic({
+                preview: true,
+                mandatoryFieldCheck: false,
+                customTopicNeeded: true,
+            });
+
+            await subtopicHelper.createSubtopicChildContentTopicTree({
+                application: true,
+                article: true,
+                protectedarea: true,
+                subtopic: true,
+                consultation: true,
+                news: true,
+                publication: true,
+            });
+
+            await navigateToCreatedContentHelper.navigateToCreatedContent({ active: true, deleted: false });
+            await subtopicHelper.verifySubtopicChildContentVisibility({
+                application: true,
+                article: true,
+                protectedarea: true,
+                subtopic: true,
+                consultation: false,
+                news: false,
+                publication: false,
+            });
+
+            // searching as anon to ensure content is not viewable as draft
+            await anonymousHelper.searchAsAnon({ edited: false });
+
+            // verify published subtopic is visible on homepage but Draft children are not
+            await topicVisibilityHelper.verifySubtopicViaHomepage({ title: testData.Subtopic.title, shouldBeVisible: true, edited: false });
+            await subtopicHelper.verifySubtopicChildContentVisibility({
+                application: false,
+                article: false,
+                protectedarea: false,
+                subtopic: false,
+                consultation: false,
+                news: false,
+                publication: false,
+            });
+
+            // verify published subtopic is visible on the topics page but Draft children are not
+            await topicVisibilityHelper.verifySubtopicViaTopicsPage({ title: testData.Subtopic.title, shouldBeVisible: true, edited: false });
+            await subtopicHelper.verifySubtopicChildContentVisibility({
+                application: false,
+                article: false,
+                protectedarea: false,
+                subtopic: false,
+                consultation: false,
+                news: false,
+                publication: false,
+            });
+
+
+            ////////////////////////////////
+            //////// NEEDS REVIEW //////////
+            ////////////////////////////////
+
+            // log back in and naviagte to content 
+            await loginHelper.loginWithValidUser();
+            await navigateToCreatedContentHelper.navigateToCreatedContent({
+                active: true,
+                deleted: false
+            });
+
+            // moderate all children content to needs review
+            await contentModerationHelper.topicSupervisorModerateAllSubtopicChildrenContent({
+                application: true,
+                article: true,
+                protectedarea: true,
+                subtopic: true,
+                consultation: true,
+                news: true,
+                publication: true,
+                QuickPublish: false,
+                NeedsReview: true,
+                Published: false,
+                Archive: false,
+            });
+
+            // verify core child content in needs review is visible to the logged-in Topic Supervisor
+            await navigateToCreatedContentHelper.navigateToCreatedContent({ active: true, deleted: false });
+            await subtopicHelper.verifySubtopicChildContentVisibility({
+                application: true,
+                article: true,
+                protectedarea: true,
+                subtopic: true,
+                consultation: false,
+                news: false,
+                publication: false,
+            });
+
+            // searching as anon to ensure content is not viewable as draft
+            await anonymousHelper.searchAsAnon({ edited: false });
+
+            // verify published subtopic is visible on homepage but Needs Review children are not
+            await topicVisibilityHelper.verifySubtopicViaHomepage({ title: testData.Subtopic.title, shouldBeVisible: true, edited: false });
+            await subtopicHelper.verifySubtopicChildContentVisibility({
+                application: false,
+                article: false,
+                protectedarea: false,
+                subtopic: false,
+                consultation: false,
+                news: false,
+                publication: false,
+            });
+
+            // verify published subtopic is visible on /topics page but Needs Review children are not
+            await topicVisibilityHelper.verifySubtopicViaTopicsPage({ title: testData.Subtopic.title, shouldBeVisible: true, edited: false });
+            await subtopicHelper.verifySubtopicChildContentVisibility({
+                application: false,
+                article: false,
+                protectedarea: false,
+                subtopic: false,
+                consultation: false,
+                news: false,
+                publication: false,
+            });
+
+            ////////////////////////////////
+            ////////// PUBLISHED ///////////
+            ////////////////////////////////
+
+            // log back in and naviagte to content 
+            await loginHelper.loginWithValidUser();
+            await navigateToCreatedContentHelper.navigateToCreatedContent({
+                active: true,
+                deleted: false
+            });
+
+            // moderate all children content to published
+            await contentModerationHelper.topicSupervisorModerateAllSubtopicChildrenContent({
+                application: true,
+                article: true,
+                protectedarea: true,
+                subtopic: true,
+                consultation: true,
+                news: true,
+                publication: true,
+                QuickPublish: false,
+                NeedsReview: false,
+                Published: true,
+                Archive: false,
+            });
+
+            // verify that all needs review children are visible to the logged-in Topic Supervisor
+            await navigateToCreatedContentHelper.navigateToCreatedContent({ active: true, deleted: false });
+            await subtopicHelper.verifySubtopicChildContentVisibility({
+                application: true,
+                article: true,
+                protectedarea: true,
+                subtopic: true,
+                consultation: true,
+                news: true,
+                publication: true,
+            });
+
+            // searching as anon to ensure content is viewable as published
+            await anonymousHelper.searchAsAnon({ edited: false });
+
+            // verify published subtopic is visible on homepage but published  children are too 
+            await topicVisibilityHelper.verifySubtopicViaHomepage({ title: testData.Subtopic.title, shouldBeVisible: true, edited: false });
+            await subtopicHelper.verifySubtopicChildContentVisibility({
+                application: true,
+                article: true,
+                protectedarea: true,
+                subtopic: true,
+                consultation: true,
+                news: true,
+                publication: true,
+            });
+
+            // verify published subtopic is visible on /topics page but published children are too
+            await topicVisibilityHelper.verifySubtopicViaTopicsPage({ title: testData.Subtopic.title, shouldBeVisible: true, edited: false });
+            await subtopicHelper.verifySubtopicChildContentVisibility({
+                application: true,
+                article: true,
+                protectedarea: true,
+                subtopic: true,
+                consultation: true,
+                news: true,
+                publication: true,
+            });
+
+            ////////////////////////////////
+            ////////// ARCHIVED ////////////
+            ////////////////////////////////
+
+            // log back in and naviagte to content 
+            await loginHelper.loginWithValidUser();
+            await navigateToCreatedContentHelper.navigateToCreatedContent({
+                active: true,
+                deleted: false
+            });
+
+            // moderate all children content to archived
+            await contentModerationHelper.topicSupervisorModerateAllSubtopicChildrenContent({
+                application: true,
+                article: true,
+                protectedarea: true,
+                subtopic: true,
+                consultation: true,
+                news: true,
+                publication: true,
+                QuickPublish: false,
+                NeedsReview: false,
+                Published: false,
+                Archive: true,
+            });
+
+            // verify that all newly archived children are NOT visible to the logged-in Topic Supervisor
+            await navigateToCreatedContentHelper.navigateToCreatedContent({ active: true, deleted: false });
+            await subtopicHelper.verifySubtopicChildContentVisibility({
+                application: false,
+                article: false,
+                protectedarea: false,
+                subtopic: false,
+                consultation: false,
+                news: false,
+                publication: false,
+            });
+
+            // searching as anon to ensure content is viewable as published
+            await anonymousHelper.searchAsAnon({ edited: false });
+
+            // verify published subtopic is visible on homepage but published children are not as archived 
+            await topicVisibilityHelper.verifySubtopicViaHomepage({ title: testData.Subtopic.title, shouldBeVisible: true, edited: false });
+            await topicVisibilityHelper.verifySubtopicViaHomepage({ title: testData.Subtopic.title, shouldBeVisible: true, edited: false });
+            await subtopicHelper.verifySubtopicChildContentVisibility({
+                application: false,
+                article: false,
+                protectedarea: false,
+                subtopic: false,
+                consultation: false,
+                news: false,
+                publication: false,
+            });
+
+            // verify published subtopic is visible on /topics page but published children are not as archived
+            await topicVisibilityHelper.verifySubtopicViaTopicsPage({ title: testData.Subtopic.title, shouldBeVisible: true, edited: false });
+            await subtopicHelper.verifySubtopicChildContentVisibility({
+                application: false,
+                article: false,
+                protectedarea: false,
+                subtopic: false,
+                consultation: false,
+                news: false,
+                publication: false,
+            });
+        });
+
+    test('Full-Subtopic-TC02 - Create - Create full Subtopic using quickly add and moderate child content through all states', { tag: '@create' },
+        async ({ subtopicHelper, anonymousHelper, loginHelper, contentModerationHelper, navigateToCreatedContentHelper, testData, topicVisibilityHelper }) =>
         {
             await subtopicHelper.createSubtopic({
                 preview: false,
                 mandatoryFieldCheck: false,
                 customTopicNeeded: true,
-                hideListing: true,
             });
 
-            // moderating to published  
+            await subtopicHelper.createSubtopicChildContentQuicklyAdd({
+                application: true,
+                article: true,
+                protectedarea: true,
+                subtopic: true,
+            });
+
+            // verify that all created Draft children are visible to the logged-in Topic Supervisor
+            await navigateToCreatedContentHelper.navigateToCreatedContent({ active: true, deleted: false });
+            await subtopicHelper.verifySubtopicChildContentVisibility({
+                application: true,
+                article: true,
+                protectedarea: true,
+                subtopic: true,
+            });
+
+            // searching as anon to ensure content is not viewable as draft
+            await anonymousHelper.searchAsAnon({ edited: false });
+
+            // verify published subtopic is visible on homepage but Draft children are not
+            await topicVisibilityHelper.verifySubtopicViaHomepage({ title: testData.Subtopic.title, shouldBeVisible: true, edited: false });
+            await subtopicHelper.verifySubtopicChildContentVisibility({
+                application: false,
+                article: false,
+                protectedarea: false,
+                subtopic: false,
+            });
+
+            // verify published subtopic is visible on the topics page but Draft children are not
+            await topicVisibilityHelper.verifySubtopicViaTopicsPage({ title: testData.Subtopic.title, shouldBeVisible: true, edited: false });
+            await subtopicHelper.verifySubtopicChildContentVisibility({
+                application: false,
+                article: false,
+                protectedarea: false,
+                subtopic: false,
+            });
+
+            ////////////////////////////////
+            //////// NEEDS REVIEW //////////
+            ////////////////////////////////
+
+            // log back in and naviagte to content
+            await loginHelper.loginWithValidUser();
+            await navigateToCreatedContentHelper.navigateToCreatedContent({ active: true, deleted: false });
+            await contentModerationHelper.topicSupervisorModerateAllSubtopicChildrenContent({
+                application: true,
+                article: true,
+                protectedarea: true,
+                subtopic: true,
+                QuickPublish: false,
+                NeedsReview: true,
+                Published: false,
+                Archive: false,
+            });
+
+            // verify core child content in needs review is visible to the logged-in Topic Supervisor
+            await navigateToCreatedContentHelper.navigateToCreatedContent({ active: true, deleted: false });
+            await subtopicHelper.verifySubtopicChildContentVisibility({
+                application: true,
+                article: true,
+                protectedarea: true,
+                subtopic: true,
+            });
+
+            // searching as anon to ensure content is not viewable as draft
+            await anonymousHelper.searchAsAnon({ edited: false });
+
+            // verify published subtopic is visible on homepage but Needs Review children are not
+            await topicVisibilityHelper.verifySubtopicViaHomepage({ title: testData.Subtopic.title, shouldBeVisible: true, edited: false });
+            await subtopicHelper.verifySubtopicChildContentVisibility({
+                application: false,
+                article: false,
+                protectedarea: false,
+                subtopic: false,
+            });
+
+            // verify published subtopic is visible on /topics page but Needs Review children are not
+            await topicVisibilityHelper.verifySubtopicViaTopicsPage({ title: testData.Subtopic.title, shouldBeVisible: true, edited: false });
+            await subtopicHelper.verifySubtopicChildContentVisibility({
+                application: false,
+                article: false,
+                protectedarea: false,
+                subtopic: false,
+            });
+
+            ////////////////////////////////
+            ////////// PUBLISHED ///////////
+            ////////////////////////////////
+
+            // log back in and naviagte to content
+            await loginHelper.loginWithValidUser();
+            await navigateToCreatedContentHelper.navigateToCreatedContent({ active: true, deleted: false });
+            await contentModerationHelper.topicSupervisorModerateAllSubtopicChildrenContent({
+                application: true,
+                article: true,
+                protectedarea: true,
+                subtopic: true,
+                QuickPublish: false,
+                NeedsReview: false,
+                Published: true,
+                Archive: false,
+            });
+
+            // verify that all needs review children are visible to the logged-in Topic Supervisor
+            await navigateToCreatedContentHelper.navigateToCreatedContent({ active: true, deleted: false });
+            await subtopicHelper.verifySubtopicChildContentVisibility({
+                application: true,
+                article: true,
+                protectedarea: true,
+                subtopic: true,
+            });
+
+            // searching as anon to ensure content is viewable as published
+            await anonymousHelper.searchAsAnon({ edited: false });
+
+            // verify published subtopic is visible on homepage and published children are too
+            await topicVisibilityHelper.verifySubtopicViaHomepage({ title: testData.Subtopic.title, shouldBeVisible: true, edited: false });
+            await subtopicHelper.verifySubtopicChildContentVisibility({
+                application: true,
+                article: true,
+                protectedarea: true,
+                subtopic: true,
+            });
+
+            // verify published subtopic is visible on /topics page and published children are too
+            await topicVisibilityHelper.verifySubtopicViaTopicsPage({ title: testData.Subtopic.title, shouldBeVisible: true, edited: false });
+            await subtopicHelper.verifySubtopicChildContentVisibility({
+                application: true,
+                article: true,
+                protectedarea: true,
+                subtopic: true,
+            });
+
+            ////////////////////////////////
+            ////////// ARCHIVED ////////////
+            ////////////////////////////////
+
+            // log back in and naviagte to content
+            await loginHelper.loginWithValidUser();
+            await navigateToCreatedContentHelper.navigateToCreatedContent({ active: true, deleted: false });
+            await contentModerationHelper.topicSupervisorModerateAllSubtopicChildrenContent({
+                application: true,
+                article: true,
+                protectedarea: true,
+                subtopic: true,
+                QuickPublish: false,
+                NeedsReview: false,
+                Published: false,
+                Archive: true,
+            });
+
+            // verify that all newly archived children are NOT visible to the logged-in Topic Supervisor
+            await navigateToCreatedContentHelper.navigateToCreatedContent({ active: true, deleted: false });
+            await subtopicHelper.verifySubtopicChildContentVisibility({
+                application: false,
+                article: false,
+                protectedarea: false,
+                subtopic: false,
+            });
+
+            // searching as anon to ensure content is not viewable as archived
+            await anonymousHelper.searchAsAnon({ edited: false });
+
+            // verify published subtopic is visible on homepage but archived children are not
+            await topicVisibilityHelper.verifySubtopicViaHomepage({ title: testData.Subtopic.title, shouldBeVisible: true, edited: false });
+            await subtopicHelper.verifySubtopicChildContentVisibility({
+                application: false,
+                article: false,
+                protectedarea: false,
+                subtopic: false,
+            });
+
+            // verify published subtopic is visible on /topics page but archived children are not
+            await topicVisibilityHelper.verifySubtopicViaTopicsPage({ title: testData.Subtopic.title, shouldBeVisible: true, edited: false });
+            await subtopicHelper.verifySubtopicChildContentVisibility({
+                application: false,
+                article: false,
+                protectedarea: false,
+                subtopic: false,
+            });
+        });
+
+    test('Full-Subtopic-TC03 - Edit - Edit Subtopic by removing some child content using the topics tree', { tag: '@edit' },
+        async ({ subtopicHelper, anonymousHelper, loginHelper, contentModerationHelper, navigateToCreatedContentHelper, testData, topicVisibilityHelper }) =>
+        {
+            await subtopicHelper.createSubtopic({
+                preview: false,
+                mandatoryFieldCheck: false,
+                customTopicNeeded: true,
+            });
+
+            await subtopicHelper.createSubtopicChildContentTopicTree({
+                application: true,
+                article: true,
+                protectedarea: true,
+                subtopic: true,
+            });
+
+            // navigate back to parent subtopic
+            await navigateToCreatedContentHelper.navigateToCreatedContent({ active: true, deleted: false });
+
+            // moderate all children content to published
+            await contentModerationHelper.topicSupervisorModerateAllSubtopicChildrenContent({
+                application: true,
+                article: true,
+                protectedarea: true,
+                subtopic: true,
+                QuickPublish: false,
+                NeedsReview: false,
+                Published: true,
+                Archive: false,
+            });
+
+            // verify all published children are visible to anonymous users
+            await anonymousHelper.searchAsAnon({ edited: false });
+
+            // verify published subtopic and children via the homepage
+            await topicVisibilityHelper.verifySubtopicViaHomepage({ title: testData.Subtopic.title, shouldBeVisible: true, edited: false });
+            await subtopicHelper.verifySubtopicChildContentVisibility({
+                application: true,
+                article: true,
+                protectedarea: true,
+                subtopic: true,
+            });
+
+            // verify published subtopic and children via the topics page
+            await topicVisibilityHelper.verifySubtopicViaTopicsPage({ title: testData.Subtopic.title, shouldBeVisible: true, edited: false });
+            await subtopicHelper.verifySubtopicChildContentVisibility({
+                application: true,
+                article: true,
+                protectedarea: true,
+                subtopic: true,
+            });
+
+            // log back in and navigate to content
+            await loginHelper.loginWithValidUser();
+            await navigateToCreatedContentHelper.navigateToCreatedContent({
+                active: true,
+                deleted: false
+            });
+
+            // remove child content using the topics tree
+            await subtopicHelper.removeChildContentByTopicTree({
+                application: true,
+                article: true,
+                protectedarea: true,
+                subtopic: false,
+                replacementTopic: 'Food',
+            });
+
+            await anonymousHelper.searchAsAnon({ edited: false });
+
+            // verify removed children are absent and the child subtopic remains via the homepage
+            await topicVisibilityHelper.verifySubtopicViaHomepage({ title: testData.Subtopic.title, shouldBeVisible: true, edited: false });
+            await subtopicHelper.verifySubtopicChildContentVisibility({
+                application: false,
+                article: false,
+                protectedarea: false,
+                subtopic: true,
+            });
+
+            // verify the same child visibility via the topics page
+            await topicVisibilityHelper.verifySubtopicViaTopicsPage({ title: testData.Subtopic.title, shouldBeVisible: true, edited: false });
+            await subtopicHelper.verifySubtopicChildContentVisibility({
+                application: false,
+                article: false,
+                protectedarea: false,
+                subtopic: true,
+            });
+        });
+
+    test('Full-Subtopic-TC04 - Edit - Edit Subtopic by removing Consultation, News and Publication using the topics tree', { tag: '@edit' },
+        async ({ subtopicHelper, anonymousHelper, loginHelper, contentModerationHelper, navigateToCreatedContentHelper, testData, topicVisibilityHelper }) =>
+        {
+            await subtopicHelper.createSubtopic({
+                preview: false,
+                mandatoryFieldCheck: false,
+                customTopicNeeded: true,
+            });
+
+            await subtopicHelper.createSubtopicChildContentTopicTree({
+                application: false,
+                article: false,
+                protectedarea: false,
+                subtopic: false,
+                consultation: true,
+                news: true,
+                publication: true,
+            });
+
+            // navigate back to parent subtopic
+            await navigateToCreatedContentHelper.navigateToCreatedContent({ active: true, deleted: false });
+
+            // moderate all children content to published
+            await contentModerationHelper.topicSupervisorModerateAllSubtopicChildrenContent({
+                application: false,
+                article: false,
+                protectedarea: false,
+                subtopic: false,
+                consultation: true,
+                news: true,
+                publication: true,
+                QuickPublish: false,
+                NeedsReview: false,
+                Published: true,
+                Archive: false,
+            });
+
+            // verify all published children are visible to anonymous users
+            await anonymousHelper.searchAsAnon({ edited: false });
+
+            // verify published subtopic and children via the homepage
+            await topicVisibilityHelper.verifySubtopicViaHomepage({ title: testData.Subtopic.title, shouldBeVisible: true, edited: false });
+            await subtopicHelper.verifySubtopicChildContentVisibility({
+                application: false,
+                article: false,
+                protectedarea: false,
+                subtopic: false,
+                consultation: true,
+                news: true,
+                publication: true,
+            });
+
+            // verify published subtopic and children via the topics page
+            await topicVisibilityHelper.verifySubtopicViaTopicsPage({ title: testData.Subtopic.title, shouldBeVisible: true, edited: false });
+            await subtopicHelper.verifySubtopicChildContentVisibility({
+                application: false,
+                article: false,
+                protectedarea: false,
+                subtopic: false,
+                consultation: true,
+                news: true,
+                publication: true,
+            });
+
+            // log back in and navigate to content
+            await loginHelper.loginWithValidUser();
+            await navigateToCreatedContentHelper.navigateToCreatedContent({
+                active: true,
+                deleted: false
+            });
+
+            // remove child content using the topics tree
+            await subtopicHelper.removeChildContentByTopicTree({
+                application: false,
+                article: false,
+                protectedarea: false,
+                subtopic: false,
+                consultation: true,
+                news: true,
+                publication: true,
+                replacementTopic: 'Food',
+            });
+
+            await anonymousHelper.searchAsAnon({ edited: false });
+
+            // verify removed children are absent via the homepage
+            await topicVisibilityHelper.verifySubtopicViaHomepage({ title: testData.Subtopic.title, shouldBeVisible: true, edited: false });
+            await subtopicHelper.verifySubtopicChildContentVisibility({
+                application: false,
+                article: false,
+                protectedarea: false,
+                subtopic: false,
+                consultation: false,
+                news: false,
+                publication: false,
+            });
+
+            // verify the same child visibility via the topics page
+            await topicVisibilityHelper.verifySubtopicViaTopicsPage({ title: testData.Subtopic.title, shouldBeVisible: true, edited: false });
+            await subtopicHelper.verifySubtopicChildContentVisibility({
+                application: false,
+                article: false,
+                protectedarea: false,
+                subtopic: false,
+                consultation: false,
+                news: false,
+                publication: false,
+            });
+        });
+
+    test('Full-Subtopic-TC05 - Edit - Rearrange Application, Article, Protected Area and Subtopic child content with drag and drop on the edit node page', { tag: '@edit' },
+        async ({ subtopicHelper, navigateToCreatedContentHelper }) =>
+        {
+            await subtopicHelper.createSubtopic({
+                preview: false,
+                mandatoryFieldCheck: false,
+                customTopicNeeded: true,
+            });
+
+            await subtopicHelper.createSubtopicChildContentQuicklyAdd({
+                application: true,
+                article: true,
+                protectedarea: true,
+                subtopic: true,
+            });
+
+            // navigate back to parent subtopic
+            await navigateToCreatedContentHelper.navigateToCreatedContent({ active: true, deleted: false });
+
+            // use drag and drop on the edit node page to edit the subtopic
+            await subtopicHelper.editSubtopicUsingDragAndDrop();
+        });
+
+    test('Full-Subtopic-TC06 - Edit - Reorder Application, Article, Protected Area and Subtopic child content using the moderation sidebar Arrange Content button', { tag: '@edit' },
+        async ({ subtopicHelper, navigateToCreatedContentHelper }) =>
+        {
+            await subtopicHelper.createSubtopic({
+                preview: false,
+                mandatoryFieldCheck: false,
+                customTopicNeeded: true,
+            });
+
+            await subtopicHelper.createSubtopicChildContentQuicklyAdd({
+                application: true,
+                article: true,
+                protectedarea: true,
+                subtopic: true,
+            });
+
+            // navigate back to parent subtopic
+            await navigateToCreatedContentHelper.navigateToCreatedContent({ active: true, deleted: false });
+
+            // reorder Subtopic Content using the Arrange Content modal
+            await subtopicHelper.arrangeSubtopicContentUsingDragAndDrop();
+        });
+
+    test('Full-Subtopic-TC07 - Edit - Edit child content nodes and verify child content edits displayed correctly', { tag: '@edit' },
+        async ({ subtopicHelper, contentModerationHelper, navigateToCreatedContentHelper }) =>
+        {
+            await subtopicHelper.createSubtopic({
+                preview: false,
+                mandatoryFieldCheck: false,
+                customTopicNeeded: true,
+            });
+
+            await subtopicHelper.createSubtopicChildContentTopicTree({
+                application: true,
+                article: true,
+                protectedarea: true,
+                subtopic: true,
+                consultation: true,
+                news: true,
+                publication: true,
+            });
+
+            // navigate back to parent subtopic
+            await navigateToCreatedContentHelper.navigateToCreatedContent({ active: true, deleted: false });
+
+            // moderate all children content to published
+            await contentModerationHelper.topicSupervisorModerateAllSubtopicChildrenContent({
+                application: true,
+                article: true,
+                protectedarea: true,
+                subtopic: true,
+                consultation: true,
+                news: true,
+                publication: true,
+                QuickPublish: false,
+                NeedsReview: false,
+                Published: true,
+                Archive: false,
+            });
+
+            // edit child content nodes
+            await subtopicHelper.editSubtopicChildContentNodes({
+                application: true,
+                article: true,
+                protectedarea: true,
+                subtopic: true,
+                consultation: true,
+                news: true,
+                publication: true,
+            });
+
+            // verify child content edits displayed correctly
+            await navigateToCreatedContentHelper.navigateToCreatedContent({ active: true, deleted: false });
+            await subtopicHelper.verifySubtopicChildContentVisibility({
+                application: true,
+                article: true,
+                protectedarea: true,
+                subtopic: true,
+                consultation: true,
+                news: true,
+                publication: true,
+                edited: true,
+            });
+        });
+
+    test('Full-Subtopic-TC08 - Delete - Ensure cannot delete Subtopic with Application, Article, Protected Area and Subtopic child content by moderation sidebar but can when child content archived', { tag: '@delete' },
+        async ({ subtopicHelper, anonymousHelper, contentModerationHelper, navigateToCreatedContentHelper, testData, topicVisibilityHelper }) =>
+        {
+            await subtopicHelper.createSubtopic({
+                preview: false,
+                mandatoryFieldCheck: false,
+                customTopicNeeded: true,
+            });
+
+            await subtopicHelper.createSubtopicChildContentTopicTree({
+                application: true,
+                article: true,
+                protectedarea: true,
+                subtopic: true,
+            });
+
+            // navigate back to parent subtopic
+            await navigateToCreatedContentHelper.navigateToCreatedContent({ active: true, deleted: false });
+
+            // verify deletion is blocked while child content is in draft
+            await subtopicHelper.verifySubtopicDeletionIsBlocked();
+
+            for (const moderationState of ['Needs Review', 'Published'])
+            {
+                await contentModerationHelper.topicSupervisorModerateAllSubtopicChildrenContent({
+                    application: true,
+                    article: true,
+                    protectedarea: true,
+                    subtopic: true,
+                    QuickPublish: false,
+                    NeedsReview: moderationState === 'Needs Review',
+                    Published: moderationState === 'Published',
+                    Archive: false,
+                });
+
+                await navigateToCreatedContentHelper.navigateToCreatedContent({ active: true, deleted: false });
+                await subtopicHelper.verifySubtopicDeletionIsBlocked();
+            }
+
+            /////// ARCHIVED ///////
+
+            // moderate all children content to archived
+            await contentModerationHelper.topicSupervisorModerateAllSubtopicChildrenContent({
+                application: true,
+                article: true,
+                protectedarea: true,
+                subtopic: true,
+                QuickPublish: false,
+                NeedsReview: false,
+                Published: false,
+                Archive: true,
+            });
+
+            // navigate back to parent subtopic
+            await navigateToCreatedContentHelper.navigateToCreatedContent({ active: true, deleted: false });
+
+            // delete the parent subtopic while child content is archived
+            await subtopicHelper.deleteSubtopic({ delete: true, cancel: false });
+
+            // verify delete
+            await navigateToCreatedContentHelper.navigateToCreatedContent({ active: false, deleted: true });
+
+            // ensure the deleted subtopic is not viewable to anonymous users
+            await anonymousHelper.searchAsAnon({ edited: false });
+            await topicVisibilityHelper.verifySubtopicViaHomepage({ title: testData.Subtopic.title, shouldBeVisible: false, edited: false });
+            await topicVisibilityHelper.verifySubtopicViaTopicsPage({ title: testData.Subtopic.title, shouldBeVisible: false, edited: false });
+        });
+
+    for (const [index, { moderationState, saveAsOption }] of ([
+        { moderationState: 'Draft', saveAsOption: 'draft' },
+        { moderationState: 'Needs Review', saveAsOption: 'needsreview' },
+        { moderationState: 'Published', saveAsOption: 'published' },
+        { moderationState: 'Archived', saveAsOption: 'archived' },
+    ] as const).entries())
+    {
+        test(`Full-Subtopic-TC09.${index + 1} - Delete - Ensure Subtopic can be deleted with Consultation, News and Publication while child content is ${moderationState}`, { tag: '@delete' },
+            async ({ subtopicHelper, navigateToCreatedContentHelper, anonymousHelper, topicVisibilityHelper, testData }) =>
+            {
+                await subtopicHelper.createSubtopic({
+                    preview: false,
+                    mandatoryFieldCheck: false,
+                    customTopicNeeded: true,
+                });
+
+                await subtopicHelper.createSubtopicChildContentTopicTree({
+                    application: false,
+                    article: false,
+                    protectedarea: false,
+                    subtopic: false,
+                    consultation: true,
+                    news: true,
+                    publication: true,
+                }, saveAsOption);
+
+                if (saveAsOption !== 'archived')
+                {
+                    // verify the delete warning for non-archived child content
+                    await navigateToCreatedContentHelper.navigateToCreatedContent({ active: true, deleted: false });
+                    await subtopicHelper.deleteSubtopic({ delete: false, cancel: false, deleteAltChildContentWarning: true });
+                }
+
+                // delete the subtopic in every child content state
+                await navigateToCreatedContentHelper.navigateToCreatedContent({ active: true, deleted: false });
+                await subtopicHelper.deleteSubtopic({ delete: true, cancel: false });
+                await navigateToCreatedContentHelper.navigateToCreatedContent({ active: false, deleted: true });
+
+                await anonymousHelper.searchAsAnon({ edited: false });
+                await topicVisibilityHelper.verifySubtopicViaHomepage({ title: testData.Subtopic.title, shouldBeVisible: false, edited: false });
+                await topicVisibilityHelper.verifySubtopicViaTopicsPage({ title: testData.Subtopic.title, shouldBeVisible: false, edited: false });
+            });
+    }
+
+    test('Full-Subtopic-TC10 - Archive - Ensure cannot archive Subtopic with Application, Article, Protected Area and Subtopic child content by moderation sidebar but can when child content archived', { tag: '@archive' },
+        async ({ subtopicHelper, contentModerationHelper, navigateToCreatedContentHelper, anonymousHelper, topicVisibilityHelper, testData }) =>
+        {
+            await subtopicHelper.createSubtopic({
+                preview: false,
+                mandatoryFieldCheck: false,
+                customTopicNeeded: true,
+            });
+
+            await subtopicHelper.createSubtopicChildContentTopicTree({
+                application: true,
+                article: true,
+                protectedarea: true,
+                subtopic: true,
+            });
+
+            // navigate back to parent subtopic
+            await navigateToCreatedContentHelper.navigateToCreatedContent({ active: true, deleted: false });
+
+            // verify archiving is blocked while child content is in draft
+            await subtopicHelper.verifySubtopicArchivingIsBlocked();
+
+            for (const moderationState of ['Needs Review', 'Published'])
+            {
+                await contentModerationHelper.topicSupervisorModerateAllSubtopicChildrenContent({
+                    application: true,
+                    article: true,
+                    protectedarea: true,
+                    subtopic: true,
+                    QuickPublish: false,
+                    NeedsReview: moderationState === 'Needs Review',
+                    Published: moderationState === 'Published',
+                    Archive: false,
+                });
+
+                await navigateToCreatedContentHelper.navigateToCreatedContent({ active: true, deleted: false });
+                await subtopicHelper.verifySubtopicArchivingIsBlocked();
+            }
+
+            // archive all child content
+            await contentModerationHelper.topicSupervisorModerateAllSubtopicChildrenContent({
+                application: true,
+                article: true,
+                protectedarea: true,
+                subtopic: true,
+                QuickPublish: false,
+                NeedsReview: false,
+                Published: false,
+                Archive: true,
+            });
+
+            await navigateToCreatedContentHelper.navigateToCreatedContent({ active: true, deleted: false });
+            await contentModerationHelper.topicSupervisorModerateContent({
+                QuickPublish: false,
+                NeedsReview: false,
+                Published: false,
+                Archive: true,
+            });
+
+            await navigateToCreatedContentHelper.navigateToCreatedContent({ active: true, deleted: false });
+            await subtopicHelper.verifySubtopicIsArchived();
+
+            await anonymousHelper.searchAsAnon({ edited: false });
+            await topicVisibilityHelper.verifySubtopicViaHomepage({ title: testData.Subtopic.title, shouldBeVisible: false, edited: false });
+            await topicVisibilityHelper.verifySubtopicViaTopicsPage({ title: testData.Subtopic.title, shouldBeVisible: false, edited: false });
+        });
+
+    for (const [index, { moderationState, saveAsOption }] of ([
+        { moderationState: 'Draft', saveAsOption: 'draft' },
+        { moderationState: 'Needs Review', saveAsOption: 'needsreview' },
+        { moderationState: 'Published', saveAsOption: 'published' },
+        { moderationState: 'Archived', saveAsOption: 'archived' },
+    ] as const).entries())
+    {
+        test(`Full-Subtopic-TC11.${index + 1} - Archive - Ensure Subtopic can be archived with Consultation, News and Publication in ${moderationState}`, { tag: '@archive' },
+            async ({ subtopicHelper, contentModerationHelper, navigateToCreatedContentHelper, anonymousHelper, topicVisibilityHelper, testData }) =>
+            {
+                await subtopicHelper.createSubtopic({
+                    preview: false,
+                    mandatoryFieldCheck: false,
+                    customTopicNeeded: true,
+                });
+
+                await subtopicHelper.createSubtopicChildContentTopicTree({
+                    application: false,
+                    article: false,
+                    protectedarea: false,
+                    subtopic: false,
+                    consultation: true,
+                    news: true,
+                    publication: true,
+                }, saveAsOption);
+
+                await navigateToCreatedContentHelper.navigateToCreatedContent({ active: true, deleted: false });
+                await contentModerationHelper.topicSupervisorModerateContent({
+                    QuickPublish: false,
+                    NeedsReview: false,
+                    Published: false,
+                    Archive: true,
+                });
+
+                await navigateToCreatedContentHelper.navigateToCreatedContent({ active: true, deleted: false });
+                await subtopicHelper.verifySubtopicIsArchived();
+
+                await anonymousHelper.searchAsAnon({ edited: false });
+                await topicVisibilityHelper.verifySubtopicViaHomepage({ title: testData.Subtopic.title, shouldBeVisible: false, edited: false });
+                await topicVisibilityHelper.verifySubtopicViaTopicsPage({ title: testData.Subtopic.title, shouldBeVisible: false, edited: false });
+            });
+    }
+
+    test('Full-Subtopic-TC12 - Archive - Ensure cannot Archive Subtopic with Application, Article, Protected Area and Subtopic child content by reverting to a previous Archived revision', { tag: '@archive' },
+        async ({ subtopicHelper, anonymousHelper, topicVisibilityHelper, revisionHelper, contentModerationHelper, navigateToCreatedContentHelper, testSetUpData, testData }) =>
+        {
+            // create the first revision as archived
+            testSetUpData.saveAsOptionForTest.saveAsOption = testSetUpData.validSaveAsOptionList.archived;
+            await subtopicHelper.createSubtopic({
+                preview: false,
+                mandatoryFieldCheck: false,
+                customTopicNeeded: true,
+            });
+
+            // publish the subtopic to create an active revision
             await contentModerationHelper.topicSupervisorModerateContent({
                 QuickPublish: false,
                 NeedsReview: false,
                 Published: true,
-                Archive: false
+                Archive: false,
             });
 
-            // verify the hidden Topic is not listed publicly
+            await subtopicHelper.createSubtopicChildContentTopicTree({
+                application: true,
+                article: true,
+                protectedarea: true,
+                subtopic: true,
+            });
+
+            // verify cannot revert the parent subtopic to Archived while children are in Draft
+            await navigateToCreatedContentHelper.navigateToCreatedContent({ active: true, deleted: false });
+            await subtopicHelper.verifyCannotRevertToPreviousArchivedRevision();
+
+            // moderate all child content to Needs Review
+            await contentModerationHelper.topicSupervisorModerateAllSubtopicChildrenContent({
+                application: true,
+                article: true,
+                protectedarea: true,
+                subtopic: true,
+                QuickPublish: false,
+                NeedsReview: true,
+                Published: false,
+                Archive: false,
+            });
+
+            await navigateToCreatedContentHelper.navigateToCreatedContent({ active: true, deleted: false });
+            await subtopicHelper.verifyCannotRevertToPreviousArchivedRevision();
+
+            // moderate all child content to Published
+            await contentModerationHelper.topicSupervisorModerateAllSubtopicChildrenContent({
+                application: true,
+                article: true,
+                protectedarea: true,
+                subtopic: true,
+                QuickPublish: false,
+                NeedsReview: false,
+                Published: true,
+                Archive: false,
+            });
+
+            await navigateToCreatedContentHelper.navigateToCreatedContent({ active: true, deleted: false });
+            await subtopicHelper.verifyCannotRevertToPreviousArchivedRevision();
+
+            // moderate all child content to Archived
+            await contentModerationHelper.topicSupervisorModerateAllSubtopicChildrenContent({
+                application: true,
+                article: true,
+                protectedarea: true,
+                subtopic: true,
+                QuickPublish: false,
+                NeedsReview: false,
+                Published: false,
+                Archive: true,
+            });
+
+            await navigateToCreatedContentHelper.navigateToCreatedContent({ active: true, deleted: false });
+            await revisionHelper.revertRevisions({
+                revert: false,
+                cancel: false,
+                topicArchivedRevert: true,
+            });
+
+            await navigateToCreatedContentHelper.navigateToCreatedContent({ active: true, deleted: false });
+            await subtopicHelper.verifySubtopicIsArchived();
+
             await anonymousHelper.searchAsAnon({ edited: false });
             await topicVisibilityHelper.verifySubtopicViaHomepage({ title: testData.Subtopic.title, shouldBeVisible: false, edited: false });
-            await topicVisibilityHelper.verifySubtopicViaHomepage({ title: testData.Subtopic.title, shouldBeVisible: false, edited: false });
+            await topicVisibilityHelper.verifySubtopicViaTopicsPage({ title: testData.Subtopic.title, shouldBeVisible: false, edited: false });
         });
+
+    for (const [index, { moderationState, saveAsOption }] of ([
+        { moderationState: 'Draft', saveAsOption: 'draft' },
+        { moderationState: 'Needs Review', saveAsOption: 'needsreview' },
+        { moderationState: 'Published', saveAsOption: 'published' },
+        { moderationState: 'Archived', saveAsOption: 'archived' },
+    ] as const).entries())
+    {
+        test(`Full-Subtopic-TC13.${index + 1} - Archive - Ensure Subtopic can be archived with Consultation, News and Publication in ${moderationState} by reverting to a previous Archived revision`, { tag: '@archive' },
+            async ({ subtopicHelper, anonymousHelper, topicVisibilityHelper, revisionHelper, contentModerationHelper, navigateToCreatedContentHelper, testSetUpData, testData }) =>
+            {
+                // create the first revision as archived
+                testSetUpData.saveAsOptionForTest.saveAsOption = testSetUpData.validSaveAsOptionList.archived;
+                await subtopicHelper.createSubtopic({
+                    preview: false,
+                    mandatoryFieldCheck: false,
+                    customTopicNeeded: true,
+                });
+
+                // publish the subtopic to create an active revision
+                await contentModerationHelper.topicSupervisorModerateContent({
+                    QuickPublish: false,
+                    NeedsReview: false,
+                    Published: true,
+                    Archive: false,
+                });
+
+                await subtopicHelper.createSubtopicChildContentTopicTree({
+                    application: false,
+                    article: false,
+                    protectedarea: false,
+                    subtopic: false,
+                    consultation: true,
+                    news: true,
+                    publication: true,
+                }, saveAsOption);
+
+                await navigateToCreatedContentHelper.navigateToCreatedContent({ active: true, deleted: false });
+                await revisionHelper.revertRevisions({
+                    revert: false,
+                    cancel: false,
+                    topicArchivedRevert: true,
+                });
+
+                await navigateToCreatedContentHelper.navigateToCreatedContent({ active: true, deleted: false });
+                await subtopicHelper.verifySubtopicIsArchived();
+
+                await anonymousHelper.searchAsAnon({ edited: false });
+                await topicVisibilityHelper.verifySubtopicViaHomepage({ title: testData.Subtopic.title, shouldBeVisible: false, edited: false });
+                await topicVisibilityHelper.verifySubtopicViaTopicsPage({ title: testData.Subtopic.title, shouldBeVisible: false, edited: false });
+            });
+    }
+
+    test('Full-Subtopic-TC14 - Revision - Create a subtopic and add child content one by one, verifying no new revisions are created', { tag: '@revision' },
+        async ({ subtopicHelper, navigateToCreatedContentHelper, revisionHelper }) =>
+        {
+            await subtopicHelper.createSubtopic({
+                preview: false,
+                mandatoryFieldCheck: false,
+                customTopicNeeded: true,
+            });
+
+            await navigateToCreatedContentHelper.navigateToCreatedContent({ active: true, deleted: false });
+            const initialRevisionCount = 1;
+            await revisionHelper.verifyRevisionCount(initialRevisionCount);
+            const childContentTypes = ['application', 'article', 'subtopic', 'consultation', 'news', 'publication', 'protectedarea'] as const;
+
+            for (const childContentType of childContentTypes)
+            {
+                await test.step(`Create ${childContentType} and verify no new subtopic revision`, async () =>
+                {
+                    await revisionHelper.revisionPage.goBack();
+                    await subtopicHelper.createSubtopicChildContentTopicTree({
+                        application: false,
+                        article: false,
+                        protectedarea: false,
+                        subtopic: false,
+                        consultation: false,
+                        news: false,
+                        publication: false,
+                        [childContentType]: true,
+                    });
+
+                    await navigateToCreatedContentHelper.navigateToCreatedContent({ active: true, deleted: false });
+                    await revisionHelper.verifyRevisionCount(initialRevisionCount);
+                });
+            }
+        });
+
+    test('Full-Subtopic-TC15 - Revision - Create a full subtopic with Application, remove it, then add an edited Subtopic and add an Article and verify child content does not show on revision compare', { tag: '@revision' },
+        async ({ subtopicHelper, revisionHelper, navigateToCreatedContentHelper, testSetUpData, testData }) =>
+        {
+            // create initial subtopic with Application child content
+            testSetUpData.saveAsOptionForTest.saveAsOption = testSetUpData.validSaveAsOptionList.draft;
+            await subtopicHelper.createSubtopic({
+                preview: false,
+                mandatoryFieldCheck: false,
+                customTopicNeeded: true,
+            });
+
+            await subtopicHelper.createSubtopicChildContentTopicTree({
+                application: true,
+                article: false,
+                protectedarea: false,
+                subtopic: false,
+            });
+
+            // navigate back to parent subtopic and remove Application child content
+            await navigateToCreatedContentHelper.navigateToCreatedContent({ active: true, deleted: false });
+            await subtopicHelper.removeChildContentByTopicTree({
+                application: true,
+                article: false,
+                protectedarea: false,
+                subtopic: false,
+                replacementTopic: 'Food',
+            });
+
+            // save the edited subtopic as Needs Review
+            testSetUpData.saveAsOptionForTest.saveAsOption = testSetUpData.validSaveAsOptionList.needsreview;
+            await navigateToCreatedContentHelper.navigateToCreatedContent({ active: true, deleted: false });
+            await subtopicHelper.editSubtopic({ preview: false, preserveSiteTopics: true });
+
+            // add Article under the edited Subtopic
+            await subtopicHelper.createSubtopicChildContentTopicTree({
+                application: false,
+                article: true,
+                protectedarea: false,
+                subtopic: false,
+            }, 'draft', { useEditedTitle: true });
+
+            await navigateToCreatedContentHelper.navigateToCreatedContent({ active: true, deleted: false });
+
+            // restore edited title for revision navigation
+            testData.Subtopic.title = testData.Subtopic.titleEdited;
+            testSetUpData.contentTitleforTest.contentTitle = testData.Subtopic.titleEdited;
+
+            // compare the revisions and verify child content is not shown
+            await revisionHelper.compareRevisions();
+            await revisionHelper.subtopicComparePage.verifySubtopicChildContentNotShownOnComparePage();
+        });
+
+    test('Full-Subtopic-TC16 - Revision - Create a subtopic with Application, keep it, then edit Subtopic and add an Article and delete a revision to verify both child content items are displayed', { tag: '@revision' },
+        async ({ subtopicHelper, revisionHelper, navigateToCreatedContentHelper, testSetUpData, testData }) =>
+        {
+            // create initial subtopic with Application child content
+            testSetUpData.saveAsOptionForTest.saveAsOption = testSetUpData.validSaveAsOptionList.draft;
+            await subtopicHelper.createSubtopic({
+                preview: false,
+                mandatoryFieldCheck: false,
+                customTopicNeeded: true,
+            });
+
+            await subtopicHelper.createSubtopicChildContentTopicTree({
+                application: true,
+                article: false,
+                protectedarea: false,
+                subtopic: false,
+            });
+
+            // edit the subtopic to create a new revision without removing Application
+            testSetUpData.saveAsOptionForTest.saveAsOption = testSetUpData.validSaveAsOptionList.needsreview;
+            await navigateToCreatedContentHelper.navigateToCreatedContent({ active: true, deleted: false });
+            await subtopicHelper.editSubtopic({ preview: false, preserveSiteTopics: true });
+
+            // add Article under the edited Subtopic
+            await subtopicHelper.createSubtopicChildContentTopicTree({
+                application: false,
+                article: true,
+                protectedarea: false,
+                subtopic: false,
+            }, 'draft', { useEditedTitle: true });
+
+            await navigateToCreatedContentHelper.navigateToCreatedContent({ active: true, deleted: false });
+
+            // delete a revision
+            await revisionHelper.deleteRevisions({
+                delete: true,
+                cancel: false,
+            });
+
+            // restore edited title for navigation
+            testData.Subtopic.title = testData.Subtopic.titleEdited;
+            testSetUpData.contentTitleforTest.contentTitle = testData.Subtopic.titleEdited;
+
+            await navigateToCreatedContentHelper.navigateToCreatedContent({ active: true, deleted: false });
+
+            // verify that both Application and Article child content appear
+            await subtopicHelper.verifySubtopicChildContentVisibility({
+                application: true,
+                article: true,
+                protectedarea: false,
+                subtopic: false,
+            });
+        });
+
+    test('Full-Subtopic-TC17 - Revision - Create a subtopic with Application, keep it, then edit Subtopic and add an Article and revert a revision to verify both child content items are displayed', { tag: '@revision' },
+        async ({ subtopicHelper, revisionHelper, navigateToCreatedContentHelper, testSetUpData, testData }) =>
+        {
+            // create initial subtopic with Application child content
+            testSetUpData.saveAsOptionForTest.saveAsOption = testSetUpData.validSaveAsOptionList.draft;
+            await subtopicHelper.createSubtopic({
+                preview: false,
+                mandatoryFieldCheck: false,
+                customTopicNeeded: true,
+            });
+
+            await subtopicHelper.createSubtopicChildContentTopicTree({
+                application: true,
+                article: false,
+                protectedarea: false,
+                subtopic: false,
+            });
+
+            // edit the subtopic to create a new revision without removing Application
+            testSetUpData.saveAsOptionForTest.saveAsOption = testSetUpData.validSaveAsOptionList.needsreview;
+            await navigateToCreatedContentHelper.navigateToCreatedContent({ active: true, deleted: false });
+            await subtopicHelper.editSubtopic({ preview: false, preserveSiteTopics: true });
+
+            // add Article under the edited Subtopic
+            await subtopicHelper.createSubtopicChildContentTopicTree({
+                application: false,
+                article: true,
+                protectedarea: false,
+                subtopic: false,
+            }, 'draft', { useEditedTitle: true });
+
+            await navigateToCreatedContentHelper.navigateToCreatedContent({ active: true, deleted: false });
+
+            // revert a revision
+            await revisionHelper.revertRevisions({
+                revert: true,
+                cancel: false,
+            });
+
+            // restore original title for navigation
+            testSetUpData.contentTitleforTest.contentTitle = testData.Subtopic.title;
+            await navigateToCreatedContentHelper.navigateToCreatedContent({ active: true, deleted: false });
+
+            // verify that both Application and Article child content appear
+            await subtopicHelper.verifySubtopicChildContentVisibility({
+                application: true,
+                article: true,
+                protectedarea: false,
+                subtopic: false,
+            });
+        });
+
+    for (const [index, { moderationState, saveAsOption }] of ([
+        { moderationState: 'Draft', saveAsOption: 'draft' },
+        { moderationState: 'Needs Review', saveAsOption: 'needsreview' },
+    ] as const).entries())
+    {
+        test(`Full-Subtopic-TC18.${index + 1} - Warning - Ensure Subtopic child content including Protected Area displays warning message when Subtopic is in ${moderationState}`, { tag: '@archive' },
+            async ({ subtopicHelper, testSetUpData }) =>
+            {
+                testSetUpData.saveAsOptionForTest.saveAsOption = testSetUpData.validSaveAsOptionList[saveAsOption];
+                await subtopicHelper.createSubtopic({
+                    preview: false,
+                    mandatoryFieldCheck: false,
+                    customTopicNeeded: true,
+                });
+
+                await subtopicHelper.createSubtopicChildContentTopicTree({
+                    application: true,
+                    article: true,
+                    protectedarea: true,
+                    subtopic: true,
+                }, 'published', { verifyUnpublishedTopicWarning: true });
+            });
+    }
+
 });
+
+
+
 
 
 

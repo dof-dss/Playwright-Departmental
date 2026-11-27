@@ -15,6 +15,7 @@ export interface ArticleSaveData
   revisionLogMessage: string;
   globalTopicChoice: string;
   topics: (string | null)[];
+  subtopicParent?: string;
   articleSummary: string;
   articleBodyField: string;
   existingAudioName?: string;
@@ -152,6 +153,8 @@ export class ArticleCreatePage
         data.topics[1] ?? null,
         data.topics[2] ?? null,
         data.topics[3] ?? null,
+        false,
+        data.subtopicParent,
       );
     }
     else

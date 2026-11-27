@@ -50,6 +50,7 @@ export class UALEditPage
   private readonly ualHairColourField: Locator;
   private readonly ualDistinguishingMarksField: Locator;
   private readonly ualReleaseTypeField: Locator;
+  private readonly removeUALPhotoButton: Locator;
 
   // constructor
   constructor(
@@ -82,6 +83,7 @@ export class UALEditPage
     this.ualHairColourField = page.locator('#edit-field-hair-colour-0-value');
     this.ualDistinguishingMarksField = page.locator('#edit-field-distinguishing-marks-0-value');
     this.ualReleaseTypeField = page.locator('#edit-field-release-type-0-value');
+    this.removeUALPhotoButton = page.locator('//input[contains(@id,"edit-field-photo-selection-0-remove-button")]');
   }
 
   // ------------------------ asserts ------------------------
@@ -172,6 +174,14 @@ export class UALEditPage
     await this.ualReleaseTypeField.fill(releaseType);
   }
 
+  async removeExistingUALPhoto()
+  {
+    await this.testSteps.LogInfo('Removing the existing UAL photo');
+    await expect(this.removeUALPhotoButton).toBeEnabled();
+    await this.removeUALPhotoButton.click();
+    await expect(this.removeUALPhotoButton).toBeHidden();
+  }
+
   // ------------------------ actions related to edit UAL ------------------------
 
   // fill in UAL edit form elements
@@ -182,10 +192,7 @@ export class UALEditPage
     await this.createPages.enterRevisionLogMessage(data.revisionLogMessage);
     await this.editUALFrom(data.uALFrom);
     await this.editUALAge(data.age);
-    await this.page.waitForTimeout(1000);
-    await expect(this.page.locator('//input[contains(@id,"edit-field-photo-selection-0-remove-button")]')).toBeEnabled();
-    await this.page.locator('//input[contains(@id,"edit-field-photo-selection-0-remove-button")]').click();
-    await this.page.waitForTimeout(1000);
+    await this.removeExistingUALPhoto();
     await this.uploadMediaHelper.uploadImageWorkflow({
       original: false,
       edited: true

@@ -8,6 +8,7 @@ export interface VerifyOptions
 {
     preview: boolean;
     topics: (string | null)[];
+    preserveSiteTopics?: boolean;
 };
 
 export class ConsultationNodePage
@@ -136,7 +137,7 @@ export class ConsultationNodePage
     }
 
     //verify edited consultation method
-    async verifyEditedConsultation({topics }: VerifyOptions)
+    async verifyEditedConsultation({ topics, preserveSiteTopics }: VerifyOptions)
     {
         // verify consultation open 
         await this.testSteps.LogInfo('Verifying "Closed consultation" text is present');
@@ -146,29 +147,37 @@ export class ConsultationNodePage
         await this.testSteps.LogInfo(`Verifying title "${this.testData.Consultation.titleEdited}" is visible`);
         await expect(this.page.locator(`//h1[text()[normalize-space(.)="${this.testData.Consultation.titleEdited}"]]`)).toBeVisible();
 
-        // Verify topics (edited - only topic2 should be visible)
-        const editedTopics = topics;
-
-        // Only topic2 is visible; others should be hidden
-        await this.testSteps.LogInfo(`Verifying Edited Site topic "${editedTopics[1]}" is visible`);
-        if (editedTopics[1])
+        if (preserveSiteTopics)
         {
-            await expect(this.page.locator(this.topicLinkXPath(editedTopics[1]))).toBeVisible();
+            for (const topic of topics.slice(0, 3))
+            {
+                if (topic)
+                {
+                    await this.testSteps.LogInfo(`Verifying preserved Site topic "${topic}" is visible`);
+                    await expect(this.page.locator(this.topicLinkXPath(topic))).toBeVisible();
+                }
+            }
         }
-        if (editedTopics[0])
+        else
         {
-            await this.testSteps.LogInfo(`Verifying Edited Site topic "${editedTopics[0]}" is NOT visible`);
-            await expect(this.page.locator(this.topicLinkXPath(editedTopics[0]))).toBeHidden();
+            await this.testSteps.LogInfo(`Verifying Edited Site topic "${topics[1]}" is visible`);
+            if (topics[1])
+            {
+                await expect(this.page.locator(this.topicLinkXPath(topics[1]))).toBeVisible();
+            }
+            for (const topic of [topics[0], topics[2]])
+            {
+                if (topic)
+                {
+                    await this.testSteps.LogInfo(`Verifying Edited Site topic "${topic}" is NOT visible`);
+                    await expect(this.page.locator(this.topicLinkXPath(topic))).toBeHidden();
+                }
+            }
         }
-        if (editedTopics[2])
+        if (topics[3])
         {
-            await this.testSteps.LogInfo(`Verifying Edited Site topic "${editedTopics[2]}" is NOT visible`);
-            await expect(this.page.locator(this.topicLinkXPath(editedTopics[2]))).toBeHidden();
-        }
-        if (editedTopics[3])
-        {
-            await this.testSteps.LogInfo(`Verifying Edited Site topic "${editedTopics[3]}" is NOT visible`);
-            await expect(this.page.locator(this.topicLinkXPath(editedTopics[3]))).toBeHidden();
+            await this.testSteps.LogInfo(`Verifying Site topic "${topics[3]}" is NOT visible`);
+            await expect(this.page.locator(this.topicLinkXPath(topics[3]))).toBeHidden();
         }
         // verify consultation opens box
         await this.testSteps.LogInfo('Verifying "Consultation closed" text is present');
@@ -200,7 +209,7 @@ export class ConsultationNodePage
     }
 
     //verify consultation method
-    async verifyFutureConsultation({topics }: VerifyOptions)
+    async verifyFutureConsultation({ topics }: VerifyOptions)
     {
         // verify consultation open 
         await this.testSteps.LogInfo('Verifying "Consultation opens" text is present');

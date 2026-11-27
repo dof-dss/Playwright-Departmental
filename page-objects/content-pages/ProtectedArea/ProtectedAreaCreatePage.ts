@@ -10,6 +10,7 @@ export interface ProtectedAreaSaveData
   protectedAreaTitle: string;
   revisionLogMessage: string;
   topics: (string | null)[];
+  subtopicParent?: string;
   protectedAreaType: string;
   featureType: string;
   county: string;
@@ -50,7 +51,7 @@ export class ProtectedAreaCreatePage
     this.protectedAreaTypeSelect = page.getByLabel('Protected area type');
     this.featureTypeSelect = page.getByLabel('Feature type');
     this.countySelect = page.getByLabel('County', { exact: true });
-    this.councilSelect = page.getByLabel('Council');
+    this.councilSelect = page.getByLabel('Council', { exact: true });
     this.documentField = page.getByRole('textbox', { name: 'Document' });
 
     this.titleFieldIsRequired = page.getByText('Title field is required.');
@@ -58,8 +59,8 @@ export class ProtectedAreaCreatePage
 
   async createProtectedAreaPageURLCheck()
   {
-    await this.testSteps.LogInfo(`Verifying URL is "${this.testSetUpData.urlForTest.url}/node/add/protected_area"`);
-    await expect(this.page).toHaveURL(`${this.testSetUpData.urlForTest.url}/node/add/protected_area`);
+    await this.testSteps.LogInfo(`Verifying URL contains "${this.testSetUpData.urlForTest.url}/node/add/protected_area"`);
+    await expect(this.page).toHaveURL(new RegExp(`${this.testSetUpData.urlForTest.url}/node/add/protected_area(?:\\?.*)?$`));
   }
 
   async returnFromPreviewProtectedAreaPageURLCheck()
@@ -115,17 +116,26 @@ export class ProtectedAreaCreatePage
     await expect(this.titleFieldIsRequired).toBeVisible();
   }
 
-  async fillProtectedAreaForm(data: ProtectedAreaSaveData)
+  async fillProtectedAreaForm(data: ProtectedAreaSaveData, topicsAlreadySelected = false)
   {
     await this.createProtectedAreaPageURLCheck();
     await this.enterProtectedAreaTitle(data.protectedAreaTitle);
     await this.createPages.enterRevisionLogMessage(data.revisionLogMessage);
-    await this.topics.selectSiteTopics(
-      data.topics[0] ?? null,
-      data.topics[1] ?? null,
-      data.topics[2] ?? null,
-      data.topics[3] ?? null,
-    );
+    if (!topicsAlreadySelected)
+    {
+      await this.topics.selectSiteTopics(
+        data.topics[0] ?? null,
+        data.topics[1] ?? null,
+        data.topics[2] ?? null,
+        data.topics[3] ?? null,
+        false,
+        data.subtopicParent,
+      );
+    }
+    else
+    {
+      await this.topics.verifySiteTopicsSelected(data.topics[0]!);
+    }
     await this.selectProtectedAreaType(data.protectedAreaType);
     await this.selectFeatureType(data.featureType);
     await this.selectCounty(data.county);

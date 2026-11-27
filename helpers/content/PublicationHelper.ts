@@ -20,6 +20,7 @@ export interface SaveOptions
 {
     preview: boolean;
     mandatoryFieldCheck: boolean;
+    subtopicParent?: string;
     existingDocumentName?: string;
     existingSecureFileName?: string;
 };
@@ -27,6 +28,8 @@ export interface SaveOptions
 export interface EditSaveOptions
 {
     preview: boolean;
+    preserveSiteTopics?: boolean;
+    preserveGlobalTopics?: boolean;
 };
 
 export interface DeleteOptions
@@ -110,6 +113,7 @@ export class PublicationHelper
             revisionLogMessage: this.testData.Publication.revisionlog,
             globalTopicChoice: this.testData.GlobalTopics.employment,
             topics: this.topicsHelper.getTopics(),
+            subtopicParent: options.subtopicParent,
             pubType: this.testData.Publication.publicationType,
             publicationSummary: this.testData.Publication.summary,
             publicationBodyField: this.testData.Publication.body,
@@ -136,7 +140,10 @@ export class PublicationHelper
 
         // Save and verify
         await this.createPage.clickSaveButton();
-        await this.publicationNodePage.publicationNodeURLCheck();
+        if (this.testSetUpData.saveAsOptionForTest.saveAsOption !== this.testSetUpData.validSaveAsOptionList.archived)
+        {
+            await this.publicationNodePage.publicationNodeURLCheck();
+        }
         await this.publicationNodePage.verifyPublication({
             topics: this.topicsHelper.getTopics()
         });
@@ -154,7 +161,10 @@ export class PublicationHelper
         await this.moderationSideBar.clickEditContentButton();
 
         // set topics for test using selec topics for site before filling publication form
-        await this.topicsHelper.selectTopicForSite({ edit: true, triggeralert: false });
+        if (!options.preserveSiteTopics)
+        {
+            await this.topicsHelper.selectTopicForSite({ edit: true, triggeralert: false });
+        }
 
         // complete publication form using edit isolated test data 
         await this.publicationEditPage.editPublicationForm({
@@ -168,7 +178,7 @@ export class PublicationHelper
             pubType: this.testData.Publication.publicationTypeEdited,
             publicationSummary: this.testData.Publication.summaryEdited,
             publicationBodyField: this.testData.Publication.bodyEdited,
-        });
+        }, !options.preserveSiteTopics, !options.preserveGlobalTopics);
 
         // setting test set up data to new title
         this.testSetUpData.contentTitleforTest.contentTitle = this.testData.Publication.titleEdited;
@@ -183,7 +193,8 @@ export class PublicationHelper
             await this.createPage.clickPreviewButton();
             await this.previewPage.performURLCheck();
             await this.publicationNodePage.verifyEditedPublication({
-                topics: this.topicsHelper.getTopics()
+                topics: this.topicsHelper.getTopics(),
+                preserveSiteTopics: options.preserveSiteTopics,
             });
             await this.previewPage.clickBackToContentEdittingButton();
             await this.publicationEditPage.returnFromPreviewPublicationPageURLCheck();
@@ -193,7 +204,8 @@ export class PublicationHelper
         await this.createPage.clickSaveButton();
         await this.publicationNodePage.publicationNodeURLCheck();
         await this.publicationNodePage.verifyEditedPublication({
-            topics: this.topicsHelper.getTopics()
+            topics: this.topicsHelper.getTopics(),
+            preserveSiteTopics: options.preserveSiteTopics,
         });
     }
 
@@ -438,7 +450,6 @@ export class PublicationHelper
 
 
 }
-
 
 
 

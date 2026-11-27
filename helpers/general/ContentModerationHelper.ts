@@ -33,6 +33,7 @@ export interface TopicChildModerationStates extends TopicSupervisorModerationSta
 {
     application: boolean;
     article: boolean;
+    protectedarea: boolean;
     subtopic: boolean;
     consultation?: boolean;
     news?: boolean;
@@ -593,7 +594,17 @@ export class ContentModerationHelper
 
     async topicSupervisorModerateAllChildrenContent(options: TopicChildModerationStates)
     {
-        const { application, article, subtopic, consultation, news, publication, ...wantedState } = options;
+        await this.moderateChildrenContent(options, 'topic');
+    }
+
+    async topicSupervisorModerateAllSubtopicChildrenContent(options: TopicChildModerationStates)
+    {
+        await this.moderateChildrenContent(options, 'subtopic');
+    }
+
+    private async moderateChildrenContent(options: TopicChildModerationStates, parent: 'topic' | 'subtopic')
+    {
+        const { application, article, protectedarea, subtopic, consultation, news, publication, ...wantedState } = options;
         const selectedChildren = [
             {
                 selected: application,
@@ -606,9 +617,14 @@ export class ContentModerationHelper
                 title: this.testdata.Article.title,
             },
             {
+                selected: protectedarea,
+                contentType: this.testSetUpData.validContentTypeList.protectedarea,
+                title: this.testdata.ProtectedArea.title,
+            },
+            {
                 selected: subtopic,
                 contentType: this.testSetUpData.validContentTypeList.subtopic,
-                title: this.testdata.Subtopic.title,
+                title: parent === 'subtopic' ? this.testdata.SubtopicChild.title : this.testdata.Subtopic.title,
             },
             {
                 selected: consultation,
@@ -639,8 +655,8 @@ export class ContentModerationHelper
         }
         finally
         {
-            this.testSetUpData.contentTypeforTest.contentType = this.testSetUpData.validContentTypeList.topic;
-            this.testSetUpData.contentTitleforTest.contentTitle = this.testdata.Topic.title;
+            this.testSetUpData.contentTypeforTest.contentType = this.testSetUpData.validContentTypeList[parent];
+            this.testSetUpData.contentTitleforTest.contentTitle = parent === 'topic' ? this.testdata.Topic.title : this.testdata.Subtopic.title;
         }
     }
 

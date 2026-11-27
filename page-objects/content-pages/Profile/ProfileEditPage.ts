@@ -31,6 +31,7 @@ export class ProfileEditPage
   private readonly profileTitleField: Locator;
   private readonly profileDepartmentField: Locator;
   private readonly profileSummaryField: Locator;
+  private readonly removeProfilePhotoButton: Locator;
 
   constructor(
     private readonly page: Page,
@@ -49,6 +50,7 @@ export class ProfileEditPage
     this.profileTitleField = page.locator('#edit-title-0-value');
     this.profileDepartmentField = page.locator('#edit-field-department-0-value');
     this.profileSummaryField = page.locator('#edit-field-summary-0-value');
+    this.removeProfilePhotoButton = page.locator('//input[contains(@id,"edit-field-photo-selection-0-remove-button")]');
   }
 
   async editProfilePageURLCheck()
@@ -81,6 +83,14 @@ export class ProfileEditPage
     await this.profileSummaryField.fill(summary);
   }
 
+  async removeExistingProfilePhoto()
+  {
+    await this.testSteps.LogInfo('Removing the existing profile photo');
+    await expect(this.removeProfilePhotoButton).toBeEnabled();
+    await this.removeProfilePhotoButton.click();
+    await expect(this.removeProfilePhotoButton).toBeHidden();
+  }
+
   async editProfileForm(data: ProfileEditSaveData)
   {
     await this.editProfilePageURLCheck();
@@ -88,8 +98,7 @@ export class ProfileEditPage
     await this.createPages.enterRevisionLogMessage(data.revisionLogMessage);
     await this.editProfileDepartment(data.department);
     await this.ckeditor.enterCKEditorBody(data.body);
-    await expect(this.page.locator('//input[contains(@id,"edit-field-photo-selection-0-remove-button")]')).toBeEnabled();
-    await this.page.locator('//input[contains(@id,"edit-field-photo-selection-0-remove-button")]').click();
+    await this.removeExistingProfilePhoto();
     await this.uploadMediaHelper.uploadImageWorkflow({
       original: false,
       edited: true

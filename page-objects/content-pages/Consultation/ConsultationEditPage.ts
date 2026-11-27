@@ -51,6 +51,7 @@ export class ConsultationEditPage
   private readonly consultationRespondOnline: Locator;
   private readonly consultationEmailAddress: Locator;
   private readonly consultationPostalAddress: Locator;
+  private readonly removeConsultationAttachmentButton: Locator;
 
   // constructor
   constructor(
@@ -82,6 +83,7 @@ export class ConsultationEditPage
     this.consultationRespondOnline = page.locator('#edit-field-respond-online-0-uri');
     this.consultationEmailAddress = page.locator('#edit-field-email-address-0-value');
     this.consultationPostalAddress = page.locator('#edit-field-postal-0-value');
+    this.removeConsultationAttachmentButton = page.locator('//input[contains(@id,"edit-field-attachment-selection-0-remove-button")]');
   }
 
   // ------------------------ asserts ------------------------
@@ -155,7 +157,7 @@ export class ConsultationEditPage
   async editConsultationRespondOnline(respondeOnline: string)
   {
     await this.testSteps.LogInfo(`Entering "${respondeOnline}" into the Respond Online field`);
-    await this.consultationRespondOnline.fill(respondeOnline);
+    await this.consultationRespondOnline.pressSequentially(respondeOnline);
   }
 
   // enter consultation consultation Email Address
@@ -172,33 +174,43 @@ export class ConsultationEditPage
     await this.consultationPostalAddress.fill(postalAddress);
   }
 
+  async removeExistingConsultationAttachment()
+  {
+    await this.testSteps.LogInfo('Removing the existing consultation attachment');
+    await expect(this.removeConsultationAttachmentButton).toBeEnabled();
+    await this.removeConsultationAttachmentButton.click();
+    await expect(this.removeConsultationAttachmentButton).toBeHidden();
+  }
+
   // ------------------------ actions related to create consultation  ------------------------
 
   // fill in consultation form elements - title summary topics etc
-  async editConsultationForm(data: ConsultationEditSaveData)
+  async editConsultationForm(data: ConsultationEditSaveData, updateSiteTopics: boolean = true, updateGlobalTopics: boolean = true)
   {
     await this.editConsultationPageURLCheck();
     await this.editConsultationTitle(data.consultationTitle);
     await this.editPubPublishedDate(data.consPubDate);
     await this.createPages.enterRevisionLogMessage(data.revisionLogMessage);
-    await this.topics.selectSiteTopics(
-      data.topics[0] ?? null,
-      data.topics[1] ?? null,
-      data.topics[2] ?? null,
-      data.topics[3] ?? null,
-      true,
-    );
-    await this.page.locator(`//span[text()="${this.testSetUpData.globalTopicForTest.globalTopic}"]/following-sibling::button`).click();
-    await this.topics.selectGlobalTopics(data.globalTopicChoice);
+    if (updateSiteTopics)
+    {
+      await this.topics.selectSiteTopics(
+        data.topics[0] ?? null,
+        data.topics[1] ?? null,
+        data.topics[2] ?? null,
+        data.topics[3] ?? null,
+        true,
+      );
+    }
+    if (updateGlobalTopics)
+    {
+      await this.topics.replaceGlobalTopic(data.globalTopicChoice);
+    }
     await this.editConsultationSummary(data.consultationSummary);
     await this.editConsultationStartDate(data.consultationStartDate);
     await this.editConsultationStartTime(data.consultationStartTime);
     await this.editConsultationEndDate(data.consultationEndDate);
     await this.editConsultationEndTime(data.consultationEndTime);
-    await this.page.waitForTimeout(1000);
-    await expect(this.page.locator('//input[contains(@id,"edit-field-attachment-selection-0-remove-button")]')).toBeEnabled();
-    await this.page.locator('//input[contains(@id,"edit-field-attachment-selection-0-remove-button")]').click();
-    await this.page.waitForTimeout(1000);
+    await this.removeExistingConsultationAttachment();
     await this.ckeditor.enterCKEditorBody(data.consultationBody);
     await this.editConsultationRespondOnline(data.consultationRespondOnline);
     await this.editConsultationEmailAddress(data.consultationEmailAddress);

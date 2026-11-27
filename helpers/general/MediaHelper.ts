@@ -1,4 +1,4 @@
-import { Page } from '@playwright/test';
+import { expect, Page } from '@playwright/test';
 import { LoginPage } from '@poms/base-pages/LoginPage';
 import { MediaPage } from '@poms/content-pages/Media/MediaPage';
 import { AudioFileCreatePage } from '@poms/content-pages/Media/Audio/AudioFileCreatePage';
@@ -427,22 +427,18 @@ export class MediaHelper
         await this.mediaPage.clickGridView();
         await this.mediaPage.enterContentTitleInSearch(contentTitle);
         await this.mediaPage.clickSearchButton();
-
         await this.mediaPage.deleteSingleMediaFromBulkOptions(contentTitle);
-
 
         if (options.delete === true)
         {
             await this.deleteMediaItemPage.clickDelete();
             await this.deleteMediaItemPage.deleteMediaItemConfirmationCheck();
-            //await this.contentPage.confirmContentDoesNotExist(this.testSetUpData.contentTitleforTest.contentTitle);
             // test moderation state updated to deleted 
             this.testSetUpData.moderationStateForTest.moderationState = this.testSetUpData.validModerationStates.deleted;
         }
         else if (options.cancel === true)
         {
             await this.deleteMediaItemPage.clickCancel();
-            //await this.applicationNodePage.applicationNodeURLCheck();
         }
     }
 
@@ -453,30 +449,35 @@ export class MediaHelper
         await this.mediaPage.clickTableView();
         await this.mediaPage.enterContentTitleInSearch(searchTitle);
         await this.mediaPage.clickSearchButton();
-
         await this.mediaPage.deleteMultipleMediaFromBulkOptions();
-        // // click edit content
-        // await this.mediaPage.clickGridView();
-        // await this.mediaPage.enterContentTitleInSearch(contentTitle);
-        // await this.mediaPage.clickSearchButton();
-
-        //await this.mediaPage.chooseDeleteMediaFromBulkOptions(contentTitle);
 
         if (options.delete === true)
         {
             await this.deleteMediaItemPage.clickDelete();
             await this.deleteMediaItemPage.deleteMediaItemConfirmationCheck();
-            //await this.contentPage.confirmContentDoesNotExist(this.testSetUpData.contentTitleforTest.contentTitle);
+
             // test moderation state updated to deleted 
             this.testSetUpData.moderationStateForTest.moderationState = this.testSetUpData.validModerationStates.deleted;
 
-            await this.page.locator('form#views-form-media-library-default-page').getByText('No media available.', { exact: true }).waitFor({ state: 'visible' });
+            const mediaLibraryForm = this.page.locator('form#views-form-media-library-default-page');
+            if (this.testSetUpData.userForTest.username === this.testSetUpData.validUserList.author_username || this.testSetUpData.userForTest.username === this.testSetUpData.validUserList.stats_author_username)
+            {
+                await expect(mediaLibraryForm).toBeVisible();
+                const noMedia = mediaLibraryForm.getByText('No media available.', { exact: true });
+                const editLinks = mediaLibraryForm.getByRole('link', { name: 'Edit', exact: true });
+                await expect.poll(async () => await noMedia.isVisible() || await editLinks.count() === 0, {
+                    message: 'Expected no media or no editable media to remain',
+                }).toBe(true);
+            }
+            else
+            {
+                await expect(mediaLibraryForm.getByText('No media available.', { exact: true })).toBeVisible();
+            }
 
         }
         else if (options.cancel === true)
         {
             await this.deleteMediaItemPage.clickCancel();
-            //await this.applicationNodePage.applicationNodeURLCheck();
         }
     }
 

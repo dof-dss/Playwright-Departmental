@@ -47,7 +47,7 @@ export class ProtectedAreaEditPage
     this.protectedAreaTypeSelect = page.getByLabel('Protected area type');
     this.featureTypeSelect = page.getByLabel('Feature type');
     this.countySelect = page.getByLabel('County', { exact: true });
-    this.councilSelect = page.getByLabel('Council');
+    this.councilSelect = page.getByLabel('Council', { exact: true });
     this.documentField = page.getByRole('textbox', { name: 'Document' });
   }
 
@@ -103,18 +103,21 @@ export class ProtectedAreaEditPage
     await this.page.getByText(document, { exact: false }).first().click();
   }
 
-  async editProtectedAreaForm(data: ProtectedAreaEditData)
+  async editProtectedAreaForm(data: ProtectedAreaEditData, updateSiteTopics: boolean = true)
   {
     await this.editProtectedAreaPageURLCheck();
     await this.editProtectedAreaTitle(data.protectedAreaTitle);
     await this.createPages.enterRevisionLogMessage(data.revisionLogMessage);
-    await this.topics.selectSiteTopics(
-      data.topics[0] ?? null,
-      data.topics[1] ?? null,
-      data.topics[2] ?? null,
-      data.topics[3] ?? null,
-      true,
-    );
+    if (updateSiteTopics)
+    {
+      await this.topics.selectSiteTopics(
+        data.topics[0] ?? null,
+        data.topics[1] ?? null,
+        data.topics[2] ?? null,
+        data.topics[3] ?? null,
+        true,
+      );
+    }
     await this.selectProtectedAreaType(data.protectedAreaType);
     await this.selectFeatureType(data.featureType);
     await this.selectCounty(data.county);

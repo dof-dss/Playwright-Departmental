@@ -13,6 +13,7 @@ export interface SubtopicSaveData
     subtopicTitle: string;
     revisionLogMessage: string;
     topics: (string | null)[];
+    subtopicParent?: string;
     subtopicSummary: string;
     subtopicLongDescription: string;
     bannerImage?: boolean;
@@ -114,6 +115,8 @@ export class SubtopicCreatePage
                 data.topics[1] ?? null,
                 data.topics[2] ?? null,
                 data.topics[3] ?? null,
+                false,
+                data.subtopicParent,
             );
         }
         else

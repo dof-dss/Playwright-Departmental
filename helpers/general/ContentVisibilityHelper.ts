@@ -6,7 +6,7 @@ import { TestSteps } from '@poms/base-pages/TestSteps';
 import { TestSetUpData, TestData } from '@tdata/TestDataObject';
 import { MediaPage } from '@poms/content-pages/Media/MediaPage';
 import { AddMediaItemPage } from '@poms/content-pages/Media/AddMediaItemPage';
-import {MediaHelper} from '@helpers/general/MediaHelper';
+import { MediaHelper } from '@helpers/general/MediaHelper';
 
 export class ContentVisibilityHelper
 {
@@ -253,10 +253,6 @@ export class ContentVisibilityHelper
         }
     }
 
-
-
-
-
     // MEDIA LIBRARY CONTENT VISIBILITY METHODS
     async ContentVisibilityMediaLibrary()
     {
@@ -268,7 +264,6 @@ export class ContentVisibilityHelper
         await this.RemoteVideoContentVisibility();
         //await this.SecureFileContentVisibility();
     }
-
 
     async AudioContentVisibility()
     {
@@ -307,7 +302,7 @@ export class ContentVisibilityHelper
 
     async SecureFileContentVisibility()
     {
-            this.testSetUpData.contentTypeforTest.contentType = "Secure file";
+        this.testSetUpData.contentTypeforTest.contentType = "Secure file";
 
         if (this.testSetUpData.userForTest.username === this.testSetUpData.validUserList.stats_author_username ||
             this.testSetUpData.userForTest.username === this.testSetUpData.validUserList.stats_supervisor_username)

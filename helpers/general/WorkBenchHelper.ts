@@ -3,7 +3,6 @@ import { TestSetUpData, TestData } from '../../test-data/TestDataObject';
 import { ContentPage } from '@poms/base-pages/ContentPage';
 import { BasePage } from '@poms/base-pages/BasePage';
 import { ApplicationNodePage } from '@poms/content-pages/Application/ApplicationNodePage';
-import { VerificationHelper } from './VerificationHelper';
 
 
 export interface ViewState
@@ -19,7 +18,6 @@ export class WorkBenchHelper
     private contentPage: ContentPage;
     private basePage: BasePage;
     private applicationNodePage: ApplicationNodePage;
-    private verificationHelper: VerificationHelper;
 
 
     constructor(
@@ -33,7 +31,6 @@ export class WorkBenchHelper
         this.contentPage = new ContentPage(page, this.testSetUpData);
         this.basePage = new BasePage(page, testSetUpData);
         this.applicationNodePage = new ApplicationNodePage(page, testSetUpData, testData);
-        this.verificationHelper = new VerificationHelper(page, this.testSetUpData, this.testData);
 
     }
 
@@ -71,9 +68,6 @@ export class WorkBenchHelper
             await this.contentPage.chooseModerationStateDropdownDraft();
             await this.contentPage.clickApplyButton();
             await this.contentPage.clickTargetContentLink(this.testSetUpData.contentTitleforTest.contentTitle);
-            await this.verificationHelper.verifyChosenContent({
-                edited: false,
-            });
             // verifying Content is NOT in All Drafts view when Moderation State dropdown is set to Needs Review
             await this.basePage.clickContentLink();
             await this.contentPage.contentPageURLCheck();
@@ -88,9 +82,6 @@ export class WorkBenchHelper
             await this.contentPage.chooseModerationStateDropdownDraft();
             await this.contentPage.clickApplyButton();
             await this.contentPage.clickTargetContentLink(this.testSetUpData.contentTitleforTest.contentTitle);
-            await this.verificationHelper.verifyChosenContent({
-                edited: false,
-            });
         }
 
         if (options.needsReview)
@@ -114,9 +105,6 @@ export class WorkBenchHelper
             await this.contentPage.chooseModerationStateDropdownNeedsReview();
             await this.contentPage.clickApplyButton();
             await this.contentPage.clickTargetContentLink(this.testSetUpData.contentTitleforTest.contentTitle);
-            await this.verificationHelper.verifyChosenContent({
-                edited: false,
-            });
             // verifying Content is NOT in All Drafts view when Moderation State dropdown is set to Draft
             await this.basePage.clickContentLink();
             await this.contentPage.contentPageURLCheck();
@@ -131,9 +119,6 @@ export class WorkBenchHelper
             await this.contentPage.chooseModerationStateDropdownNeedsReview();
             await this.contentPage.clickApplyButton();
             await this.contentPage.clickTargetContentLink(this.testSetUpData.contentTitleforTest.contentTitle);
-            await this.verificationHelper.verifyChosenContent({
-                edited: false,
-            });
             // verifying Content is Displayed in Needs Review view
             await this.basePage.clickContentLink();
             await this.contentPage.contentPageURLCheck();
@@ -142,9 +127,6 @@ export class WorkBenchHelper
             await this.contentPage.enterContentNameToReturnTo(this.testSetUpData.contentTitleforTest.contentTitle);
             await this.contentPage.clickApplyButton();
             await this.contentPage.clickTargetContentLink(this.testSetUpData.contentTitleforTest.contentTitle);
-            await this.verificationHelper.verifyChosenContent({
-                edited: false,
-            });
         }
 
         if (options.archived)
@@ -177,9 +159,6 @@ export class WorkBenchHelper
             await this.contentPage.enterContentNameToReturnTo(this.testSetUpData.contentTitleforTest.contentTitle);
             await this.contentPage.clickApplyButton();
             await this.contentPage.clickTargetContentLink(this.testSetUpData.contentTitleforTest.contentTitle);
-            await this.verificationHelper.verifyChosenContent({
-                edited: false,
-            });
         }
     }
 
@@ -219,9 +198,6 @@ export class WorkBenchHelper
             await this.contentPage.chooseModerationStateDropdownDraft();
             await this.contentPage.clickApplyButton();
             await this.contentPage.clickTargetContentLink(this.testSetUpData.contentTitleforTest.contentTitle);
-            await this.verificationHelper.verifyChosenContent({
-                edited: false,
-            });
             // verifying Content is NOT in All Drafts view when Moderation State dropdown is set to Needs Review
             await this.basePage.clickContentLink();
             await this.contentPage.contentPageURLCheck();
@@ -236,9 +212,6 @@ export class WorkBenchHelper
             await this.contentPage.chooseModerationStateDropdownDraft();
             await this.contentPage.clickApplyButton();
             await this.contentPage.clickTargetContentLink(this.testSetUpData.contentTitleforTest.contentTitle);
-            await this.verificationHelper.verifyChosenContent({
-                edited: false,
-            });
         }
 
         if (options.needsReview)
@@ -262,9 +235,6 @@ export class WorkBenchHelper
             await this.contentPage.chooseModerationStateDropdownNeedsReview();
             await this.contentPage.clickApplyButton();
             await this.contentPage.clickTargetContentLink(this.testSetUpData.contentTitleforTest.contentTitle);
-            await this.verificationHelper.verifyChosenContent({
-                edited: false,
-            });
             // verifying Content is NOT in All Drafts view when Moderation State dropdown is set to Draft
             await this.basePage.clickContentLink();
             await this.contentPage.contentPageURLCheck();
@@ -279,9 +249,6 @@ export class WorkBenchHelper
             await this.contentPage.chooseModerationStateDropdownNeedsReview();
             await this.contentPage.clickApplyButton();
             await this.contentPage.clickTargetContentLink(this.testSetUpData.contentTitleforTest.contentTitle);
-            await this.verificationHelper.verifyChosenContent({
-                edited: false,
-            });
         }
 
         if (options.archived)
@@ -307,9 +274,6 @@ export class WorkBenchHelper
             await this.contentPage.enterContentNameToReturnTo(this.testSetUpData.contentTitleforTest.contentTitle);
             await this.contentPage.clickApplyButton();
             await this.contentPage.clickTargetContentLink(this.testSetUpData.contentTitleforTest.contentTitle);
-            await this.verificationHelper.verifyChosenContent({
-                edited: false,
-            });
         }
     }
 

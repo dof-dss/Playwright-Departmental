@@ -16,6 +16,7 @@ export interface PublicationSaveData
   revisionLogMessage: string;
   globalTopicChoice: string;
   topics: (string | null)[];
+  subtopicParent?: string;
   publicationSummary: string;
   pubType: string;
   publicationBodyField: string;
@@ -212,6 +213,8 @@ export class PublicationCreatePage
       data.topics[1] ?? null,
       data.topics[2] ?? null,
       data.topics[3] ?? null,
+      false,
+      data.subtopicParent,
     );
     await this.topics.selectGlobalTopics(data.globalTopicChoice);
     await this.selectPubType(data.pubType);

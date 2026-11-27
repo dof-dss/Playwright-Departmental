@@ -17,6 +17,7 @@ export interface NewsSaveData
   newsType: string;
   globalTopicChoice: string;
   topics: (string | null)[];
+  subtopicParent?: string;
   newsIntoParagraph: string;
   newsteaser: string;
   newsBodyField: string;
@@ -163,6 +164,8 @@ export class NewsCreatePage
       data.topics[1] ?? null,
       data.topics[2] ?? null,
       data.topics[3] ?? null,
+      false,
+      data.subtopicParent,
     );
     await this.selectNewsType(data.newsType);
     await this.topics.selectGlobalTopics(data.globalTopicChoice);

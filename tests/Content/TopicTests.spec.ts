@@ -1,6 +1,8 @@
 import { TestSteps } from '@poms/base-pages/TestSteps';
 import { test } from '@fixtures/MyFixtures';
 import { TopicVisibilityHelper } from '@helpers/general/TopicVisibilityHelper';
+import { RevisionHelper } from '@helpers/general/RevisionHelper';
+import { AnonymousHelper } from '@helpers/general/AnonymousHelper';
 
 test.describe('Empty Topic Tests', { tag: ['@topics', '@regression', '@topic_supervisor'] }, () =>
 {
@@ -12,7 +14,7 @@ test.describe('Empty Topic Tests', { tag: ['@topics', '@regression', '@topic_sup
         await testSteps.LogInfo(testInfo.title);
 
         // setting the isolated data for THIS specific test run
-        testSetUpData.urlForTest.url = testSetUpData.validTestURLList.finance_url;
+        testSetUpData.urlForTest.url = testSetUpData.validTestURLList.daera_url;
         testSetUpData.userForTest.username = testSetUpData.validUserList.topicsupervisor_username;
         testSetUpData.userForTest.password = testSetUpData.validUserList.topicsupervisor_password;
         testSetUpData.contentTypeforTest.contentType = testSetUpData.validContentTypeList.topic;
@@ -178,7 +180,7 @@ test.describe('Empty Topic Tests', { tag: ['@topics', '@regression', '@topic_sup
             await topicVisibilityHelper.verifyTopicOnTopicsPage({ title: testData.Topic.title, shouldBeVisible: false, edited: false });
         });
 
-    test('Empty-Topic-TC04 - Compare revisions- Edit empty Topic content and ensure user is able to Compare revisions', { tag: "@revision" },
+    test('Empty-Topic-TC04 - Compare revisions - Edit empty Topic content and ensure user is able to Compare revisions', { tag: "@revision" },
         async ({ topicHelper, revisionHelper, testSetUpData }) =>
         {
             // creating content
@@ -319,7 +321,7 @@ test.describe('Empty Topic Tests', { tag: ['@topics', '@regression', '@topic_sup
             await topicsTreeHelper.verifyTopicNotVisibleInSiteTopicsTree(testData.Topic.title);
         });
 
-    test('Empty-Topic-TC09 - Emsure that Hide Listing functionality prevents Topic being listed on parent topic pages and home page', {  },
+    test('Empty-Topic-TC09 - Emsure that Hide Listing functionality prevents Topic being listed on parent topic pages and home page', {},
         async ({ topicHelper, contentModerationHelper, anonymousHelper, topicVisibilityHelper, testData }) =>
         {
             await topicHelper.createTopic({
@@ -353,7 +355,7 @@ test.describe('Full Topic Tests', { tag: ['@topics', '@regression', '@topic_supe
         await testSteps.LogInfo(testInfo.title);
 
         // setting the isolated data for THIS specific test run
-        testSetUpData.urlForTest.url = testSetUpData.validTestURLList.finance_url;
+        testSetUpData.urlForTest.url = testSetUpData.validTestURLList.daera_url;
         testSetUpData.userForTest.username = testSetUpData.validUserList.topicsupervisor_username;
         testSetUpData.userForTest.password = testSetUpData.validUserList.topicsupervisor_password;
         testSetUpData.contentTypeforTest.contentType = testSetUpData.validContentTypeList.topic;
@@ -364,7 +366,7 @@ test.describe('Full Topic Tests', { tag: ['@topics', '@regression', '@topic_supe
         await loginHelper.loginWithValidUser();
     });
 
-    test('Full-Topic-TC01 - Create - Create full Topic using topics tree)', { tag: "@create" },
+    test('Full-Topic-TC01 - Create - Create full Topic using topics tree and moderate child content through all states)', { tag: "@create" },
         async ({ topicHelper, anonymousHelper, loginHelper, contentModerationHelper, navigateToCreatedContentHelper, testSetUpData, testData, topicVisibilityHelper }) =>
         {
             await topicHelper.createTopic({
@@ -375,16 +377,25 @@ test.describe('Full Topic Tests', { tag: ['@topics', '@regression', '@topic_supe
             await topicHelper.createTopicChildContentTopicTree({
                 application: true,
                 article: true,
+                protectedarea: true,
                 subtopic: true,
+                consultation: true,
+                news: true,
+                publication: true,
             });
 
-            // verify that all created Draft children are visible to the logged-in Topic Supervisor
+            // verify core child content is visible to the logged-in Topic Supervisor and Consultation, News, Publication are not
             await navigateToCreatedContentHelper.navigateToCreatedContent({ active: true, deleted: false });
             await topicHelper.verifyTopicChildContentVisibility({
                 application: true,
                 article: true,
+                protectedarea: true,
                 subtopic: true,
+                consultation: false,
+                news: false,
+                publication: false,
             });
+
 
             // searching as anon to ensure content is not viewable as draft
             await anonymousHelper.searchAsAnon({ edited: false });
@@ -394,7 +405,11 @@ test.describe('Full Topic Tests', { tag: ['@topics', '@regression', '@topic_supe
             await topicHelper.verifyTopicChildContentVisibility({
                 application: false,
                 article: false,
+                protectedarea: false,
                 subtopic: false,
+                consultation: false,
+                news: false,
+                publication: false,
             });
 
             // verify published topic is visible on the topics page but Draft children are not
@@ -402,7 +417,11 @@ test.describe('Full Topic Tests', { tag: ['@topics', '@regression', '@topic_supe
             await topicHelper.verifyTopicChildContentVisibility({
                 application: false,
                 article: false,
+                protectedarea: false,
                 subtopic: false,
+                consultation: false,
+                news: false,
+                publication: false,
             });
 
             ////////////////////////////////
@@ -420,19 +439,27 @@ test.describe('Full Topic Tests', { tag: ['@topics', '@regression', '@topic_supe
             await contentModerationHelper.topicSupervisorModerateAllChildrenContent({
                 application: true,
                 article: true,
+                protectedarea: true,
                 subtopic: true,
+                consultation: true,
+                news: true,
+                publication: true,
                 QuickPublish: false,
                 NeedsReview: true,
                 Published: false,
-                Archive: false
+                Archive: false,
             });
 
-            // verify that all needs review children are visible to the logged-in Topic Supervisor
+            // verify core child content in needs review is visible to the logged-in Topic Supervisor
             await navigateToCreatedContentHelper.navigateToCreatedContent({ active: true, deleted: false });
             await topicHelper.verifyTopicChildContentVisibility({
                 application: true,
                 article: true,
+                protectedarea: true,
                 subtopic: true,
+                consultation: false,
+                news: false,
+                publication: false,
             });
 
             // searching as anon to ensure content is not viewable as draft
@@ -443,7 +470,11 @@ test.describe('Full Topic Tests', { tag: ['@topics', '@regression', '@topic_supe
             await topicHelper.verifyTopicChildContentVisibility({
                 application: false,
                 article: false,
+                protectedarea: false,
                 subtopic: false,
+                consultation: false,
+                news: false,
+                publication: false,
             });
 
             // verify published topic is visible on /topics page but Needs Review children are not
@@ -451,7 +482,11 @@ test.describe('Full Topic Tests', { tag: ['@topics', '@regression', '@topic_supe
             await topicHelper.verifyTopicChildContentVisibility({
                 application: false,
                 article: false,
+                protectedarea: false,
                 subtopic: false,
+                consultation: false,
+                news: false,
+                publication: false,
             });
 
             ////////////////////////////////
@@ -469,11 +504,15 @@ test.describe('Full Topic Tests', { tag: ['@topics', '@regression', '@topic_supe
             await contentModerationHelper.topicSupervisorModerateAllChildrenContent({
                 application: true,
                 article: true,
+                protectedarea: true,
                 subtopic: true,
+                consultation: true,
+                news: true,
+                publication: true,
                 QuickPublish: false,
                 NeedsReview: false,
                 Published: true,
-                Archive: false
+                Archive: false,
             });
 
             // verify that all needs review children are visible to the logged-in Topic Supervisor
@@ -481,7 +520,11 @@ test.describe('Full Topic Tests', { tag: ['@topics', '@regression', '@topic_supe
             await topicHelper.verifyTopicChildContentVisibility({
                 application: true,
                 article: true,
+                protectedarea: true,
                 subtopic: true,
+                consultation: true,
+                news: true,
+                publication: true,
             });
 
             // searching as anon to ensure content is viewable as published
@@ -492,7 +535,11 @@ test.describe('Full Topic Tests', { tag: ['@topics', '@regression', '@topic_supe
             await topicHelper.verifyTopicChildContentVisibility({
                 application: true,
                 article: true,
+                protectedarea: true,
                 subtopic: true,
+                consultation: true,
+                news: true,
+                publication: true,
             });
 
             // verify published topic is visible on /topics page but published children are too
@@ -500,7 +547,11 @@ test.describe('Full Topic Tests', { tag: ['@topics', '@regression', '@topic_supe
             await topicHelper.verifyTopicChildContentVisibility({
                 application: true,
                 article: true,
+                protectedarea: true,
                 subtopic: true,
+                consultation: true,
+                news: true,
+                publication: true,
             });
 
             ////////////////////////////////
@@ -518,19 +569,27 @@ test.describe('Full Topic Tests', { tag: ['@topics', '@regression', '@topic_supe
             await contentModerationHelper.topicSupervisorModerateAllChildrenContent({
                 application: true,
                 article: true,
+                protectedarea: true,
                 subtopic: true,
+                consultation: true,
+                news: true,
+                publication: true,
                 QuickPublish: false,
                 NeedsReview: false,
                 Published: false,
-                Archive: true
+                Archive: true,
             });
 
-            // verify that all needs review children are visible to the logged-in Topic Supervisor
+            // verify that all newly archived children are NOT visible to the logged-in Topic Supervisor
             await navigateToCreatedContentHelper.navigateToCreatedContent({ active: true, deleted: false });
             await topicHelper.verifyTopicChildContentVisibility({
-                application: true,
-                article: true,
-                subtopic: true,
+                application: false,
+                article: false,
+                protectedarea: false,
+                subtopic: false,
+                consultation: false,
+                news: false,
+                publication: false,
             });
 
             // searching as anon to ensure content is viewable as published
@@ -541,7 +600,11 @@ test.describe('Full Topic Tests', { tag: ['@topics', '@regression', '@topic_supe
             await topicHelper.verifyTopicChildContentVisibility({
                 application: false,
                 article: false,
+                protectedarea: false,
                 subtopic: false,
+                consultation: false,
+                news: false,
+                publication: false,
             });
 
             // verify published topic is visible on /topics page but published children are not as archived
@@ -549,11 +612,15 @@ test.describe('Full Topic Tests', { tag: ['@topics', '@regression', '@topic_supe
             await topicHelper.verifyTopicChildContentVisibility({
                 application: false,
                 article: false,
+                protectedarea: false,
                 subtopic: false,
+                consultation: false,
+                news: false,
+                publication: false,
             });
         });
 
-    test('Full-Topic-TC02 - Create - Create full Topic using quickly add)', { tag: "@create" },
+    test('Full-Topic-TC02 - Create - Create full Topic using quickly add and moderate child content through all states)', { tag: "@create" },
         async ({ topicHelper, anonymousHelper, loginHelper, contentModerationHelper, navigateToCreatedContentHelper, testSetUpData, testData, topicVisibilityHelper }) =>
         {
             await topicHelper.createTopic({
@@ -564,6 +631,7 @@ test.describe('Full Topic Tests', { tag: ['@topics', '@regression', '@topic_supe
             await topicHelper.createTopicChildContentQuicklyAdd({
                 application: true,
                 article: true,
+                protectedarea: true,
                 subtopic: true,
             });
 
@@ -572,6 +640,7 @@ test.describe('Full Topic Tests', { tag: ['@topics', '@regression', '@topic_supe
             await topicHelper.verifyTopicChildContentVisibility({
                 application: true,
                 article: true,
+                protectedarea: true,
                 subtopic: true,
             });
 
@@ -583,6 +652,7 @@ test.describe('Full Topic Tests', { tag: ['@topics', '@regression', '@topic_supe
             await topicHelper.verifyTopicChildContentVisibility({
                 application: false,
                 article: false,
+                protectedarea: false,
                 subtopic: false,
             });
 
@@ -591,6 +661,7 @@ test.describe('Full Topic Tests', { tag: ['@topics', '@regression', '@topic_supe
             await topicHelper.verifyTopicChildContentVisibility({
                 application: false,
                 article: false,
+                protectedarea: false,
                 subtopic: false,
             });
 
@@ -609,11 +680,12 @@ test.describe('Full Topic Tests', { tag: ['@topics', '@regression', '@topic_supe
             await contentModerationHelper.topicSupervisorModerateAllChildrenContent({
                 application: true,
                 article: true,
+                protectedarea: true,
                 subtopic: true,
                 QuickPublish: false,
                 NeedsReview: true,
                 Published: false,
-                Archive: false
+                Archive: false,
             });
 
             // verify that all needs review children are visible to the logged-in Topic Supervisor
@@ -621,6 +693,7 @@ test.describe('Full Topic Tests', { tag: ['@topics', '@regression', '@topic_supe
             await topicHelper.verifyTopicChildContentVisibility({
                 application: true,
                 article: true,
+                protectedarea: true,
                 subtopic: true,
             });
 
@@ -632,6 +705,7 @@ test.describe('Full Topic Tests', { tag: ['@topics', '@regression', '@topic_supe
             await topicHelper.verifyTopicChildContentVisibility({
                 application: false,
                 article: false,
+                protectedarea: false,
                 subtopic: false,
             });
 
@@ -640,6 +714,7 @@ test.describe('Full Topic Tests', { tag: ['@topics', '@regression', '@topic_supe
             await topicHelper.verifyTopicChildContentVisibility({
                 application: false,
                 article: false,
+                protectedarea: false,
                 subtopic: false,
             });
 
@@ -658,11 +733,12 @@ test.describe('Full Topic Tests', { tag: ['@topics', '@regression', '@topic_supe
             await contentModerationHelper.topicSupervisorModerateAllChildrenContent({
                 application: true,
                 article: true,
+                protectedarea: true,
                 subtopic: true,
                 QuickPublish: false,
                 NeedsReview: false,
                 Published: true,
-                Archive: false
+                Archive: false,
             });
 
             // verify that all needs review children are visible to the logged-in Topic Supervisor
@@ -670,6 +746,7 @@ test.describe('Full Topic Tests', { tag: ['@topics', '@regression', '@topic_supe
             await topicHelper.verifyTopicChildContentVisibility({
                 application: true,
                 article: true,
+                protectedarea: true,
                 subtopic: true,
             });
 
@@ -681,6 +758,7 @@ test.describe('Full Topic Tests', { tag: ['@topics', '@regression', '@topic_supe
             await topicHelper.verifyTopicChildContentVisibility({
                 application: true,
                 article: true,
+                protectedarea: true,
                 subtopic: true,
             });
 
@@ -689,6 +767,7 @@ test.describe('Full Topic Tests', { tag: ['@topics', '@regression', '@topic_supe
             await topicHelper.verifyTopicChildContentVisibility({
                 application: true,
                 article: true,
+                protectedarea: true,
                 subtopic: true,
             });
 
@@ -707,19 +786,21 @@ test.describe('Full Topic Tests', { tag: ['@topics', '@regression', '@topic_supe
             await contentModerationHelper.topicSupervisorModerateAllChildrenContent({
                 application: true,
                 article: true,
+                protectedarea: true,
                 subtopic: true,
                 QuickPublish: false,
                 NeedsReview: false,
                 Published: false,
-                Archive: true
+                Archive: true,
             });
 
-            // verify that all needs review children are visible to the logged-in Topic Supervisor
+            // verify that all newly archived children are NOT visible to the logged-in Topic Supervisor
             await navigateToCreatedContentHelper.navigateToCreatedContent({ active: true, deleted: false });
             await topicHelper.verifyTopicChildContentVisibility({
-                application: true,
-                article: true,
-                subtopic: true,
+                application: false,
+                article: false,
+                protectedarea: false,
+                subtopic: false,
             });
 
             // searching as anon to ensure content is viewable as published
@@ -730,6 +811,7 @@ test.describe('Full Topic Tests', { tag: ['@topics', '@regression', '@topic_supe
             await topicHelper.verifyTopicChildContentVisibility({
                 application: false,
                 article: false,
+                protectedarea: false,
                 subtopic: false,
             });
 
@@ -738,11 +820,12 @@ test.describe('Full Topic Tests', { tag: ['@topics', '@regression', '@topic_supe
             await topicHelper.verifyTopicChildContentVisibility({
                 application: false,
                 article: false,
+                protectedarea: false,
                 subtopic: false,
             });
         });
 
-    test('Full-Topic-TC03 - Edit - Edit Topic by removing some child content)', { tag: "@edit" },
+    test('Full-Topic-TC03 - Edit - Edit Topic by removing some child content using the topics tree)', { tag: "@edit" },
         async ({ topicHelper, anonymousHelper, loginHelper, contentModerationHelper, navigateToCreatedContentHelper, testSetUpData, testData, topicVisibilityHelper }) =>
         {
             await topicHelper.createTopic({
@@ -750,9 +833,10 @@ test.describe('Full Topic Tests', { tag: ['@topics', '@regression', '@topic_supe
                 mandatoryFieldCheck: false
             });
 
-            await topicHelper.createTopicChildContentQuicklyAdd({
+            await topicHelper.createTopicChildContentTopicTree({
                 application: true,
                 article: true,
+                protectedarea: true,
                 subtopic: true,
             });
 
@@ -763,11 +847,12 @@ test.describe('Full Topic Tests', { tag: ['@topics', '@regression', '@topic_supe
             await contentModerationHelper.topicSupervisorModerateAllChildrenContent({
                 application: true,
                 article: true,
+                protectedarea: true,
                 subtopic: true,
                 QuickPublish: false,
                 NeedsReview: false,
                 Published: true,
-                Archive: false
+                Archive: false,
             });
 
             // searching as anon to ensure content is not viewable as draft
@@ -778,6 +863,7 @@ test.describe('Full Topic Tests', { tag: ['@topics', '@regression', '@topic_supe
             await topicHelper.verifyTopicChildContentVisibility({
                 application: true,
                 article: true,
+                protectedarea: true,
                 subtopic: true,
             });
 
@@ -786,6 +872,7 @@ test.describe('Full Topic Tests', { tag: ['@topics', '@regression', '@topic_supe
             await topicHelper.verifyTopicChildContentVisibility({
                 application: true,
                 article: true,
+                protectedarea: true,
                 subtopic: true,
             });
 
@@ -800,8 +887,9 @@ test.describe('Full Topic Tests', { tag: ['@topics', '@regression', '@topic_supe
             await topicHelper.removeChildContentByTopicTree({
                 application: true,
                 article: true,
+                protectedarea: true,
                 subtopic: false,
-                replacementTopic: 'Finance',
+                replacementTopic: 'Food',
             });
 
             // searching as anon to ensure content is not viewable as draft
@@ -812,6 +900,7 @@ test.describe('Full Topic Tests', { tag: ['@topics', '@regression', '@topic_supe
             await topicHelper.verifyTopicChildContentVisibility({
                 application: false,
                 article: false,
+                protectedarea: false,
                 subtopic: true,
             });
 
@@ -820,11 +909,122 @@ test.describe('Full Topic Tests', { tag: ['@topics', '@regression', '@topic_supe
             await topicHelper.verifyTopicChildContentVisibility({
                 application: false,
                 article: false,
+                protectedarea: false,
                 subtopic: true,
             });
         });
 
-    test('Full-Topic-TC04 - Edit - Edit Topic by using drag and drop on edit node page)', { tag: "@edit" },
+    test('Full-Topic-TC04 - Edit - Edit Topic by removing Consultation, News and Publication using the topics tree)', { tag: "@edit" },
+        async ({ topicHelper, anonymousHelper, loginHelper, contentModerationHelper, navigateToCreatedContentHelper, testSetUpData, testData, topicVisibilityHelper }) =>
+        {
+            await topicHelper.createTopic({
+                preview: false,
+                mandatoryFieldCheck: false
+            });
+
+            await topicHelper.createTopicChildContentTopicTree({
+                application: false,
+                article: false,
+                protectedarea: false,
+                subtopic: false,
+                consultation: true,
+                news: true,
+                publication: true,
+            });
+
+            // navigate back to parent topic 
+            await navigateToCreatedContentHelper.navigateToCreatedContent({ active: true, deleted: false });
+
+            // moderate all children content to published
+            await contentModerationHelper.topicSupervisorModerateAllChildrenContent({
+                application: false,
+                article: false,
+                protectedarea: false,
+                subtopic: false,
+                consultation: true,
+                news: true,
+                publication: true,
+                QuickPublish: false,
+                NeedsReview: false,
+                Published: true,
+                Archive: false,
+            });
+
+            // searching as anon to ensure content is not viewable as draft
+            await anonymousHelper.searchAsAnon({ edited: false });
+
+            // verify published topic is visible on homepage and published children are visible  
+            await topicVisibilityHelper.verifyTopicOnHomepage({ title: testData.Topic.title, shouldBeVisible: true, edited: false });
+            await topicHelper.verifyTopicChildContentVisibility({
+                application: false,
+                article: false,
+                protectedarea: false,
+                subtopic: false,
+                consultation: true,
+                news: true,
+                publication: true,
+            });
+
+            // verify published topic is visible on the topics page and published children are visible  
+            await topicVisibilityHelper.verifyTopicOnTopicsPage({ title: testData.Topic.title, shouldBeVisible: true, edited: false });
+            await topicHelper.verifyTopicChildContentVisibility({
+                application: false,
+                article: false,
+                protectedarea: false,
+                subtopic: false,
+                consultation: true,
+                news: true,
+                publication: true,
+            });
+
+            // log back in and naviagte to content 
+            await loginHelper.loginWithValidUser();
+            await navigateToCreatedContentHelper.navigateToCreatedContent({
+                active: true,
+                deleted: false
+            });
+
+            // remove child content 
+            await topicHelper.removeChildContentByTopicTree({
+                application: false,
+                article: false,
+                protectedarea: false,
+                subtopic: false,
+                consultation: true,
+                news: true,
+                publication: true,
+                replacementTopic: 'Food',
+            });
+
+            // searching as anon to ensure content is not viewable as draft
+            await anonymousHelper.searchAsAnon({ edited: false });
+
+            // verify published topic is visible on homepage and published children are visible  
+            await topicVisibilityHelper.verifyTopicOnHomepage({ title: testData.Topic.title, shouldBeVisible: true, edited: false });
+            await topicHelper.verifyTopicChildContentVisibility({
+                application: false,
+                article: false,
+                protectedarea: false,
+                subtopic: false,
+                consultation: false,
+                news: false,
+                publication: false,
+            });
+
+            // verify published topic is visible on the topics page and published children are visible  
+            await topicVisibilityHelper.verifyTopicOnTopicsPage({ title: testData.Topic.title, shouldBeVisible: true, edited: false });
+            await topicHelper.verifyTopicChildContentVisibility({
+                application: false,
+                article: false,
+                protectedarea: false,
+                subtopic: false,
+                consultation: false,
+                news: false,
+                publication: false,
+            });
+        });
+
+    test('Full-Topic-TC05 - Edit - Rearrange Application, Article, Protected Area and Subtopic child content with drag and drop on the edit node page', { tag: "@edit" },
         async ({ topicHelper, anonymousHelper, loginHelper, contentModerationHelper, navigateToCreatedContentHelper, testSetUpData, testData, topicVisibilityHelper }) =>
         {
             await topicHelper.createTopic({
@@ -835,27 +1035,19 @@ test.describe('Full Topic Tests', { tag: ['@topics', '@regression', '@topic_supe
             await topicHelper.createTopicChildContentQuicklyAdd({
                 application: true,
                 article: true,
+                protectedarea: true,
                 subtopic: true,
             });
 
             // navigate back to parent topic 
             await navigateToCreatedContentHelper.navigateToCreatedContent({ active: true, deleted: false });
 
-            // moderate all children content to published
-            await contentModerationHelper.topicSupervisorModerateAllChildrenContent({
-                application: true,
-                article: true,
-                subtopic: true,
-                QuickPublish: false,
-                NeedsReview: false,
-                Published: true,
-                Archive: false
-            });
+            // use drag and drop on edit node page to edit the topic
+            await topicHelper.editTopicUsingDragAndDrop();
 
-            // RETURN TO WHEN TOPICS BRANCH BACK 
         });
 
-    test('Full-Topic-TC05 - Edit - Edit Topic by using arrange content button moderation sidebar)', { tag: "@edit" },
+    test('Full-Topic-TC06 - Edit - Reorder Application, Article, Protected Area and Subtopic child content using the moderation sidebar Arrange Content button', { tag: "@edit" },
         async ({ topicHelper, anonymousHelper, loginHelper, contentModerationHelper, navigateToCreatedContentHelper, testSetUpData, testData, topicVisibilityHelper }) =>
         {
             await topicHelper.createTopic({
@@ -866,27 +1058,19 @@ test.describe('Full Topic Tests', { tag: ['@topics', '@regression', '@topic_supe
             await topicHelper.createTopicChildContentQuicklyAdd({
                 application: true,
                 article: true,
+                protectedarea: true,
                 subtopic: true,
             });
 
             // navigate back to parent topic 
             await navigateToCreatedContentHelper.navigateToCreatedContent({ active: true, deleted: false });
 
-            // moderate all children content to published
-            await contentModerationHelper.topicSupervisorModerateAllChildrenContent({
-                application: true,
-                article: true,
-                subtopic: true,
-                QuickPublish: false,
-                NeedsReview: false,
-                Published: true,
-                Archive: false
-            });
+            // reorder Topic Content using the Arrange Content modal
+            await topicHelper.arrangeTopicContentUsingDragAndDrop();
 
-            // RETURN TO WHEN TOPICS BRANCH BACK 
         });
 
-    test('Full-Topic-TC06 - Edit - Edit child content nodes and verify changes)', { tag: "@edit" },
+    test('Full-Topic-TC07 - Edit - Edit child content nodes and verify child content edits displayed correctly)', { tag: "@edit" },
         async ({ topicHelper, anonymousHelper, loginHelper, contentModerationHelper, navigateToCreatedContentHelper, testSetUpData, testData, topicVisibilityHelper }) =>
         {
             await topicHelper.createTopic({
@@ -894,10 +1078,14 @@ test.describe('Full Topic Tests', { tag: ['@topics', '@regression', '@topic_supe
                 mandatoryFieldCheck: false
             });
 
-            await topicHelper.createTopicChildContentQuicklyAdd({
+            await topicHelper.createTopicChildContentTopicTree({
                 application: true,
                 article: true,
+                protectedarea: true,
                 subtopic: true,
+                consultation: true,
+                news: true,
+                publication: true,
             });
 
             // navigate back to parent topic 
@@ -907,17 +1095,44 @@ test.describe('Full Topic Tests', { tag: ['@topics', '@regression', '@topic_supe
             await contentModerationHelper.topicSupervisorModerateAllChildrenContent({
                 application: true,
                 article: true,
+                protectedarea: true,
                 subtopic: true,
+                consultation: true,
+                news: true,
+                publication: true,
                 QuickPublish: false,
                 NeedsReview: false,
                 Published: true,
-                Archive: false
+                Archive: false,
             });
 
-            // RETURN TO WHEN TOPICS BRANCH BACK 
+            // edit child content nodes 
+            await topicHelper.editTopicChildContentNodes({
+                application: true,
+                article: true,
+                protectedarea: true,
+                subtopic: true,
+                consultation: true,
+                news: true,
+                publication: true,
+            });
+
+            // verify child content edits displayed correctly
+            await navigateToCreatedContentHelper.navigateToCreatedContent({ active: true, deleted: false });
+            await topicHelper.verifyTopicChildContentVisibility({
+                application: true,
+                article: true,
+                protectedarea: true,
+                subtopic: true,
+                consultation: true,
+                news: true,
+                publication: true,
+                edited: true,
+            });
+
         });
 
-    test('Full-Topic-TC07 - Delete - Ensure cannot delete Topic with child content by moderation sidebar but can when child content archived)', { tag: "@delete" },
+    test('Full-Topic-TC08 - Delete - Ensure cannot delete Topic with Application, Article, Protected Area and Subtopic child content by moderation sidebar but can when child content archived)', { tag: "@delete" },
         async ({ topicHelper, anonymousHelper, loginHelper, contentModerationHelper, navigateToCreatedContentHelper, testSetUpData, testData, topicVisibilityHelper }) =>
         {
             await topicHelper.createTopic({
@@ -925,55 +1140,35 @@ test.describe('Full Topic Tests', { tag: ['@topics', '@regression', '@topic_supe
                 mandatoryFieldCheck: false
             });
 
-            await topicHelper.createTopicChildContentQuicklyAdd({
+            await topicHelper.createTopicChildContentTopicTree({
                 application: true,
                 article: true,
+                protectedarea: true,
                 subtopic: true,
             });
 
             // navigate back to parent topic 
             await navigateToCreatedContentHelper.navigateToCreatedContent({ active: true, deleted: false });
 
-            // try to delete the parent topic while it still has child content in draft state
-            //await topicHelper.tryToDeleteParentTopicWithChildContent();
+            // verify deletion is blocked while child content is in draft
+            await topicHelper.verifyTopicDeletionIsBlocked();
 
-            /////// NEED REVIEW ///////
+            for (const moderationState of ['Needs Review', 'Published'])
+            {
+                await contentModerationHelper.topicSupervisorModerateAllChildrenContent({
+                    application: true,
+                    article: true,
+                    protectedarea: true,
+                    subtopic: true,
+                    QuickPublish: false,
+                    NeedsReview: moderationState === 'Needs Review',
+                    Published: moderationState === 'Published',
+                    Archive: false,
+                });
 
-            // moderate all children content to published
-            await contentModerationHelper.topicSupervisorModerateAllChildrenContent({
-                application: true,
-                article: true,
-                subtopic: true,
-                QuickPublish: false,
-                NeedsReview: true,
-                Published: false,
-                Archive: false
-            });
-
-            // navigate back to parent topic 
-            await navigateToCreatedContentHelper.navigateToCreatedContent({ active: true, deleted: false });
-
-            // try to delete the parent topic while it still has child content in needs review state
-            //await topicHelper.tryToDeleteParentTopicWithChildContent();
-
-            /////// PUBLISHED ///////
-
-            // moderate all children content to published
-            await contentModerationHelper.topicSupervisorModerateAllChildrenContent({
-                application: true,
-                article: true,
-                subtopic: true,
-                QuickPublish: false,
-                NeedsReview: false,
-                Published: true,
-                Archive: false
-            });
-
-            // navigate back to parent topic 
-            await navigateToCreatedContentHelper.navigateToCreatedContent({ active: true, deleted: false });
-
-            // try to delete the parent topic while it still has child content in needs review state
-            //await topicHelper.tryToDeleteParentTopicWithChildContent();
+                await navigateToCreatedContentHelper.navigateToCreatedContent({ active: true, deleted: false });
+                await topicHelper.verifyTopicDeletionIsBlocked();
+            }
 
             /////// ARCHIVED ///////
 
@@ -981,11 +1176,12 @@ test.describe('Full Topic Tests', { tag: ['@topics', '@regression', '@topic_supe
             await contentModerationHelper.topicSupervisorModerateAllChildrenContent({
                 application: true,
                 article: true,
+                protectedarea: true,
                 subtopic: true,
                 QuickPublish: false,
                 NeedsReview: false,
                 Published: false,
-                Archive: true
+                Archive: true,
             });
 
             // navigate back to parent topic 
@@ -1004,6 +1200,549 @@ test.describe('Full Topic Tests', { tag: ['@topics', '@regression', '@topic_supe
 
         });
 
+    for (const [index, { moderationState, saveAsOption }] of ([
+        { moderationState: 'Draft', saveAsOption: 'draft' },
+        { moderationState: 'Needs Review', saveAsOption: 'needsreview' },
+        { moderationState: 'Published', saveAsOption: 'published' },
+        { moderationState: 'Archived', saveAsOption: 'archived' },
+    ] as const).entries())
+    {
+        test(`Full-Topic-TC09.${index + 1} - Delete - Ensure Topic can be deleted with Consultation, News and Publication in a ${moderationState} state`, { tag: "@delete" },
+            async ({ topicHelper, navigateToCreatedContentHelper, anonymousHelper, topicVisibilityHelper, testData }) =>
+            {
+                await topicHelper.createTopic({
+                    preview: false,
+                    mandatoryFieldCheck: false
+                });
+
+                await topicHelper.createTopicChildContentTopicTree({
+                    application: false,
+                    article: false,
+                    protectedarea: false,
+                    subtopic: false,
+                    consultation: true,
+                    news: true,
+                    publication: true,
+                }, saveAsOption);
+
+                if (saveAsOption !== 'archived')
+                {
+                    // verify the delete warning for non-archived child content
+                    await navigateToCreatedContentHelper.navigateToCreatedContent({ active: true, deleted: false });
+                    await topicHelper.deleteTopic({ delete: false, cancel: false, deleteAltChildContentWarning: true });
+                }
+
+                // delete the topic in every child content state
+                await navigateToCreatedContentHelper.navigateToCreatedContent({ active: true, deleted: false });
+                await topicHelper.deleteTopic({ delete: true, cancel: false });
+                await navigateToCreatedContentHelper.navigateToCreatedContent({ active: false, deleted: true });
+
+                await anonymousHelper.searchAsAnon({ edited: false });
+                await topicVisibilityHelper.verifyTopicOnHomepage({ title: testData.Topic.title, shouldBeVisible: false, edited: false });
+                await topicVisibilityHelper.verifyTopicOnTopicsPage({ title: testData.Topic.title, shouldBeVisible: false, edited: false });
+            });
+    }
+
+    test('Full-Topic-TC10 - Archive - Ensure cannot archive Topic with Application, Article, Protected Area and Subtopic child content by moderation sidebar but can when child content archived', { tag: "@archive" },
+        async ({ topicHelper, contentModerationHelper, navigateToCreatedContentHelper, anonymousHelper, topicVisibilityHelper, testData }) =>
+        {
+            await topicHelper.createTopic({
+                preview: false,
+                mandatoryFieldCheck: false
+            });
+
+            await topicHelper.createTopicChildContentTopicTree({
+                application: true,
+                article: true,
+                protectedarea: true,
+                subtopic: true,
+            });
+            await navigateToCreatedContentHelper.navigateToCreatedContent({ active: true, deleted: false });
+            await topicHelper.verifyTopicArchivingIsBlocked();
+
+            for (const moderationState of ['Needs Review', 'Published'])
+            {
+                await contentModerationHelper.topicSupervisorModerateAllChildrenContent({
+                    application: true,
+                    article: true,
+                    protectedarea: true,
+                    subtopic: true,
+                    QuickPublish: false,
+                    NeedsReview: moderationState === 'Needs Review',
+                    Published: moderationState === 'Published',
+                    Archive: false,
+                });
+
+                await navigateToCreatedContentHelper.navigateToCreatedContent({ active: true, deleted: false });
+                await topicHelper.verifyTopicArchivingIsBlocked();
+            }
+
+            await contentModerationHelper.topicSupervisorModerateAllChildrenContent({
+                application: true,
+                article: true,
+                protectedarea: true,
+                subtopic: true,
+                QuickPublish: false,
+                NeedsReview: false,
+                Published: false,
+                Archive: true,
+            });
+
+            await navigateToCreatedContentHelper.navigateToCreatedContent({ active: true, deleted: false });
+            await contentModerationHelper.topicSupervisorModerateContent({
+                QuickPublish: false,
+                NeedsReview: false,
+                Published: false,
+                Archive: true
+            });
+
+            await navigateToCreatedContentHelper.navigateToCreatedContent({ active: true, deleted: false });
+            await topicHelper.verifyTopicIsArchived();
+
+            await anonymousHelper.searchAsAnon({ edited: false });
+            await topicVisibilityHelper.verifyTopicOnHomepage({ title: testData.Topic.title, shouldBeVisible: false, edited: false });
+            await topicVisibilityHelper.verifyTopicOnTopicsPage({ title: testData.Topic.title, shouldBeVisible: false, edited: false });
+        });
+
+    for (const [index, { moderationState, saveAsOption }] of ([
+        { moderationState: 'Draft', saveAsOption: 'draft' },
+        { moderationState: 'Needs Review', saveAsOption: 'needsreview' },
+        { moderationState: 'Published', saveAsOption: 'published' },
+        { moderationState: 'Archived', saveAsOption: 'archived' },
+    ] as const).entries())
+    {
+        test(`Full-Topic-TC11.${index + 1} - Archive - Ensure Topic can be archived with Consultation, News and Publication in ${moderationState}`, { tag: "@archive" },
+            async ({ topicHelper, contentModerationHelper, navigateToCreatedContentHelper, anonymousHelper, topicVisibilityHelper, testData }) =>
+            {
+                await topicHelper.createTopic({
+                    preview: false,
+                    mandatoryFieldCheck: false
+                });
+
+                await topicHelper.createTopicChildContentTopicTree({
+                    application: false,
+                    article: false,
+                    protectedarea: false,
+                    subtopic: false,
+                    consultation: true,
+                    news: true,
+                    publication: true,
+                }, saveAsOption);
+
+                await navigateToCreatedContentHelper.navigateToCreatedContent({ active: true, deleted: false });
+                await contentModerationHelper.topicSupervisorModerateContent({
+                    QuickPublish: false,
+                    NeedsReview: false,
+                    Published: false,
+                    Archive: true
+                });
+
+                await navigateToCreatedContentHelper.navigateToCreatedContent({ active: true, deleted: false });
+                await topicHelper.verifyTopicIsArchived();
+
+                await anonymousHelper.searchAsAnon({ edited: false });
+                await topicVisibilityHelper.verifyTopicOnHomepage({ title: testData.Topic.title, shouldBeVisible: false, edited: false });
+                await topicVisibilityHelper.verifyTopicOnTopicsPage({ title: testData.Topic.title, shouldBeVisible: false, edited: false });
+            });
+    }
+
+    test('Full-Topic-TC12 - Archive - Ensure cannot Archive Topic with Application, Article, Protected Area and Subtopic child content by reverting to a previous Archived revision)', { tag: "@archive" },
+        async ({ topicHelper, anonymousHelper, topicVisibilityHelper, revisionHelper, contentModerationHelper, navigateToCreatedContentHelper, testSetUpData, testData }) =>
+        {
+
+            // set save as option to archived to create first revision as archived 
+            testSetUpData.saveAsOptionForTest.saveAsOption = testSetUpData.validSaveAsOptionList.archived;
+            await topicHelper.createTopic({
+                preview: false,
+                mandatoryFieldCheck: false
+            });
+
+            // moderate parent topic to publsihed state 
+            await contentModerationHelper.topicSupervisorModerateContent({
+                QuickPublish: false,
+                NeedsReview: false,
+                Published: true,
+                Archive: false
+            });
+
+            await topicHelper.createTopicChildContentTopicTree({
+                application: true,
+                article: true,
+                protectedarea: true,
+                subtopic: true,
+            });
+
+            // navigate back to parent topic 
+            await navigateToCreatedContentHelper.navigateToCreatedContent({ active: true, deleted: false });
+
+            // verify cannot archive the parent topic which has child content in non archived state by reverting to a previous Archived revision of parent topic
+            await topicHelper.verifyCannotRevertToPreviousArchivedRevision();
+
+            // now moderate the child content to needs review state
+            await contentModerationHelper.topicSupervisorModerateAllChildrenContent({
+                application: true,
+                article: true,
+                protectedarea: true,
+                subtopic: true,
+                QuickPublish: false,
+                NeedsReview: true,
+                Published: false,
+                Archive: false,
+            });
+
+            // navigate back to parent topic
+            await navigateToCreatedContentHelper.navigateToCreatedContent({ active: true, deleted: false });
+
+            // verify cannot archive the parent topic which has child content in non archived state by reverting to a previous Archived revision of parent topic
+            await topicHelper.verifyCannotRevertToPreviousArchivedRevision();
+
+            // now moderate the child content to Published state
+            await contentModerationHelper.topicSupervisorModerateAllChildrenContent({
+                application: true,
+                article: true,
+                protectedarea: true,
+                subtopic: true,
+                QuickPublish: false,
+                NeedsReview: false,
+                Published: true,
+                Archive: false,
+            });
+
+            // navigate back to parent topic
+            await navigateToCreatedContentHelper.navigateToCreatedContent({ active: true, deleted: false });
+
+            // verify cannot archive the parent topic which has child content in non archived state by reverting to a previous Archived revision of parent topic
+            await topicHelper.verifyCannotRevertToPreviousArchivedRevision();
+
+            // now moderate the child content to Archived state
+            await contentModerationHelper.topicSupervisorModerateAllChildrenContent({
+                application: true,
+                article: true,
+                protectedarea: true,
+                subtopic: true,
+                QuickPublish: false,
+                NeedsReview: false,
+                Published: false,
+                Archive: true,
+            });
+
+            // navigate back to parent topic
+            await navigateToCreatedContentHelper.navigateToCreatedContent({ active: true, deleted: false });
+
+            // verify can archive the parent topic which has child content in an archived state by reverting to a previous Archived revision of parent topic
+            await revisionHelper.revertRevisions({
+                revert: false,
+                cancel: false,
+                topicArchivedRevert: true
+            });
+
+            // navigate back to parent topic
+            await navigateToCreatedContentHelper.navigateToCreatedContent({ active: true, deleted: false });
+            await topicHelper.verifyTopicIsArchived();
+
+            // search as anon to verify the parent topic is archived and not visible
+            await anonymousHelper.searchAsAnon({ edited: false });
+            await topicVisibilityHelper.verifyTopicOnHomepage({ title: testData.Topic.title, shouldBeVisible: false, edited: false });
+            await topicVisibilityHelper.verifyTopicOnTopicsPage({ title: testData.Topic.title, shouldBeVisible: false, edited: false });
+
+
+        });
+
+    for (const [index, { moderationState, saveAsOption }] of ([
+        { moderationState: 'Draft', saveAsOption: 'draft' },
+        { moderationState: 'Needs Review', saveAsOption: 'needsreview' },
+        { moderationState: 'Published', saveAsOption: 'published' },
+        { moderationState: 'Archived', saveAsOption: 'archived' },
+    ] as const).entries())
+    {
+        test(`Full-Topic-TC13.${index + 1} - Archive - Ensure can Archive Topic with Consultation, News and Publication in ${moderationState} by reverting to a previous Archived revision`, { tag: "@archive" },
+            async ({ topicHelper, anonymousHelper, topicVisibilityHelper, revisionHelper, contentModerationHelper, navigateToCreatedContentHelper, testSetUpData, testData }) =>
+            {
+                // set save as option to archived to create first revision as archived 
+                testSetUpData.saveAsOptionForTest.saveAsOption = testSetUpData.validSaveAsOptionList.archived;
+                await topicHelper.createTopic({
+                    preview: false,
+                    mandatoryFieldCheck: false
+                });
+
+                // moderate parent topic to publsihed state 
+                await contentModerationHelper.topicSupervisorModerateContent({
+                    QuickPublish: false,
+                    NeedsReview: false,
+                    Published: true,
+                    Archive: false
+                });
+
+                await topicHelper.createTopicChildContentTopicTree({
+                    application: false,
+                    article: false,
+                    protectedarea: false,
+                    subtopic: false,
+                    consultation: true,
+                    news: true,
+                    publication: true,
+                }, saveAsOption);
+
+                // navigate back to parent topic 
+                await navigateToCreatedContentHelper.navigateToCreatedContent({ active: true, deleted: false });
+
+                // verify can archive the parent topic which has child content in specified moderation state by reverting to a previous Archived revision of parent topic
+                await revisionHelper.revertRevisions({
+                    revert: false,
+                    cancel: false,
+                    topicArchivedRevert: true
+                });
+
+                // navigate back to parent topic
+                await navigateToCreatedContentHelper.navigateToCreatedContent({ active: true, deleted: false });
+                await topicHelper.verifyTopicIsArchived();
+
+                await anonymousHelper.searchAsAnon({ edited: false });
+                await topicVisibilityHelper.verifyTopicOnHomepage({ title: testData.Topic.title, shouldBeVisible: false, edited: false });
+                await topicVisibilityHelper.verifyTopicOnTopicsPage({ title: testData.Topic.title, shouldBeVisible: false, edited: false });
+            });
+    }
+
+    test('Full-Topic-TC14 - Revision - Create a topic and add child content one by one, verifying no new revisions are created', { tag: "@revision" },
+        async ({ topicHelper, navigateToCreatedContentHelper, revisionHelper }) =>
+        {
+            await topicHelper.createTopic({
+                preview: false,
+                mandatoryFieldCheck: false
+            });
+
+            await navigateToCreatedContentHelper.navigateToCreatedContent({ active: true, deleted: false });
+            const initialRevisionCount = 1;
+            await revisionHelper.verifyRevisionCount(initialRevisionCount);
+            const childContentTypes = ['application', 'article', 'subtopic', 'consultation', 'news', 'publication', 'protectedarea'] as const;
+
+            for (const childContentType of childContentTypes)
+            {
+                await test.step(`Create ${childContentType} and verify no new topic revision`, async () =>
+                {
+                    await revisionHelper.revisionPage.goBack();
+                    await topicHelper.createTopicChildContentTopicTree({
+                        application: false,
+                        article: false,
+                        protectedarea: false,
+                        subtopic: false,
+                        consultation: false,
+                        news: false,
+                        publication: false,
+                        [childContentType]: true
+                    });
+
+                    await navigateToCreatedContentHelper.navigateToCreatedContent({ active: true, deleted: false });
+                    await revisionHelper.verifyRevisionCount(initialRevisionCount);
+                });
+            }
+        });
+
+    test('Full-Topic-TC15 - Revision - Create a full topic with Application, remove it, then add an edit Topic and add an Article and verify child content does not show on revision compare', { tag: "@revision" },
+        async ({ topicHelper, revisionHelper, navigateToCreatedContentHelper, testSetUpData, testData }) =>
+        {
+            // set save as option to draft to create first revision as draft 
+            testSetUpData.saveAsOptionForTest.saveAsOption = testSetUpData.validSaveAsOptionList.draft;
+
+            // Create initial topic with only Application child content - First Revision
+            await topicHelper.createTopic({
+                preview: false,
+                mandatoryFieldCheck: false
+            });
+
+            await topicHelper.createTopicChildContentTopicTree({
+                application: true,
+                article: false,
+                protectedarea: false,
+                subtopic: false,
+            });
+
+            // Navigate back to parent topic and remove Application child content via topics tree
+            await navigateToCreatedContentHelper.navigateToCreatedContent({ active: true, deleted: false });
+
+            await topicHelper.removeChildContentByTopicTree({
+                application: true,
+                article: false,
+                protectedarea: false,
+                subtopic: false,
+                replacementTopic: 'Food',
+            });
+
+            // overriding test data so that Edit test saves as Needs Review
+            testSetUpData.saveAsOptionForTest.saveAsOption = testSetUpData.validSaveAsOptionList.needsreview;
+
+            // edit the topic to create a new revision
+            await navigateToCreatedContentHelper.navigateToCreatedContent({ active: true, deleted: false });
+            await topicHelper.editTopic({ preview: false });
+
+            // Now add new child content (Article, Subtopic, Consultation, News, Publication) - Second Revision
+            // useEditedTitle=true because the topic was just edited
+            await topicHelper.createTopicChildContentTopicTree({
+                application: false,
+                article: true,
+                protectedarea: false,
+                subtopic: false,
+            }, 'draft', { useEditedTitle: true });
+
+            // Navigate to revisions and compare the two revisions
+            await navigateToCreatedContentHelper.navigateToCreatedContent({ active: true, deleted: false });
+
+            // Restore edited title for navigation (was restored to original by createTopicChildContentTopicTree)
+            testData.Topic.title = testData.Topic.titleEdited;
+            testSetUpData.contentTitleforTest.contentTitle = testData.Topic.titleEdited;
+
+            // Compare the revisions and verify that topic child content is not shown on compare page
+            await revisionHelper.compareRevisions();
+
+            // Verify that no topic child content appears on the compare page
+            await revisionHelper.topicComparePage.verifyTopicChildContentNotShownOnComparePage();
+        });
+
+    test('Full-Topic-TC16 - Revision - Create a topic with Application, keep it, then edit Topic and add an Article and delete a revision to verify both child content items are displayed', { tag: "@revision" },
+        async ({ topicHelper, revisionHelper, navigateToCreatedContentHelper, testSetUpData, testData }) =>
+        {
+            // set save as option to draft to create first revision as draft 
+            testSetUpData.saveAsOptionForTest.saveAsOption = testSetUpData.validSaveAsOptionList.draft;
+
+            // Create initial topic with only Application child content - First Revision
+            await topicHelper.createTopic({
+                preview: false,
+                mandatoryFieldCheck: false
+            });
+
+            await topicHelper.createTopicChildContentTopicTree({
+                application: true,
+                article: false,
+                protectedarea: false,
+                subtopic: false,
+            });
+
+            // overriding test data so that Edit test saves as Needs Review
+            testSetUpData.saveAsOptionForTest.saveAsOption = testSetUpData.validSaveAsOptionList.needsreview;
+
+            // edit the topic to create a new revision without removing Application
+            await navigateToCreatedContentHelper.navigateToCreatedContent({ active: true, deleted: false });
+            await topicHelper.editTopic({ preview: false });
+
+            // Now add new child content (Article) - Second Revision
+            // useEditedTitle=true because the topic was just edited
+            await topicHelper.createTopicChildContentTopicTree({
+                application: false,
+                article: true,
+                protectedarea: false,
+                subtopic: false,
+            }, 'draft', { useEditedTitle: true });
+
+            // Navigate to revisions and delete a revision
+            await navigateToCreatedContentHelper.navigateToCreatedContent({ active: true, deleted: false });
+
+            // Delete a revision
+            await revisionHelper.deleteRevisions({
+                delete: true,
+                cancel: false
+            });
+
+            // Restore edited title for navigation (was restored to original by createTopicChildContentTopicTree)
+            testData.Topic.title = testData.Topic.titleEdited;
+            testSetUpData.contentTitleforTest.contentTitle = testData.Topic.titleEdited;
+
+            // Navigate back to verify both child content items are displayed
+            await navigateToCreatedContentHelper.navigateToCreatedContent({ active: true, deleted: false });
+
+            // Verify that both Application and Article child content appear
+            await topicHelper.verifyTopicChildContentVisibility({
+                application: true,
+                article: true,
+                protectedarea: false,
+                subtopic: false,
+            });
+        });
+
+    test('Full-Topic-TC17 - Revision - Create a topic with Application, keep it, then edit Topic and add an Article and revert a revision to verify both child content items are displayed', { tag: "@revision" },
+        async ({ topicHelper, revisionHelper, navigateToCreatedContentHelper, testSetUpData, testData }) =>
+        {
+            // set save as option to draft to create first revision as draft 
+            testSetUpData.saveAsOptionForTest.saveAsOption = testSetUpData.validSaveAsOptionList.draft;
+
+            // Create initial topic with only Application child content - First Revision
+            await topicHelper.createTopic({
+                preview: false,
+                mandatoryFieldCheck: false
+            });
+
+            await topicHelper.createTopicChildContentTopicTree({
+                application: true,
+                article: false,
+                protectedarea: false,
+                subtopic: false,
+            });
+
+            // overriding test data so that Edit test saves as Needs Review
+            testSetUpData.saveAsOptionForTest.saveAsOption = testSetUpData.validSaveAsOptionList.needsreview;
+
+            // edit the topic to create a new revision without removing Application
+            await navigateToCreatedContentHelper.navigateToCreatedContent({ active: true, deleted: false });
+            await topicHelper.editTopic({ preview: false });
+
+            // Now add new child content (Article) - Second Revision
+            // useEditedTitle=true because the topic was just edited, will be restored by the method automatically
+            await topicHelper.createTopicChildContentTopicTree({
+                application: false,
+                article: true,
+                protectedarea: false,
+                subtopic: false,
+            }, 'draft', { useEditedTitle: true });
+
+            // Navigate to revisions and revert a revision
+            await navigateToCreatedContentHelper.navigateToCreatedContent({ active: true, deleted: false });
+
+            // Revert a revision
+            await revisionHelper.revertRevisions({
+                revert: true,
+                cancel: false
+            });
+
+            // testData.Topic.title is already back to original from createTopicChildContentTopicTree's finally block
+            testSetUpData.contentTitleforTest.contentTitle = testData.Topic.title;
+
+            // Navigate back to verify both child content items are displayed
+            await navigateToCreatedContentHelper.navigateToCreatedContent({ active: true, deleted: false });
+
+            // Verify that both Application and Article child content appear
+            await topicHelper.verifyTopicChildContentVisibility({
+                application: true,
+                article: true,
+                protectedarea: false,
+                subtopic: false,
+            });
+        });
+
+    for (const [index, { moderationState, saveAsOption }] of ([
+        { moderationState: 'Draft', saveAsOption: 'draft' },
+        { moderationState: 'Needs Review', saveAsOption: 'needsreview' },
+    ] as const).entries())
+    {
+        test(`Full-Topic-TC18.${index + 1} - Warning - Ensure Topic child content including Protected Area displays warning message when Topic is in ${moderationState}`, { tag: "@archive" },
+            async ({ topicHelper, contentModerationHelper, navigateToCreatedContentHelper, anonymousHelper, topicVisibilityHelper, testSetUpData, testData }) =>
+            {
+                // Map the state key to its Save as dropdown value.
+                testSetUpData.saveAsOptionForTest.saveAsOption = testSetUpData.validSaveAsOptionList[saveAsOption];
+                await topicHelper.createTopic({
+                    preview: false,
+                    mandatoryFieldCheck: false
+                });
+
+                await topicHelper.createTopicChildContentTopicTree({
+                    application: true,
+                    article: true,
+                    protectedarea: true,
+                    subtopic: true,
+                }, "published", { verifyUnpublishedTopicWarning: true });
+
+
+            });
+    }
+
+
+
 });
-
-

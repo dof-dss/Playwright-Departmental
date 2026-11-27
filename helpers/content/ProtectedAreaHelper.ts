@@ -17,11 +17,13 @@ export interface SaveOptions
 {
   preview: boolean;
   mandatoryFieldCheck: boolean;
+  subtopicParent?: string;
 }
 
 export interface EditSaveOptions
 {
   preview: boolean;
+  preserveSiteTopics?: boolean;
 }
 
 export interface DeleteOptions
@@ -89,6 +91,7 @@ export class ProtectedAreaHelper
       protectedAreaTitle: this.testData.ProtectedArea.title,
       revisionLogMessage: this.testData.ProtectedArea.revisionlog,
       topics: this.topicsHelper.getTopics(),
+      subtopicParent: options.subtopicParent,
       protectedAreaType: this.testData.ProtectedArea.type,
       featureType: this.testData.ProtectedArea.feature,
       county: this.testData.ProtectedArea.county,
@@ -120,7 +123,10 @@ export class ProtectedAreaHelper
     await this.moderationSideBar.openModerationSideBar();
     await this.moderationSideBar.clickEditContentButton();
 
-    await this.topicsHelper.selectTopicForSite({ edit: true, triggeralert: false });
+    if (!options.preserveSiteTopics)
+    {
+      await this.topicsHelper.selectTopicForSite({ edit: true, triggeralert: false });
+    }
 
     await this.protectedAreaEditPage.editProtectedAreaForm({
       protectedAreaTitle: this.testData.ProtectedArea.titleEdited,
@@ -132,7 +138,7 @@ export class ProtectedAreaHelper
       council: this.testData.ProtectedArea.councilEdited,
       document: this.testData.ProtectedArea.documentEdited,
       body: this.testData.ProtectedArea.bodyEdited,
-    });
+    }, !options.preserveSiteTopics);
 
     this.testSetUpData.contentTitleforTest.contentTitle = this.testData.ProtectedArea.titleEdited;
 

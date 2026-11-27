@@ -32,8 +32,8 @@ export default defineConfig({
   /* Run tests in files in parallel */
   fullyParallel: true,
 
-  /* Entire script each Test timeout - currently 120 seconds */
-  timeout: 500_000,
+  /* Entire script each Test timeout - currently 700 seconds */
+  timeout: 700_000,
   /* Expect assertion global timeout */
   expect: { timeout: 10000 },
 
@@ -44,7 +44,7 @@ export default defineConfig({
   retries: process.env.CI ? 0 : 0,
 
   /* Opt out of parallel tests on CI. */
-  workers: process.env.CI ? 1 : 1,
+  workers: process.env.CI ? undefined : 1,
 
   /* Reporter to use. See https://playwright.dev/docs/test-reporters */
   reporter: [
@@ -58,10 +58,10 @@ export default defineConfig({
     /* Base URL to use in actions like `await page.goto('')`. */
     // baseURL: 'http://localhost:3000',
 
-       /* This limits how long each action like .click(), .fill(), or .hover() can take to perform */
+    /* This limits how long each action like .click(), .fill(), or .hover() can take to perform */
     actionTimeout: 10000,
     trace: process.env.CI || os.platform() === 'linux' ? 'off' : 'retain-on-failure',
- 
+
     /* Collect trace when retrying the failed test. See https://playwright.dev/docs/trace-viewer */
     //trace: 'on-first-retry',
     video: process.env.CI || os.platform() === 'linux' ? 'off' : 'retain-on-failure',

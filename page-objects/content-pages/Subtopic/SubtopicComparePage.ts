@@ -28,4 +28,12 @@ export class SubtopicComparePage
         await this.testSteps.LogInfo('Verifying the Subtopic body revision diff');
         await expect(subtopicSummary.locator('p ins')).toHaveText('edited');
     }
+
+    async verifySubtopicChildContentNotShownOnComparePage()
+    {
+        await this.testSteps.LogInfo('Verifying that Subtopic child content is not shown on the compare page');
+        const childContentSections = this.page.locator('main').locator('text=/Application|Article|Subtopic|Consultation|News|Publication/');
+        await expect(childContentSections).toHaveCount(0);
+        await this.testSteps.LogInfo('Confirmed that no Subtopic child content is displayed on the revision compare page');
+    }
 }

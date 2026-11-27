@@ -17,12 +17,15 @@ export interface SaveOptions
 {
     preview: boolean;
     mandatoryFieldCheck: boolean;
+    subtopicParent?: string;
     existingRemoteVideoName?: string;
 };
 
 export interface EditSaveOptions
 {
     preview: boolean;
+    preserveSiteTopics?: boolean;
+    preserveGlobalTopics?: boolean;
 };
 
 export interface DeleteOptions
@@ -106,6 +109,7 @@ export class NewsHelper
                 this.testData.SiteTopics.topic3,
                 this.testData.SiteTopics.topic4,
             ],
+            subtopicParent: options.subtopicParent,
             newsIntoParagraph: this.testData.News.introductoryParagraph,
             newsteaser: this.testData.News.teaser,
             newsBodyField: this.testData.News.body,
@@ -124,8 +128,8 @@ export class NewsHelper
         {
             await this.createPage.clickPreviewButton();
             await this.previewPage.performURLCheck();
-            await this.newsNodePage.verifyNews({ 
-                topics: this.topicsHelper.getTopics() 
+            await this.newsNodePage.verifyNews({
+                topics: this.topicsHelper.getTopics()
             });
             await this.previewPage.clickBackToContentEdittingButton();
             await this.newsCreatePage.returnFromPreviewNewsPageURLCheck();
@@ -133,9 +137,12 @@ export class NewsHelper
 
         // Save and verify
         await this.createPage.clickSaveButton();
-        await this.newsNodePage.newsNodeURLCheck();
-        await this.newsNodePage.verifyNews({ 
-            topics: this.topicsHelper.getTopics() 
+        if (this.testSetUpData.saveAsOptionForTest.saveAsOption !== this.testSetUpData.validSaveAsOptionList.archived)
+        {
+            await this.newsNodePage.newsNodeURLCheck();
+        }
+        await this.newsNodePage.verifyNews({
+            topics: this.topicsHelper.getTopics()
         });
     }
     // edit News method
@@ -150,7 +157,10 @@ export class NewsHelper
         await this.moderationSideBar.clickEditContentButton();
 
         // set topics for test using selec topics for site before filling news form
-        await this.topicsHelper.selectTopicForSite({ edit: true, triggeralert: false });
+        if (!options.preserveSiteTopics)
+        {
+            await this.topicsHelper.selectTopicForSite({ edit: true, triggeralert: false });
+        }
 
         // complete news form using edit isolated test data 
         await this.newsEditPage.editNewsForm({
@@ -164,7 +174,7 @@ export class NewsHelper
             newsteaser: this.testData.News.teaserEdited,
             newsBodyField: this.testData.News.bodyEdited,
             newsNoteToEditor: this.testData.News.notesToEditorEdited
-        });
+        }, !options.preserveSiteTopics, !options.preserveGlobalTopics);
 
         // setting test set up data to new title
         this.testSetUpData.contentTitleforTest.contentTitle = this.testData.News.titleEdited;
@@ -178,8 +188,9 @@ export class NewsHelper
         {
             await this.createPage.clickPreviewButton();
             await this.previewPage.performURLCheck();
-            await this.newsNodePage.verifyEditedNews({ 
-                topics: this.topicsHelper.getTopics() 
+            await this.newsNodePage.verifyEditedNews({
+                topics: this.topicsHelper.getTopics(),
+                preserveSiteTopics: options.preserveSiteTopics,
             });
             await this.previewPage.clickBackToContentEdittingButton();
             await this.newsEditPage.returnFromPreviewNewsPageURLCheck();
@@ -188,8 +199,9 @@ export class NewsHelper
         // Save and verify
         await this.createPage.clickSaveButton();
         await this.newsNodePage.newsNodeURLCheck();
-        await this.newsNodePage.verifyEditedNews({ 
-            topics: this.topicsHelper.getTopics() 
+        await this.newsNodePage.verifyEditedNews({
+            topics: this.topicsHelper.getTopics(),
+            preserveSiteTopics: options.preserveSiteTopics,
         });
     }
 
@@ -252,7 +264,6 @@ export class NewsHelper
     }
 
 }
-
 
 
 

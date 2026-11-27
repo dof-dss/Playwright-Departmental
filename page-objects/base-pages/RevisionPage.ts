@@ -8,10 +8,10 @@ export class RevisionPage
 
     // locators
     private readonly compareRevisionsButton: Locator;
-    private readonly revertRevisionButton: Locator;
     private readonly revertDropDown: Locator;
+    private readonly revertRevisionButton: Locator;
     private readonly deleteRevisionButton: Locator;
-    private readonly viewContent: Locator
+    private readonly viewContent: Locator;
 
     // constructor
     constructor(private readonly page: Page)
@@ -20,10 +20,9 @@ export class RevisionPage
         this.testSteps = new TestSteps();
 
         this.compareRevisionsButton = page.getByRole('button', { name: 'Compare selected revisions' });
-        // WILL NEED UPDATED WHEN TOPICS IS FIXED
-        this.revertRevisionButton = page.locator('//p[text()="This is an automated revision log message (Draft)"]//parent::td//following-sibling::td//a[text()="Revert"]')
-        this.revertDropDown = page.locator('//p[text()="This is an automated revision log message (Draft)"]//parent::td//following-sibling::td//button')
-        this.deleteRevisionButton = page.locator('//p[text()="This is an automated revision log message (Draft)"]//parent::td//following-sibling::td//a[text()="Delete"]')
+        this.revertDropDown = page.locator('//li/button/span[text()="List additional actions"]');
+        this.revertRevisionButton = page.locator('//li/button/span[text()="Revert"]');
+        this.deleteRevisionButton = page.locator('//a[text()="Revert as Draft"]//parent::li//following-sibling::li/a[text()="Delete"]');
         this.viewContent = page.getByRole('link', { name: 'View' });
     }
 
@@ -53,8 +52,8 @@ export class RevisionPage
     // Clicking Revert revisions button
     async clickRevertRevisionsButton()
     {
-        await this.testSteps.LogInfo('Clicking Revert revisions button');
-        await this.revertRevisionButton.click();
+        await this.testSteps.LogInfo('Clicking first Revert revisions button');
+        await this.page.getByRole('link', { name: 'Revert', exact: true }).first().click();
     }
 
     // Clicking Compare selected revisions button
@@ -64,5 +63,20 @@ export class RevisionPage
         await this.viewContent.click();
     }
 
+    // Get the count of revisions in the revision table
+    async getRevisionCount(): Promise<number>
+    {
+        await this.testSteps.LogInfo('Getting revision count from revisions table');
+        const revisionRows = this.page.locator('table[data-drupal-selector="edit-node-revisions-table"] tbody tr');
+        await expect(revisionRows.first()).toBeVisible();
+        return revisionRows.count();
+    }
+
+    // Go back to the previous page
+    async goBack()
+    {
+        await this.testSteps.LogInfo('Going back to previous page');
+        await this.page.goBack();
+    }
 
 }

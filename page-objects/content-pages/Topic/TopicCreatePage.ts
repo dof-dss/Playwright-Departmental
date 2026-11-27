@@ -106,6 +106,10 @@ export class TopicCreatePage
     {
         await this.createTopicPageURLCheck();
         await this.enterTopicTitle(data.topicTitle);
+        if (data.hideListing)
+        {
+            await this.toggleHideListing();
+        }
         await this.uploadMediaHelper.uploadBannerImagesWorkflow({
             bannerImage: true,
             bannerImageOverlay: false,
@@ -114,10 +118,9 @@ export class TopicCreatePage
         await this.createPages.enterRevisionLogMessage(data.revisionLogMessage);
         await this.enterTopicSummary(data.topicSummary);
         await this.ckeditor.enterCKEditorBody(data.topicLongDescription);
-
-        if (data.hideListing)
-        {
-            await this.toggleHideListing();
-        }
+        await this.uploadMediaHelper.uploadImageWorkflow({
+            original: true,
+            edited: false
+        });
     }
 }

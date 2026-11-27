@@ -90,6 +90,7 @@ export class HeritageSiteEditPage
   private readonly historicMapViewerField: Locator;
   private readonly smNumberField: Locator;
   private readonly nismrLinkField: Locator;
+  private readonly removeHeritageSitePhotoButton: Locator;
 
   // constructor
   constructor(
@@ -151,6 +152,7 @@ export class HeritageSiteEditPage
     this.historicMapViewerField = page.locator("//*[contains(@aria-describedby, 'edit-field-historic-map-viewer-link-0-uri')]");
     this.smNumberField = page.locator("//*[contains(@aria-describedby, 'edit-field-sm-number-0-value')]");
     this.nismrLinkField = page.locator("//*[contains(@aria-describedby, 'edit-field-nismr-link-0-uri')]");
+    this.removeHeritageSitePhotoButton = page.locator('//input[contains(@id,"edit-field-photo-selection-0-remove-button")]');
   }
 
   // ------------------------ asserts ------------------------
@@ -371,6 +373,14 @@ export class HeritageSiteEditPage
     await this.nismrLinkField.fill(nismrLink);
   }
 
+  async removeExistingHeritageSitePhoto()
+  {
+    await this.testSteps.LogInfo('Removing the existing heritage site photo');
+    await expect(this.removeHeritageSitePhotoButton).toBeEnabled();
+    await this.removeHeritageSitePhotoButton.click();
+    await expect(this.removeHeritageSitePhotoButton).toBeHidden();
+  }
+
   // ------------------------ actions related to edit heritage site  ------------------------
 
   // fill in heritage site form elements for editing
@@ -418,8 +428,7 @@ export class HeritageSiteEditPage
     await this.editSmNumber(data.smNumber);
     await this.editNismrLink(data.nismrLink);
 
-    await expect(this.page.locator('//input[contains(@id,"edit-field-photo-selection-0-remove-button")]')).toBeEnabled();
-    await this.page.locator('//input[contains(@id,"edit-field-photo-selection-0-remove-button")]').click();
+    await this.removeExistingHeritageSitePhoto();
 
     // Add image
     await this.uploadMediaHelper.uploadImageWorkflow({
