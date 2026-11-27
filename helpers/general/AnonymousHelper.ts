@@ -366,7 +366,7 @@ export class AnonymousHelper
                     {
                         // await expect(this.page.locator(`//a/h3[contains(text(), "${this.testData.Publication.title}")]`)).toBeVisible();
                         await expect(this.page.getByText(this.testData.Publication.title)).toBeVisible();
-                        
+
                     }
                     catch
                     {
@@ -510,7 +510,7 @@ export class AnonymousHelper
                     {
                         // await expect(this.page.locator(`//a/h3[contains(text(), "${this.testData.Event.title}")]`)).toBeVisible();
                         await expect(this.page.getByText(this.testData.Event.title)).toBeVisible();
-                        
+
                     }
                     catch
                     {
@@ -546,7 +546,7 @@ export class AnonymousHelper
                     // full verification of content edited param is passed along through methods steming from test itself
                     await this.verifyContent(edited);
                 }
-    
+
 
                 if (!edited && this.testSetUpData.moderationStateForTest.moderationState !== this.testSetUpData.validModerationStates.published)
                 {
@@ -560,7 +560,7 @@ export class AnonymousHelper
                     }
                     catch
                     {
-                        // wait 5 seconds and refresh page
+                        // wait 2 seconds and refresh page
                         await this.page.waitForTimeout(2000);
                         // remove last char from title
                         const updatedTitle = this.testSetUpData.contentTitleforTest.contentTitle.slice(0, -1);
@@ -639,8 +639,8 @@ export class AnonymousHelper
                         // await expect(this.page.locator(`//a/h3[contains(text(), "${this.testData.Event.titleEdited}")]`)).toBeHidden();
                         await expect(this.page.getByText(this.testData.Event.titleEdited)).toBeHidden();
                     }
-                } 
-                
+                }
+
                 break;
             }
         }
