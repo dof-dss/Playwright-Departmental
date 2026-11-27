@@ -327,6 +327,11 @@ test.describe('Empty Subtopic Tests', { tag: ['@subtopics', '@regression', '@top
             await topicsTreeHelper.verifyTopicNotVisibleInSiteTopicsTree(testData.Topic.title);
         });
 
+    test('Empty-Subtopic-TC09 - Topics - Ensure a Subtopic cannot have more than one parent Topic', { tag: '@topics_alert' },
+        async ({ subtopicHelper }) =>
+        {
+            await subtopicHelper.verifySubtopicCannotHaveMultipleParentTopics();
+        });
 });
 
 test.describe('Full Subtopic Tests', { tag: ['@subtopics', '@regression', '@topicsupervisor'] }, () =>
@@ -1279,6 +1284,407 @@ test.describe('Full Subtopic Tests', { tag: ['@subtopics', '@regression', '@topi
             await topicVisibilityHelper.verifySubtopicViaHomepage({ title: testData.Subtopic.title, shouldBeVisible: false, edited: false });
             await topicVisibilityHelper.verifySubtopicViaTopicsPage({ title: testData.Subtopic.title, shouldBeVisible: false, edited: false });
         });
+
+    for (const [index, { moderationState, saveAsOption }] of ([
+        { moderationState: 'Draft', saveAsOption: 'draft' },
+        { moderationState: 'Needs Review', saveAsOption: 'needsreview' },
+        { moderationState: 'Published', saveAsOption: 'published' },
+        { moderationState: 'Archived', saveAsOption: 'archived' },
+    ] as const).entries())
+    {
+        test(`Full-Subtopic-TC11.${index + 1} - Archive - Ensure Subtopic can be archived with Consultation, News and Publication in ${moderationState}`, { tag: '@archive' },
+            async ({ subtopicHelper, contentModerationHelper, navigateToCreatedContentHelper, anonymousHelper, topicVisibilityHelper, testData }) =>
+            {
+                await subtopicHelper.createSubtopic({
+                    preview: false,
+                    mandatoryFieldCheck: false,
+                    customTopicNeeded: true,
+                });
+
+                await subtopicHelper.createSubtopicChildContentTopicTree({
+                    application: false,
+                    article: false,
+                    protectedarea: false,
+                    subtopic: false,
+                    consultation: true,
+                    news: true,
+                    publication: true,
+                }, saveAsOption);
+
+                await navigateToCreatedContentHelper.navigateToCreatedContent({ active: true, deleted: false });
+                await contentModerationHelper.topicSupervisorModerateContent({
+                    QuickPublish: false,
+                    NeedsReview: false,
+                    Published: false,
+                    Archive: true,
+                });
+
+                await navigateToCreatedContentHelper.navigateToCreatedContent({ active: true, deleted: false });
+                await subtopicHelper.verifySubtopicIsArchived();
+
+                await anonymousHelper.searchAsAnon({ edited: false });
+                await topicVisibilityHelper.verifySubtopicViaHomepage({ title: testData.Subtopic.title, shouldBeVisible: false, edited: false });
+                await topicVisibilityHelper.verifySubtopicViaTopicsPage({ title: testData.Subtopic.title, shouldBeVisible: false, edited: false });
+            });
+    }
+
+    test('Full-Subtopic-TC12 - Archive - Ensure cannot Archive Subtopic with Application, Article, Protected Area and Subtopic child content by reverting to a previous Archived revision', { tag: '@archive' },
+        async ({ subtopicHelper, anonymousHelper, topicVisibilityHelper, revisionHelper, contentModerationHelper, navigateToCreatedContentHelper, testSetUpData, testData }) =>
+        {
+            // create the first revision as archived
+            testSetUpData.saveAsOptionForTest.saveAsOption = testSetUpData.validSaveAsOptionList.archived;
+            await subtopicHelper.createSubtopic({
+                preview: false,
+                mandatoryFieldCheck: false,
+                customTopicNeeded: true,
+            });
+
+            // publish the subtopic to create an active revision
+            await contentModerationHelper.topicSupervisorModerateContent({
+                QuickPublish: false,
+                NeedsReview: false,
+                Published: true,
+                Archive: false,
+            });
+
+            await subtopicHelper.createSubtopicChildContentTopicTree({
+                application: true,
+                article: true,
+                protectedarea: true,
+                subtopic: true,
+            });
+
+            // verify cannot revert the parent subtopic to Archived while children are in Draft
+            await navigateToCreatedContentHelper.navigateToCreatedContent({ active: true, deleted: false });
+            await subtopicHelper.verifyCannotRevertToPreviousArchivedRevision();
+
+            // moderate all child content to Needs Review
+            await contentModerationHelper.topicSupervisorModerateAllSubtopicChildrenContent({
+                application: true,
+                article: true,
+                protectedarea: true,
+                subtopic: true,
+                QuickPublish: false,
+                NeedsReview: true,
+                Published: false,
+                Archive: false,
+            });
+
+            await navigateToCreatedContentHelper.navigateToCreatedContent({ active: true, deleted: false });
+            await subtopicHelper.verifyCannotRevertToPreviousArchivedRevision();
+
+            // moderate all child content to Published
+            await contentModerationHelper.topicSupervisorModerateAllSubtopicChildrenContent({
+                application: true,
+                article: true,
+                protectedarea: true,
+                subtopic: true,
+                QuickPublish: false,
+                NeedsReview: false,
+                Published: true,
+                Archive: false,
+            });
+
+            await navigateToCreatedContentHelper.navigateToCreatedContent({ active: true, deleted: false });
+            await subtopicHelper.verifyCannotRevertToPreviousArchivedRevision();
+
+            // moderate all child content to Archived
+            await contentModerationHelper.topicSupervisorModerateAllSubtopicChildrenContent({
+                application: true,
+                article: true,
+                protectedarea: true,
+                subtopic: true,
+                QuickPublish: false,
+                NeedsReview: false,
+                Published: false,
+                Archive: true,
+            });
+
+            await navigateToCreatedContentHelper.navigateToCreatedContent({ active: true, deleted: false });
+            await revisionHelper.revertRevisions({
+                revert: false,
+                cancel: false,
+                topicArchivedRevert: true,
+            });
+
+            await navigateToCreatedContentHelper.navigateToCreatedContent({ active: true, deleted: false });
+            await subtopicHelper.verifySubtopicIsArchived();
+
+            await anonymousHelper.searchAsAnon({ edited: false });
+            await topicVisibilityHelper.verifySubtopicViaHomepage({ title: testData.Subtopic.title, shouldBeVisible: false, edited: false });
+            await topicVisibilityHelper.verifySubtopicViaTopicsPage({ title: testData.Subtopic.title, shouldBeVisible: false, edited: false });
+        });
+
+    for (const [index, { moderationState, saveAsOption }] of ([
+        { moderationState: 'Draft', saveAsOption: 'draft' },
+        { moderationState: 'Needs Review', saveAsOption: 'needsreview' },
+        { moderationState: 'Published', saveAsOption: 'published' },
+        { moderationState: 'Archived', saveAsOption: 'archived' },
+    ] as const).entries())
+    {
+        test(`Full-Subtopic-TC13.${index + 1} - Archive - Ensure Subtopic can be archived with Consultation, News and Publication in ${moderationState} by reverting to a previous Archived revision`, { tag: '@archive' },
+            async ({ subtopicHelper, anonymousHelper, topicVisibilityHelper, revisionHelper, contentModerationHelper, navigateToCreatedContentHelper, testSetUpData, testData }) =>
+            {
+                // create the first revision as archived
+                testSetUpData.saveAsOptionForTest.saveAsOption = testSetUpData.validSaveAsOptionList.archived;
+                await subtopicHelper.createSubtopic({
+                    preview: false,
+                    mandatoryFieldCheck: false,
+                    customTopicNeeded: true,
+                });
+
+                // publish the subtopic to create an active revision
+                await contentModerationHelper.topicSupervisorModerateContent({
+                    QuickPublish: false,
+                    NeedsReview: false,
+                    Published: true,
+                    Archive: false,
+                });
+
+                await subtopicHelper.createSubtopicChildContentTopicTree({
+                    application: false,
+                    article: false,
+                    protectedarea: false,
+                    subtopic: false,
+                    consultation: true,
+                    news: true,
+                    publication: true,
+                }, saveAsOption);
+
+                await navigateToCreatedContentHelper.navigateToCreatedContent({ active: true, deleted: false });
+                await revisionHelper.revertRevisions({
+                    revert: false,
+                    cancel: false,
+                    topicArchivedRevert: true,
+                });
+
+                await navigateToCreatedContentHelper.navigateToCreatedContent({ active: true, deleted: false });
+                await subtopicHelper.verifySubtopicIsArchived();
+
+                await anonymousHelper.searchAsAnon({ edited: false });
+                await topicVisibilityHelper.verifySubtopicViaHomepage({ title: testData.Subtopic.title, shouldBeVisible: false, edited: false });
+                await topicVisibilityHelper.verifySubtopicViaTopicsPage({ title: testData.Subtopic.title, shouldBeVisible: false, edited: false });
+            });
+    }
+
+    test('Full-Subtopic-TC14 - Revision - Create a subtopic and add child content one by one, verifying no new revisions are created', { tag: '@revision' },
+        async ({ subtopicHelper, navigateToCreatedContentHelper, revisionHelper }) =>
+        {
+            await subtopicHelper.createSubtopic({
+                preview: false,
+                mandatoryFieldCheck: false,
+                customTopicNeeded: true,
+            });
+
+            await navigateToCreatedContentHelper.navigateToCreatedContent({ active: true, deleted: false });
+            const initialRevisionCount = 1;
+            await revisionHelper.verifyRevisionCount(initialRevisionCount);
+            const childContentTypes = ['application', 'article', 'subtopic', 'consultation', 'news', 'publication', 'protectedarea'] as const;
+
+            for (const childContentType of childContentTypes)
+            {
+                await test.step(`Create ${childContentType} and verify no new subtopic revision`, async () =>
+                {
+                    await revisionHelper.revisionPage.goBack();
+                    await subtopicHelper.createSubtopicChildContentTopicTree({
+                        application: false,
+                        article: false,
+                        protectedarea: false,
+                        subtopic: false,
+                        consultation: false,
+                        news: false,
+                        publication: false,
+                        [childContentType]: true,
+                    });
+
+                    await navigateToCreatedContentHelper.navigateToCreatedContent({ active: true, deleted: false });
+                    await revisionHelper.verifyRevisionCount(initialRevisionCount);
+                });
+            }
+        });
+
+    test('Full-Subtopic-TC15 - Revision - Create a full subtopic with Application, remove it, then add an edited Subtopic and add an Article and verify child content does not show on revision compare', { tag: '@revision' },
+        async ({ subtopicHelper, revisionHelper, navigateToCreatedContentHelper, testSetUpData, testData }) =>
+        {
+            // create initial subtopic with Application child content
+            testSetUpData.saveAsOptionForTest.saveAsOption = testSetUpData.validSaveAsOptionList.draft;
+            await subtopicHelper.createSubtopic({
+                preview: false,
+                mandatoryFieldCheck: false,
+                customTopicNeeded: true,
+            });
+
+            await subtopicHelper.createSubtopicChildContentTopicTree({
+                application: true,
+                article: false,
+                protectedarea: false,
+                subtopic: false,
+            });
+
+            // navigate back to parent subtopic and remove Application child content
+            await navigateToCreatedContentHelper.navigateToCreatedContent({ active: true, deleted: false });
+            await subtopicHelper.removeChildContentByTopicTree({
+                application: true,
+                article: false,
+                protectedarea: false,
+                subtopic: false,
+                replacementTopic: 'Food',
+            });
+
+            // save the edited subtopic as Needs Review
+            testSetUpData.saveAsOptionForTest.saveAsOption = testSetUpData.validSaveAsOptionList.needsreview;
+            await navigateToCreatedContentHelper.navigateToCreatedContent({ active: true, deleted: false });
+            await subtopicHelper.editSubtopic({ preview: false, preserveSiteTopics: true });
+
+            // add Article under the edited Subtopic
+            await subtopicHelper.createSubtopicChildContentTopicTree({
+                application: false,
+                article: true,
+                protectedarea: false,
+                subtopic: false,
+            }, 'draft', { useEditedTitle: true });
+
+            await navigateToCreatedContentHelper.navigateToCreatedContent({ active: true, deleted: false });
+
+            // restore edited title for revision navigation
+            testData.Subtopic.title = testData.Subtopic.titleEdited;
+            testSetUpData.contentTitleforTest.contentTitle = testData.Subtopic.titleEdited;
+
+            // compare the revisions and verify child content is not shown
+            await revisionHelper.compareRevisions();
+            await revisionHelper.subtopicComparePage.verifySubtopicChildContentNotShownOnComparePage();
+        });
+
+    test('Full-Subtopic-TC16 - Revision - Create a subtopic with Application, keep it, then edit Subtopic and add an Article and delete a revision to verify both child content items are displayed', { tag: '@revision' },
+        async ({ subtopicHelper, revisionHelper, navigateToCreatedContentHelper, testSetUpData, testData }) =>
+        {
+            // create initial subtopic with Application child content
+            testSetUpData.saveAsOptionForTest.saveAsOption = testSetUpData.validSaveAsOptionList.draft;
+            await subtopicHelper.createSubtopic({
+                preview: false,
+                mandatoryFieldCheck: false,
+                customTopicNeeded: true,
+            });
+
+            await subtopicHelper.createSubtopicChildContentTopicTree({
+                application: true,
+                article: false,
+                protectedarea: false,
+                subtopic: false,
+            });
+
+            // edit the subtopic to create a new revision without removing Application
+            testSetUpData.saveAsOptionForTest.saveAsOption = testSetUpData.validSaveAsOptionList.needsreview;
+            await navigateToCreatedContentHelper.navigateToCreatedContent({ active: true, deleted: false });
+            await subtopicHelper.editSubtopic({ preview: false, preserveSiteTopics: true });
+
+            // add Article under the edited Subtopic
+            await subtopicHelper.createSubtopicChildContentTopicTree({
+                application: false,
+                article: true,
+                protectedarea: false,
+                subtopic: false,
+            }, 'draft', { useEditedTitle: true });
+
+            await navigateToCreatedContentHelper.navigateToCreatedContent({ active: true, deleted: false });
+
+            // delete a revision
+            await revisionHelper.deleteRevisions({
+                delete: true,
+                cancel: false,
+            });
+
+            // restore edited title for navigation
+            testData.Subtopic.title = testData.Subtopic.titleEdited;
+            testSetUpData.contentTitleforTest.contentTitle = testData.Subtopic.titleEdited;
+
+            await navigateToCreatedContentHelper.navigateToCreatedContent({ active: true, deleted: false });
+
+            // verify that both Application and Article child content appear
+            await subtopicHelper.verifySubtopicChildContentVisibility({
+                application: true,
+                article: true,
+                protectedarea: false,
+                subtopic: false,
+            });
+        });
+
+    test('Full-Subtopic-TC17 - Revision - Create a subtopic with Application, keep it, then edit Subtopic and add an Article and revert a revision to verify both child content items are displayed', { tag: '@revision' },
+        async ({ subtopicHelper, revisionHelper, navigateToCreatedContentHelper, testSetUpData, testData }) =>
+        {
+            // create initial subtopic with Application child content
+            testSetUpData.saveAsOptionForTest.saveAsOption = testSetUpData.validSaveAsOptionList.draft;
+            await subtopicHelper.createSubtopic({
+                preview: false,
+                mandatoryFieldCheck: false,
+                customTopicNeeded: true,
+            });
+
+            await subtopicHelper.createSubtopicChildContentTopicTree({
+                application: true,
+                article: false,
+                protectedarea: false,
+                subtopic: false,
+            });
+
+            // edit the subtopic to create a new revision without removing Application
+            testSetUpData.saveAsOptionForTest.saveAsOption = testSetUpData.validSaveAsOptionList.needsreview;
+            await navigateToCreatedContentHelper.navigateToCreatedContent({ active: true, deleted: false });
+            await subtopicHelper.editSubtopic({ preview: false, preserveSiteTopics: true });
+
+            // add Article under the edited Subtopic
+            await subtopicHelper.createSubtopicChildContentTopicTree({
+                application: false,
+                article: true,
+                protectedarea: false,
+                subtopic: false,
+            }, 'draft', { useEditedTitle: true });
+
+            await navigateToCreatedContentHelper.navigateToCreatedContent({ active: true, deleted: false });
+
+            // revert a revision
+            await revisionHelper.revertRevisions({
+                revert: true,
+                cancel: false,
+            });
+
+            // restore original title for navigation
+            testSetUpData.contentTitleforTest.contentTitle = testData.Subtopic.title;
+            await navigateToCreatedContentHelper.navigateToCreatedContent({ active: true, deleted: false });
+
+            // verify that both Application and Article child content appear
+            await subtopicHelper.verifySubtopicChildContentVisibility({
+                application: true,
+                article: true,
+                protectedarea: false,
+                subtopic: false,
+            });
+        });
+
+    for (const [index, { moderationState, saveAsOption }] of ([
+        { moderationState: 'Draft', saveAsOption: 'draft' },
+        { moderationState: 'Needs Review', saveAsOption: 'needsreview' },
+    ] as const).entries())
+    {
+        test(`Full-Subtopic-TC18.${index + 1} - Warning - Ensure Subtopic child content including Protected Area displays warning message when Subtopic is in ${moderationState}`, { tag: '@archive' },
+            async ({ subtopicHelper, testSetUpData }) =>
+            {
+                testSetUpData.saveAsOptionForTest.saveAsOption = testSetUpData.validSaveAsOptionList[saveAsOption];
+                await subtopicHelper.createSubtopic({
+                    preview: false,
+                    mandatoryFieldCheck: false,
+                    customTopicNeeded: true,
+                });
+
+                await subtopicHelper.createSubtopicChildContentTopicTree({
+                    application: true,
+                    article: true,
+                    protectedarea: true,
+                    subtopic: true,
+                }, 'published', { verifyUnpublishedTopicWarning: true });
+            });
+    }
+
 });
 
 

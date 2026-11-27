@@ -28,6 +28,8 @@ import { ProtectedAreaNodePage } from '@poms/content-pages/ProtectedArea/Protect
 import { ApplicationCreatePage } from '@poms/content-pages/Application/ApplicationCreatePage';
 import { ArticleCreatePage } from '@poms/content-pages/Article/ArticleCreatePage';
 import { ProtectedAreaCreatePage } from '@poms/content-pages/ProtectedArea/ProtectedAreaCreatePage';
+import { RevisionPage } from '@poms/base-pages/RevisionPage';
+import { RevertRevisionsPage } from '@poms/base-pages/RevertRevisionsPage';
 
 export interface SaveOptions
 {
@@ -89,6 +91,8 @@ export class SubtopicHelper
     private readonly testSteps: TestSteps;
     private readonly siteTopics: Topics;
     private readonly navigateToCreatedContentHelper: NavigateToCreatedContentHelper;
+    private readonly revisionPage: RevisionPage;
+    private readonly revertRevisionsPage: RevertRevisionsPage;
 
     // constructor
     constructor(
@@ -113,6 +117,8 @@ export class SubtopicHelper
         this.testSteps = new TestSteps();
         this.siteTopics = new Topics(page, testSetUpData, testData);
         this.navigateToCreatedContentHelper = new NavigateToCreatedContentHelper(page, testSetUpData, testData);
+        this.revisionPage = new RevisionPage(page);
+        this.revertRevisionsPage = new RevertRevisionsPage(page);
     }
 
     // navigation method
@@ -123,6 +129,21 @@ export class SubtopicHelper
         await this.contentPage.clickAddContentButton();
         await this.addContentPage.addContentPageURLCheck();
         await this.addContentPage.selectContent();
+    }
+
+    async verifySubtopicCannotHaveMultipleParentTopics()
+    {
+        await this.topicsHelper.selectTopicForSite({ edit: false, triggeralert: true });
+
+        const firstParentTopic = this.testData.SiteTopics.topic1;
+        const secondParentTopic = this.testData.SiteTopics.topic2;
+        if (!firstParentTopic || !secondParentTopic)
+        {
+            throw new Error('Two parent topics are required to verify the Subtopic parent selection limit');
+        }
+
+        await this.navigateToCreateSubtopic();
+        await this.subtopicCreatePage.topics.verifySecondParentTopicSelectionIsBlocked(firstParentTopic, secondParentTopic);
     }
 
     // create Subtopic method
@@ -236,7 +257,7 @@ export class SubtopicHelper
                 if (childContentOptions?.verifyUnpublishedTopicWarning)
                 {
                     const applicationNodePage = new ApplicationNodePage(this.page, this.testSetUpData, this.testData);
-                    await applicationNodePage.verifyUnpublishedTopicWarning();
+                    await applicationNodePage.verifyUnpublishedTopicWarning(parentSubtopicTitle);
                 }
             }
 
@@ -252,7 +273,7 @@ export class SubtopicHelper
                 if (childContentOptions?.verifyUnpublishedTopicWarning)
                 {
                     const articleNodePage = new ArticleNodePage(this.page, this.testSetUpData, this.testData);
-                    await articleNodePage.verifyUnpublishedTopicWarning();
+                    await articleNodePage.verifyUnpublishedTopicWarning(parentSubtopicTitle);
                 }
             }
 
@@ -268,7 +289,7 @@ export class SubtopicHelper
                 if (childContentOptions?.verifyUnpublishedTopicWarning)
                 {
                     const protectedAreaNodePage = new ProtectedAreaNodePage(this.page, this.testSetUpData, this.testData);
-                    await protectedAreaNodePage.verifyUnpublishedTopicWarning();
+                    await protectedAreaNodePage.verifyUnpublishedTopicWarning(parentSubtopicTitle);
                 }
             }
 
@@ -288,7 +309,7 @@ export class SubtopicHelper
                 if (childContentOptions?.verifyUnpublishedTopicWarning)
                 {
                     const subtopicNodePage = new SubtopicNodePage(this.page, this.testSetUpData, this.testData);
-                    await subtopicNodePage.verifyUnpublishedTopicWarning();
+                    await subtopicNodePage.verifyUnpublishedTopicWarning(parentSubtopicTitle);
                 }
             }
 
@@ -786,6 +807,16 @@ export class SubtopicHelper
         await this.subtopicNodePage.subtopicNodeURLCheck();
         await this.moderationSideBar.openModerationSideBar();
         await this.moderationSideBar.verifyCurrentState('Archived');
+    }
+
+    async verifyCannotRevertToPreviousArchivedRevision()
+    {
+        await this.subtopicNodePage.subtopicNodeURLCheck();
+        await this.moderationSideBar.openModerationSideBar();
+        await this.moderationSideBar.clickShowRevisionsButton();
+        await this.revisionPage.revisionPageURLCheck();
+        await this.revisionPage.clickRevertRevisionsButton();
+        await this.revertRevisionsPage.verifyRevertButtonIsDisabled();
     }
 
     async deleteSubtopic(options: DeleteSubtopicOptions)

@@ -141,6 +141,41 @@ export class Topics
         await expect(topicsField.getByText(parentTopic, { exact: true })).toBeVisible();
     }
 
+    async verifySecondParentTopicSelectionIsBlocked(firstParentTopic: string, secondParentTopic: string)
+    {
+        const dialog = this.page.getByRole('dialog', { name: 'Select Topics' });
+        const getTopicCheckbox = (topicTitle: string) => dialog.getByText(topicTitle, { exact: true })
+            .locator('xpath=ancestor-or-self::a[contains(concat(" ", normalize-space(@class), " "), " jstree-anchor ")]')
+            .locator('i.jstree-checkbox');
+        const firstParentCheckbox = getTopicCheckbox(firstParentTopic);
+        const secondParentCheckbox = getTopicCheckbox(secondParentTopic);
+
+        await this.testSteps.LogInfo('Opening the Site Topics selector');
+        await expect(this.clickSiteTopicsButton).toBeEnabled();
+        await this.clickSiteTopicsButton.click();
+        await expect(dialog).toBeVisible();
+
+        await this.testSteps.LogInfo(`Selecting the first parent topic "${firstParentTopic}"`);
+        await expect(firstParentCheckbox).toBeVisible();
+        await firstParentCheckbox.click();
+
+        await this.testSteps.LogInfo(`Attempting to select a second parent topic "${secondParentTopic}"`);
+        let selectionLimitAlertDisplayed = false;
+        this.page.once('dialog', async dialog =>
+        {
+            expect(dialog.type()).toBe('alert');
+            expect(dialog.message()).toBe('Topic selection limit reached.');
+            await dialog.accept();
+            selectionLimitAlertDisplayed = true;
+            await this.testSteps.LogInfo('Topic selection limit alert appears and is accepted');
+        });
+        await secondParentCheckbox.click();
+        expect(selectionLimitAlertDisplayed).toBe(true);
+
+        await this.testSteps.LogInfo('Verifying only one parent topic remains selected');
+        await expect(dialog.getByText('Selected: 1 of 1 topics', { exact: true })).toBeVisible();
+    }
+
     private async getSubtopicCheckbox(parentTopic: string, subtopic: string): Promise<Locator>
     {
         const dialog = this.page.getByRole('dialog', { name: 'Select Topics' });

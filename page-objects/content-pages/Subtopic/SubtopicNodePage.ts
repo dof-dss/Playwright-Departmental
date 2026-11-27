@@ -139,14 +139,14 @@ export class SubtopicNodePage
     }
 
     // verify warning message when associated topic is unpublished
-    async verifyUnpublishedTopicWarning()
+    async verifyUnpublishedTopicWarning(topicTitle = this.testData.Topic.title)
     {
-        await this.testSteps.LogInfo(`Verifying unpublished topic warning message is visible for topic "${this.testData.Topic.title}"`);
+        await this.testSteps.LogInfo(`Verifying unpublished topic warning message is visible for topic "${topicTitle}"`);
         const warningMessage = this.page.locator(
             '//h2[@class="visually-hidden"][text()="Warning message"]/following-sibling::div[@class="messages__item"]'
         );
         await expect(warningMessage).toContainText(
-            `This content is associated with an unpublished topic (${this.testData.Topic.title}), so visitors have no way to reach it through that topic on the site.`
+            `This content is associated with an unpublished topic (${topicTitle}), so visitors have no way to reach it through that topic on the site.`
         );
     }
 }
